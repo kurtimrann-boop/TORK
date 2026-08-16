@@ -1,814 +1,3551 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabase";
 
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+const SHIPPER_TABS = [
+  { id: "overview", label: "Genel Bakış", icon: "⌂" },
+  { id: "loads", label: "İlanlarım", icon: "▣" },
+  { id: "create", label: "Yeni Yük", icon: "+" },
+  { id: "bids", label: "Gelen Teklifler", icon: "◇" },
+  { id: "wallet", label: "Cüzdan", icon: "₺" },
+  { id: "profile", label: "Profilim", icon: "○" },
+  { id: "settings", label: "Ayarlar", icon: "⚙" },
+];
+
+const CARRIER_TABS = [
+  { id: "overview", label: "Genel Bakış", icon: "⌂" },
+  { id: "board", label: "Uygun Yükler", icon: "◫" },
+  { id: "wallet", label: "Cüzdan", icon: "₺" },
+  { id: "profile", label: "Profilim", icon: "○" },
+  { id: "settings", label: "Ayarlar", icon: "⚙" },
+];
+
+/* =========================================================
+   SMALL UI COMPONENTS
+========================================================= */
+
+function TorkLogo({ compact = false }) {
+  return (
+    <div
+      className={`tork-logo flex items-center justify-center rounded-2xl ${
+        compact ? "h-10 w-10" : "h-12 w-12"
+      }`}
+    >
+      <span
+        className={`font-black tracking-[-0.08em] text-[#ffcc00] ${
+          compact ? "text-xl" : "text-2xl"
+        }`}
+      >
+        T
+      </span>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  detail,
+  accent = "yellow",
+}) {
+  const valueClass =
+    accent === "orange"
+      ? "text-[#f59e0b]"
+      : accent === "green"
+        ? "text-emerald-400"
+        : "text-[#ffcc00]";
+
+  return (
+    <div className="tork-panel tork-panel-hover rounded-2xl p-5">
+      <div className="tork-eyebrow mb-2">{label}</div>
+
+      <div
+        className={`text-3xl font-black tracking-tight ${valueClass}`}
+      >
+        {value}
+      </div>
+
+      {detail ? (
+        <div className="mt-1.5 text-xs text-slate-500">
+          {detail}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function EmptyState({
+  title,
+  text,
+  action,
+}) {
+  return (
+    <div className="tork-panel rounded-3xl p-10 text-center">
+      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#ffcc00]/10 bg-[#ffcc00]/5 text-xl font-black text-[#ffcc00]">
+        T
+      </div>
+
+      <h3 className="text-lg font-black text-white">
+        {title}
+      </h3>
+
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+        {text}
+      </p>
+
+      {action ? (
+        <div className="mt-6">
+          {action}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SectionHeading({
+  eyebrow,
+  title,
+  description,
+  action,
+}) {
+  return (
+    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <div className="tork-eyebrow mb-1.5">
+          {eyebrow}
+        </div>
+
+        <h2 className="text-2xl font-black tracking-[-0.03em] text-white">
+          {title}
+        </h2>
+
+        {description ? (
+          <p className="mt-1 text-sm text-slate-500">
+            {description}
+          </p>
+        ) : null}
+      </div>
+
+      {action ? (
+        <div className="shrink-0">
+          {action}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SettingRow({
+  title,
+  description,
+  children,
+}) {
+  return (
+    <div className="flex flex-col gap-4 border-b border-white/6 py-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between">
+      <div className="max-w-2xl">
+        <div className="text-sm font-bold text-white">
+          {title}
+        </div>
+
+        {description ? (
+          <div className="mt-1 text-xs leading-5 text-slate-500">
+            {description}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="shrink-0">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Toggle({
+  checked,
+  onChange,
+  disabled = false,
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={() => !disabled && onChange(!checked)}
+      className={`relative h-7 w-12 rounded-full border transition ${
+        checked
+          ? "border-[#ffcc00]/40 bg-[#ffcc00]"
+          : "border-white/10 bg-white/[0.05]"
+      } ${disabled ? "cursor-not-allowed opacity-40" : ""}`}
+    >
+      <span
+        className={`absolute top-1 h-5 w-5 rounded-full transition ${
+          checked
+            ? "left-6 bg-[#16120a]"
+            : "left-1 bg-slate-400"
+        }`}
+      />
+    </button>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  disabled = false,
+}) {
+  return (
+    <div>
+      <label className="tork-eyebrow mb-2 block">
+        {label}
+      </label>
+
+      <input
+        type={type}
+        value={value}
+        onChange={(e) =>
+          onChange(e.target.value)
+        }
+        placeholder={placeholder}
+        disabled={disabled}
+        className="tork-input px-4 py-3.5 text-sm"
+      />
+    </div>
+  );
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
 export default function TorkApp() {
-  const [authMode, setAuthMode] = useState("login");
-  const [loginRole, setLoginRole] = useState("shipper");
-  
-  // Temel Kimlik Bilgileri
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("shipper");
+  /* =======================================================
+     AUTH
+  ======================================================= */
 
-  // Kurumsal / Şirket Bilgileri
-  const [companyName, setCompanyName] = useState("");
-  const [taxNumber, setTaxNumber] = useState("");
-  const [taxOffice, setTaxOffice] = useState("");
-  const [mersisNo, setMersisNo] = useState("");
-  const [city, setCity] = useState("");
-  const [district, setDistrict] = useState("");
-  const [address, setAddress] = useState("");
-  const [iban, setIban] = useState("");
+  const [authMode, setAuthMode] =
+    useState("login");
 
-  // Taşıyıcı & Araç Detayları
-  const [vehiclePlate, setVehiclePlate] = useState("");
-  const [vehicleType, setVehicleType] = useState("TIR (Tenteli)");
-  const [adrStatus, setAdrStatus] = useState(false);
-  const [frigoStatus, setFrigoStatus] = useState(false);
+  const [loginRole, setLoginRole] =
+    useState("shipper");
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [userDashboard, setUserDashboard] = useState(null);
+  const [email, setEmail] =
+    useState("");
 
-  // Panel İçi Sekmeler
-  const [activeTab, setActiveTab] = useState("loads");
+  const [password, setPassword] =
+    useState("");
 
-  // Ayarlar Güncelleme Form State'leri
-  const [editCompanyName, setEditCompanyName] = useState("");
-  const [editTaxOffice, setEditTaxOffice] = useState("");
-  const [editTaxNumber, setEditTaxNumber] = useState("");
-  const [editMersisNo, setEditMersisNo] = useState("");
-  const [editPhone, setEditPhone] = useState("");
-  const [editIban, setEditIban] = useState("");
-  const [editPlate, setEditPlate] = useState("");
-  const [editVehicleType, setEditVehicleType] = useState("");
+  const [rememberMe, setRememberMe] =
+    useState(false);
 
-  // Yük İlanı Form State'leri
-  const [origin, setOrigin] = useState("");
-  const [destination, setDestination] = useState("");
-  const [loadTonnage, setLoadTonnage] = useState("");
-  const [loadVehicle, setLoadVehicle] = useState("TIR (Tenteli)");
-  const [cargoType, setCargoType] = useState("Paletli Ürün");
-  
-  const [loads, setLoads] = useState([]);
-  const [myLoads, setMyLoads] = useState([]);
-  const [incomingBids, setIncomingBids] = useState([]);
-  const [walletData, setWalletData] = useState({ balance: 25500, pending: 4500, total_earned: 128000 });
+  const [companyName, setCompanyName] =
+    useState("");
 
-  // Teklif Verme State'leri
-  const [activeBidLoadId, setActiveBidLoadId] = useState(null);
-  const [bidAmount, setBidAmount] = useState("");
+  const [phone, setPhone] =
+    useState("");
 
-  const fetchOpenLoads = async () => {
-    const { data } = await supabase.from("loads").select("*").eq("status", "open");
-    if (data) setLoads(data);
-  };
+  const [role, setRole] =
+    useState("shipper");
 
-  const fetchShipperData = async (userId) => {
-    const { data: loadsData } = await supabase.from("loads").select("*").eq("shipper_id", userId);
-    if (loadsData) setMyLoads(loadsData);
+  const [loading, setLoading] =
+    useState(false);
 
-    const loadIds = loadsData?.map(l => l.id) || [];
-    if (loadIds.length > 0) {
-      const { data: bidsData } = await supabase
-        .from("bids")
-        .select("*, loads(origin, destination, cargo_type, tonnage), profiles(company_name, phone)")
-        .in("load_id", loadIds);
-      if (bidsData) setIncomingBids(bidsData);
-    }
-  };
+  const [message, setMessage] =
+    useState("");
 
-  useEffect(() => {
-    if (userDashboard) {
-      setEditCompanyName(userDashboard.company_name || "");
-      setEditTaxOffice(userDashboard.tax_office || "");
-      setEditTaxNumber(userDashboard.tax_number || "");
-      setEditMersisNo(userDashboard.mersis_no || "");
-      setEditPhone(userDashboard.phone || "");
-      setEditIban(userDashboard.iban || "");
-      setEditPlate(userDashboard.vehicle_plate || "");
-      setEditVehicleType(userDashboard.vehicle_type || "TIR (Tenteli)");
+  const [userDashboard, setUserDashboard] =
+    useState(null);
 
-      if (userDashboard.role === "carrier") {
-        fetchOpenLoads();
-      } else {
-        fetchShipperData(userDashboard.id);
-      }
-    }
-  }, [userDashboard, activeTab]);
+  const [activeTab, setActiveTab] =
+    useState("overview");
 
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  /* =======================================================
+     LOADS / BIDS
+  ======================================================= */
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) { setMessage("Kayıt Hatası: " + error.message); setLoading(false); return; }
+  const [origin, setOrigin] =
+    useState("");
 
-    const userId = data.user?.id;
-    if (!userId) { setMessage("Kullanıcı kimliği alınamadı."); setLoading(false); return; }
+  const [destination, setDestination] =
+    useState("");
 
-    const { error: profileError } = await supabase.from("profiles").insert({ 
-      id: userId, 
-      role, 
-      first_name: firstName,
-      last_name: lastName,
-      company_name: companyName, 
-      phone,
-      tax_number: taxNumber,
-      tax_office: taxOffice,
-      mersis_no: mersisNo,
-      city,
-      district,
-      address,
-      iban,
-      vehicle_plate: role === 'carrier' ? vehiclePlate : null,
-      vehicle_type: role === 'carrier' ? vehicleType : null,
-      adr: adrStatus,
-      frigo: frigoStatus
+  const [tonnage, setTonnage] =
+    useState("");
+
+  const [vehicle, setVehicle] =
+    useState("TIR (Tenteli)");
+
+  const [cargoType, setCargoType] =
+    useState("Paletli Ürün");
+
+  const [packageCount, setPackageCount] =
+    useState("");
+
+  const [loadDescription, setLoadDescription] =
+    useState("");
+
+  const [loads, setLoads] =
+    useState([]);
+
+  const [myLoads, setMyLoads] =
+    useState([]);
+
+  const [incomingBids, setIncomingBids] =
+    useState([]);
+
+  const [activeBidLoadId, setActiveBidLoadId] =
+    useState(null);
+
+  const [bidAmount, setBidAmount] =
+    useState("");
+
+  /* =======================================================
+     PROFILE
+  ======================================================= */
+
+  const [profileSection, setProfileSection] =
+    useState("company");
+
+  const [legalCompanyName, setLegalCompanyName] =
+    useState("");
+
+  const [taxNumber, setTaxNumber] =
+    useState("");
+
+  const [taxOffice, setTaxOffice] =
+    useState("");
+
+  const [mersisNumber, setMersisNumber] =
+    useState("");
+
+  const [commercialRegistryNumber, setCommercialRegistryNumber] =
+    useState("");
+
+  const [companyAddress, setCompanyAddress] =
+    useState("");
+
+  const [iban, setIban] =
+    useState("");
+
+  const [ibanChangeRequested, setIbanChangeRequested] =
+    useState(false);
+
+  const [ibanOtpSent, setIbanOtpSent] =
+    useState(false);
+
+  const [ibanOtp, setIbanOtp] =
+    useState("");
+
+  const [notifications, setNotifications] =
+    useState({
+      sms: true,
+      email: true,
+      push: true,
     });
 
-    if (profileError) {
-      setMessage("Profil Kayıt Hatası: " + profileError.message);
-    } else {
-      setMessage("Kayıt ve firma onboarding başvurunuz başarılı! Şimdi giriş yapabilirsiniz.");
-      setAuthMode("login");
+  const [kvkkMarketingConsent, setKvkkMarketingConsent] =
+    useState(false);
+
+  const [dataDeletionRequested, setDataDeletionRequested] =
+    useState(false);
+
+  /* =======================================================
+     SETTINGS
+  ======================================================= */
+
+  const [settingsSection, setSettingsSection] =
+    useState("operations");
+
+  const [commissionRate, setCommissionRate] =
+    useState(5);
+
+  const [gpsFrequency, setGpsFrequency] =
+    useState(30);
+
+  const [delayThreshold, setDelayThreshold] =
+    useState(30);
+
+  const [trustWeightLocation, setTrustWeightLocation] =
+    useState(25);
+
+  const [trustWeightVehicle, setTrustWeightVehicle] =
+    useState(20);
+
+  const [trustWeightPrice, setTrustWeightPrice] =
+    useState(20);
+
+  const [trustWeightPerformance, setTrustWeightPerformance] =
+    useState(20);
+
+  const [trustWeightReliability, setTrustWeightReliability] =
+    useState(15);
+
+  const [tomtomEnabled, setTomtomEnabled] =
+    useState(true);
+
+  const [mapsEnabled, setMapsEnabled] =
+    useState(true);
+
+  const [paymentIntegrationEnabled, setPaymentIntegrationEnabled] =
+    useState(false);
+
+  const [apiGatewayEnabled, setApiGatewayEnabled] =
+    useState(true);
+
+  const [mfaRequired, setMfaRequired] =
+    useState(true);
+
+  const [sessionTimeout, setSessionTimeout] =
+    useState(30);
+
+  const [multiUserEnabled, setMultiUserEnabled] =
+    useState(true);
+
+  const [employees, setEmployees] =
+    useState([
+      {
+        id: 1,
+        name: "Operasyon Yöneticisi",
+        email: "operasyon@firma.com",
+        role: "OPERATIONS",
+      },
+    ]);
+
+  const [newEmployeeName, setNewEmployeeName] =
+    useState("");
+
+  const [newEmployeeEmail, setNewEmployeeEmail] =
+    useState("");
+
+  /* =======================================================
+     WALLET
+  ======================================================= */
+
+  const [walletBalance] =
+    useState(0);
+
+  /* =======================================================
+     LOAD DATA
+  ======================================================= */
+
+  const fetchOpenLoads = async () => {
+    const { data, error } =
+      await supabase
+        .from("loads")
+        .select("*")
+        .eq("status", "open")
+        .order("created_at", {
+          ascending: false,
+        });
+
+    if (!error && data) {
+      setLoads(data);
     }
-    setLoading(false);
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  const fetchShipperData = async (
+    userId,
+  ) => {
+    const { data: loadsData } =
+      await supabase
+        .from("loads")
+        .select("*")
+        .eq("shipper_id", userId)
+        .order("created_at", {
+          ascending: false,
+        });
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) { setMessage("Giriş Hatası: " + error.message); setLoading(false); return; }
+    setMyLoads(loadsData || []);
 
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles").select("*").eq("id", data.user.id).single();
+    const loadIds =
+      loadsData?.map(
+        (load) => load.id,
+      ) || [];
 
-    if (profileError || !profile) { setMessage("Profil bulunamadı!"); setLoading(false); return; }
-
-    if (profile.role !== loginRole) {
-      setMessage(`Bu hesap bir ${profile.role === 'shipper' ? 'Yük Veren' : 'Nakliyeci'} hesabıdır.`);
-      await supabase.auth.signOut();
-      setLoading(false);
+    if (loadIds.length === 0) {
+      setIncomingBids([]);
       return;
     }
 
-    if (rememberMe) {
-      localStorage.setItem("tork_remember_email", email);
-    } else {
-      localStorage.removeItem("tork_remember_email");
-    }
+    const { data: bidsData } =
+      await supabase
+        .from("bids")
+        .select(
+          "*, loads(origin, destination, cargo_type, tonnage), profiles(company_name, phone)",
+        )
+        .in(
+          "load_id",
+          loadIds,
+        )
+        .order("created_at", {
+          ascending: false,
+        });
 
-    setUserDashboard(profile);
-    setActiveTab(profile.role === "shipper" ? "loads" : "board");
-    setLoading(false);
-  };
-
-  const handleUpdateSettings = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    const updateData = {
-      company_name: editCompanyName,
-      tax_office: editTaxOffice,
-      tax_number: editTaxNumber,
-      mersis_no: editMersisNo,
-      phone: editPhone,
-      iban: editIban,
-    };
-
-    if (userDashboard.role === 'carrier') {
-      updateData.vehicle_plate = editPlate;
-      updateData.vehicle_type = editVehicleType;
-    }
-
-    const { error } = await supabase
-      .from("profiles")
-      .update(updateData)
-      .eq("id", userDashboard.id);
-
-    if (error) {
-      setMessage("Güncelleme Hatası: " + error.message);
-    } else {
-      setUserDashboard({ ...userDashboard, ...updateData });
-      setMessage("Profil ve kurumsal ayarlarınız başarıyla güncellendi!");
-    }
-    setLoading(false);
+    setIncomingBids(
+      bidsData || [],
+    );
   };
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem("tork_remember_email");
+    if (!userDashboard) {
+      return;
+    }
+
+    if (
+      userDashboard.role ===
+      "carrier"
+    ) {
+      fetchOpenLoads();
+    } else {
+      fetchShipperData(
+        userDashboard.id,
+      );
+    }
+  }, [
+    userDashboard,
+    activeTab,
+  ]);
+
+  useEffect(() => {
+    const savedEmail =
+      localStorage.getItem(
+        "tork_remember_email",
+      );
+
     if (savedEmail) {
       setEmail(savedEmail);
       setRememberMe(true);
     }
   }, []);
 
-  const handleCreateLoad = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.from("loads").insert({
-      shipper_id: userDashboard.id, 
-      origin, 
-      destination, 
-      tonnage: loadTonnage, 
-      vehicle_type: loadVehicle, 
-      status: "open"
-    });
-    
-    if (error) setMessage("Hata: " + error.message);
-    else { 
-      setMessage("Detaylı yük ilanı başarıyla yayınlandı!"); 
-      setOrigin(""); setDestination(""); setLoadTonnage("");
-      fetchShipperData(userDashboard.id);
-    }
-    setLoading(false);
-  };
+  /* =======================================================
+     AUTH HANDLERS
+  ======================================================= */
 
-  const handleSendBid = async (loadId) => {
-    if (!bidAmount) return;
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
     setLoading(true);
     setMessage("");
 
-    const { error } = await supabase.from("bids").insert({
-      load_id: loadId,
-      carrier_id: userDashboard.id,
-      amount: bidAmount,
-      status: 'pending'
-    });
+    const {
+      data,
+      error,
+    } =
+      await supabase.auth.signUp({
+        email,
+        password,
+      });
 
     if (error) {
-      setMessage("Teklif Verme Hatası: " + error.message);
+      setMessage(
+        "Kayıt hatası: " +
+          error.message,
+      );
+
+      setLoading(false);
+      return;
+    }
+
+    if (!data.user) {
+      setMessage(
+        "Kullanıcı oluşturulamadı.",
+      );
+
+      setLoading(false);
+      return;
+    }
+
+    const {
+      error: profileError,
+    } =
+      await supabase
+        .from("profiles")
+        .insert({
+          id: data.user.id,
+          role,
+          company_name:
+            companyName,
+          phone,
+        });
+
+    if (profileError) {
+      setMessage(
+        "Profil hatası: " +
+          profileError.message,
+      );
     } else {
-      setMessage("Navlun teklifiniz başarıyla iletildi!");
-      setActiveBidLoadId(null);
-      setBidAmount("");
+      setMessage(
+        "Kayıt başarılı. Şimdi giriş yapabilirsiniz.",
+      );
+
+      setAuthMode("login");
     }
+
     setLoading(false);
   };
 
-  const handleUpdateBidStatus = async (bidId, loadId, newStatus) => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
     setLoading(true);
-    await supabase.from("bids").update({ status: newStatus }).eq("id", bidId);
-    if (newStatus === 'accepted') {
-      await supabase.from("loads").update({ status: 'assigned' }).eq("id", loadId);
+    setMessage("");
+
+    const {
+      data,
+      error,
+    } =
+      await supabase.auth.signInWithPassword(
+        {
+          email,
+          password,
+        },
+      );
+
+    if (error) {
+      setMessage(
+        "Giriş hatası: " +
+          error.message,
+      );
+
+      setLoading(false);
+      return;
     }
-    fetchShipperData(userDashboard.id);
+
+    const {
+      data: profile,
+      error: profileError,
+    } =
+      await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", data.user.id)
+        .single();
+
+    if (
+      profileError ||
+      !profile
+    ) {
+      setMessage(
+        "Profil bulunamadı.",
+      );
+
+      setLoading(false);
+      return;
+    }
+
+    if (
+      profile.role !==
+      loginRole
+    ) {
+      setMessage(
+        `Bu hesap bir ${
+          profile.role ===
+          "shipper"
+            ? "Yük Veren"
+            : "Nakliyeci"
+        } hesabıdır. Lütfen doğru sekmeden giriş yapın.`,
+      );
+
+      await supabase.auth.signOut();
+
+      setLoading(false);
+      return;
+    }
+
+    if (rememberMe) {
+      localStorage.setItem(
+        "tork_remember_email",
+        email,
+      );
+    } else {
+      localStorage.removeItem(
+        "tork_remember_email",
+      );
+    }
+
+    setUserDashboard(
+      profile,
+    );
+
+    setActiveTab(
+      "overview",
+    );
+
     setLoading(false);
   };
 
-  // DASHBOARD RENDER
-  if (userDashboard) {
+  const handleLogout =
+    async () => {
+      await supabase.auth.signOut();
+
+      setUserDashboard(null);
+      setActiveTab("overview");
+      setMessage("");
+    };
+
+  /* =======================================================
+     LOAD HANDLERS
+  ======================================================= */
+
+  const handleCreateLoad =
+    async (e) => {
+      e.preventDefault();
+
+      setLoading(true);
+      setMessage("");
+
+      const { error } =
+        await supabase
+          .from("loads")
+          .insert({
+            shipper_id:
+              userDashboard.id,
+            origin,
+            destination,
+            tonnage,
+            vehicle_type:
+              vehicle,
+            status: "open",
+          });
+
+      if (error) {
+        setMessage(
+          "Hata: " +
+            error.message,
+        );
+      } else {
+        setMessage(
+          "Yük ilanı başarıyla yayınlandı.",
+        );
+
+        setOrigin("");
+        setDestination("");
+        setTonnage("");
+        setPackageCount("");
+        setLoadDescription("");
+
+        await fetchShipperData(
+          userDashboard.id,
+        );
+
+        setActiveTab(
+          "loads",
+        );
+      }
+
+      setLoading(false);
+    };
+
+  const handleSendBid =
+    async (loadId) => {
+      if (!bidAmount) {
+        return;
+      }
+
+      setLoading(true);
+
+      const { error } =
+        await supabase
+          .from("bids")
+          .insert({
+            load_id: loadId,
+            carrier_id:
+              userDashboard.id,
+            amount: bidAmount,
+            status: "pending",
+          });
+
+      if (error) {
+        setMessage(
+          "Teklif verme hatası: " +
+            error.message,
+        );
+      } else {
+        setMessage(
+          "Navlun teklifiniz başarıyla iletildi.",
+        );
+
+        setActiveBidLoadId(
+          null,
+        );
+
+        setBidAmount("");
+      }
+
+      setLoading(false);
+    };
+
+  const handleUpdateBidStatus =
+    async (
+      bidId,
+      loadId,
+      newStatus,
+    ) => {
+      setLoading(true);
+
+      const {
+        error: bidError,
+      } =
+        await supabase
+          .from("bids")
+          .update({
+            status:
+              newStatus,
+          })
+          .eq(
+            "id",
+            bidId,
+          );
+
+      if (bidError) {
+        setMessage(
+          "Teklif güncellenemedi: " +
+            bidError.message,
+        );
+
+        setLoading(false);
+        return;
+      }
+
+      if (
+        newStatus ===
+        "accepted"
+      ) {
+        await supabase
+          .from("loads")
+          .update({
+            status:
+              "assigned",
+          })
+          .eq(
+            "id",
+            loadId,
+          );
+      }
+
+      await fetchShipperData(
+        userDashboard.id,
+      );
+
+      setLoading(false);
+    };
+
+  /* =======================================================
+     PROFILE HANDLERS
+  ======================================================= */
+
+  const initializeProfile =
+    () => {
+      if (!userDashboard) {
+        return;
+      }
+
+      setLegalCompanyName(
+        userDashboard.company_name ||
+          "",
+      );
+
+      setCompanyAddress(
+        userDashboard.company_address ||
+          "",
+      );
+
+      setPhone(
+        userDashboard.phone ||
+          "",
+      );
+    };
+
+  useEffect(() => {
+    initializeProfile();
+  }, [userDashboard]);
+
+  const handleProfileSave =
+    async () => {
+      setLoading(true);
+      setMessage("");
+
+      /*
+       * Mevcut profiles tablosunda
+       * bildiğimiz alanları güncelliyoruz.
+       *
+       * Yeni yasal/finansal alanlar
+       * migration sonrasında ayrıca
+       * ayrı tablolara taşınacak.
+       */
+
+      const { data, error } =
+        await supabase
+          .from("profiles")
+          .update({
+            company_name:
+              legalCompanyName,
+            phone,
+          })
+          .eq(
+            "id",
+            userDashboard.id,
+          )
+          .select()
+          .single();
+
+      if (error) {
+        setMessage(
+          "Profil kaydedilemedi: " +
+            error.message,
+        );
+      } else {
+        setUserDashboard(
+          data,
+        );
+
+        setMessage(
+          "Profil bilgileriniz güncellendi.",
+        );
+      }
+
+      setLoading(false);
+    };
+
+  const requestIbanChange =
+    () => {
+      setIbanChangeRequested(
+        true,
+      );
+
+      setIbanOtpSent(false);
+      setIbanOtp("");
+
+      setMessage(
+        "IBAN değişikliği için güvenlik doğrulaması başlatıldı.",
+      );
+    };
+
+  const sendIbanOtp =
+    () => {
+      setIbanOtpSent(true);
+
+      setMessage(
+        "Tek kullanımlık doğrulama kodu gönderildi.",
+      );
+    };
+
+  const verifyIbanOtp =
+    () => {
+      if (
+        ibanOtp.length !== 6
+      ) {
+        setMessage(
+          "6 haneli OTP kodunu girin.",
+        );
+        return;
+      }
+
+      setIbanChangeRequested(
+        false,
+      );
+
+      setIbanOtpSent(false);
+      setIbanOtp("");
+
+      setMessage(
+        "IBAN değişikliği doğrulandı. Güvenlik nedeniyle soğuma süresi uygulanacak.",
+      );
+    };
+
+  const requestDataDeletion =
+    () => {
+      setDataDeletionRequested(
+        true,
+      );
+
+      setMessage(
+        "Veri silme talebiniz alındı. Talep yasal saklama gereklilikleri doğrultusunda incelenecektir.",
+      );
+    };
+
+  /* =======================================================
+     SETTINGS HANDLERS
+  ======================================================= */
+
+  const addEmployee =
+    () => {
+      if (
+        !newEmployeeName ||
+        !newEmployeeEmail
+      ) {
+        return;
+      }
+
+      setEmployees(
+        (current) => [
+          ...current,
+          {
+            id:
+              Date.now(),
+            name:
+              newEmployeeName,
+            email:
+              newEmployeeEmail,
+            role:
+              "OPERATOR",
+          },
+        ],
+      );
+
+      setNewEmployeeName(
+        "",
+      );
+
+      setNewEmployeeEmail("");
+
+      setMessage(
+        "Kullanıcı geçici olarak eklendi.",
+      );
+    };
+
+  const removeEmployee =
+    (id) => {
+      setEmployees(
+        (current) =>
+          current.filter(
+            (employee) =>
+              employee.id !==
+              id,
+          ),
+      );
+    };
+
+  const saveOperationalSettings =
+    () => {
+      const totalTrustWeight =
+        Number(
+          trustWeightLocation,
+        ) +
+        Number(
+          trustWeightVehicle,
+        ) +
+        Number(
+          trustWeightPrice,
+        ) +
+        Number(
+          trustWeightPerformance,
+        ) +
+        Number(
+          trustWeightReliability,
+        );
+
+      if (
+        totalTrustWeight !==
+        100
+      ) {
+        setMessage(
+          `Güven skoru ağırlıkları toplamı %100 olmalı. Şu an %${totalTrustWeight}.`,
+        );
+
+        return;
+      }
+
+      setMessage(
+        "Operasyonel parametreler kaydedildi.",
+      );
+    };
+
+  const saveSystemSettings =
+    () => {
+      setMessage(
+        "Sistem ve entegrasyon ayarları kaydedildi.",
+      );
+    };
+
+  /* =======================================================
+     MEMOS
+  ======================================================= */
+
+  const shipperOpenCount =
+    useMemo(
+      () =>
+        myLoads.filter(
+          (load) =>
+            load.status ===
+            "open",
+        ).length,
+      [myLoads],
+    );
+
+  const tabs =
+    userDashboard?.role ===
+    "carrier"
+      ? CARRIER_TABS
+      : SHIPPER_TABS;
+
+  /* =======================================================
+     AUTH SCREEN
+  ======================================================= */
+
+  if (!userDashboard) {
     return (
-      <main className="min-h-screen bg-[#070b14] text-slate-100 relative overflow-hidden font-sans">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+      <main className="tork-shell flex min-h-screen items-center justify-center overflow-hidden px-5 py-8 sm:px-8">
+        <div className="tork-grid" />
+        <div className="tork-noise" />
 
-        <div className="relative max-w-6xl mx-auto p-6 lg:p-12">
-          <header className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10 pb-6 border-b border-slate-800/80">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#0b1329] border border-slate-800 flex items-center justify-center p-2 shadow-xl shadow-emerald-500/10">
-                <span className="text-[#10b981] font-black text-2xl tracking-tighter">T</span>
-              </div>
+        <div className="pointer-events-none absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-[#ffcc00]/5 blur-3xl" />
+
+        <div className="pointer-events-none absolute -right-24 bottom-1/4 h-80 w-80 rounded-full bg-[#f59e0b]/6 blur-3xl" />
+
+        <div className="relative z-10 grid w-full max-w-6xl items-center gap-8 lg:grid-cols-[1.08fr_470px]">
+
+          <div className="hidden lg:block">
+            <div className="mb-7 flex items-center gap-4">
+              <TorkLogo />
+
               <div>
-                <h1 className="text-xl font-extrabold tracking-tight text-white">{userDashboard.company_name}</h1>
-                <p className="text-xs text-[#10b981] font-semibold uppercase tracking-widest">
-                  {userDashboard.role === "shipper" ? "Yük Veren Paneli" : "Nakliyeci Portalı"}
-                </p>
+                <div className="text-2xl font-black tracking-[-0.04em] text-white">
+                  Tork
+                  <span className="text-[#ffcc00]">
+                    .
+                  </span>
+                </div>
+
+                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-600">
+                  Freight Operations Platform
+                </div>
               </div>
             </div>
 
-            <div className="flex bg-[#0b1329] p-1.5 rounded-2xl border border-slate-800/80 flex-wrap justify-center gap-1">
-              {userDashboard.role === "shipper" ? (
-                <>
-                  <button onClick={() => setActiveTab("loads")} className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'loads' ? 'bg-[#10b981] text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>İlanlarım</button>
-                  <button onClick={() => setActiveTab("create")} className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'create' ? 'bg-[#10b981] text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>+ Yeni İlan Aç</button>
-                  <button onClick={() => setActiveTab("bids")} className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'bids' ? 'bg-[#10b981] text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Gelen Teklifler</button>
-                </>
-              ) : (
-                <button onClick={() => setActiveTab("board")} className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'board' ? 'bg-[#10b981] text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Uygun Yükler & Rotalar</button>
-              )}
-              <button onClick={() => setActiveTab("wallet")} className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'wallet' ? 'bg-[#10b981] text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Cüzdan</button>
-              <button onClick={() => setActiveTab("profile")} className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'profile' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'}`}>Profilim</button>
-              <button onClick={() => setActiveTab("settings")} className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'settings' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'}`}>Ayarlar</button>
+            <div className="tork-eyebrow mb-4">
+              B2B Akıllı Navlun Pazaryeri
             </div>
 
-            <button onClick={() => setUserDashboard(null)} className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-5 py-2.5 rounded-xl text-xs font-bold border border-red-500/20 transition-all">Çıkış Yap</button>
-          </header>
+            <h1 className="max-w-2xl text-5xl font-black leading-[0.95] tracking-[-0.055em] text-white xl:text-7xl">
+              Yükü yönet.
+              <br />
+              <span className="tork-brand">
+                Operasyonu hızlandır.
+              </span>
+            </h1>
 
-          {/* CÜZDAN SEKMESİ */}
-          {activeTab === "wallet" && (
-            <div className="space-y-6 animate-fadeIn">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-[#0b1329] p-8 rounded-3xl border border-slate-800 shadow-xl border-l-4 border-l-[#10b981]">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Kullanılabilir Bakiye</p>
-                  <p className="text-4xl font-black text-white mt-2">{walletData.balance.toLocaleString()} TL</p>
-                </div>
-                <div className="bg-[#0b1329] p-8 rounded-3xl border border-slate-800 shadow-xl">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Escrow'daki (Bekleyen)</p>
-                  <p className="text-4xl font-black text-blue-400 mt-2">{walletData.pending.toLocaleString()} TL</p>
-                </div>
-                <div className="bg-[#0b1329] p-8 rounded-3xl border border-slate-800 shadow-xl">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Toplam Hacim (GMV)</p>
-                  <p className="text-4xl font-black text-white mt-2">{walletData.total_earned.toLocaleString()} TL</p>
-                </div>
-              </div>
+            <p className="mt-7 max-w-xl text-base leading-7 text-slate-500">
+              Yük verenler ve
+              nakliyeciler için
+              navlun, teklif, taşıma
+              ve finans operasyonlarını
+              tek platformda birleştiren
+              Tork.
+            </p>
+          </div>
 
-              <div className="bg-[#0b1329] p-8 rounded-3xl border border-slate-800 shadow-xl flex items-center justify-between">
+          <div className="tork-panel tork-fade-up rounded-[28px] p-6 sm:p-8">
+
+            <div className="mb-7 lg:hidden">
+              <div className="flex items-center gap-3">
+                <TorkLogo compact />
+
                 <div>
-                  <h3 className="text-lg font-black text-white">Finansal İşlemler</h3>
-                  <p className="text-xs text-slate-400">Ödemelerinizi yönetin ve cüzdanınızı güncel tutun.</p>
-                </div>
-                <div>
-                  {userDashboard.role === 'shipper' ? (
-                    <button className="bg-[#10b981] text-slate-950 font-black px-8 py-4 rounded-xl hover:bg-emerald-500 transition-all">+ Bakiye Yükle</button>
-                  ) : (
-                    <button className="bg-[#10b981] text-slate-950 font-black px-8 py-4 rounded-xl hover:bg-emerald-500 transition-all">Para Çek (IBAN)</button>
-                  )}
-                </div>
-              </div>
+                  <div className="text-xl font-black text-white">
+                    Tork
+                    <span className="text-[#ffcc00]">
+                      .
+                    </span>
+                  </div>
 
-              <div className="bg-[#0b1329] p-8 rounded-3xl border border-slate-800 shadow-xl">
-                <h3 className="text-lg font-black text-white mb-6">İşlem Geçmişi (Ledger)</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-[#070b14] rounded-2xl border border-slate-800">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-[#10b981]">↓</div>
-                      <div>
-                        <p className="text-sm font-bold text-white">TRK-2026-000123 Sevkiyat Ödemesi</p>
-                        <p className="text-[10px] text-slate-500">16 Ağustos 2026, 06:45</p>
-                      </div>
-                    </div>
-                    <p className="text-sm font-black text-[#10b981]">+ 28.500 TL</p>
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600">
+                    Freight Operations
                   </div>
                 </div>
               </div>
             </div>
-          )}
 
-          {/* PROFİL EKRANI */}
-          {activeTab === "profile" && (
-            <div className="bg-[#0b1329]/90 backdrop-blur-xl p-8 rounded-3xl border border-slate-800/80 max-w-3xl mx-auto shadow-2xl space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div>
-                  <h2 className="text-2xl font-black text-white">Kurumsal Profil & Hesap Bilgileri</h2>
-                  <p className="text-xs text-slate-400 mt-1">Şirket vergi, finansal ve operasyonel kayıt bilgileri</p>
-                </div>
-                <span className="px-3 py-1 bg-[#10b981]/10 border border-[#10b981]/30 text-[#10b981] text-xs font-bold rounded-lg uppercase">
-                  {userDashboard.role === 'shipper' ? 'Yük Veren' : 'Nakliyeci'}
-                </span>
+            <div className="mb-6">
+              <div className="tork-eyebrow mb-2">
+                {authMode === "login"
+                  ? "Hoş geldiniz"
+                  : "Tork'a katılın"}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4 bg-[#070b14] p-5 rounded-2xl border border-slate-800">
-                  <p className="text-xs font-bold text-[#10b981] uppercase tracking-wider">Şirket Bilgileri</p>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-400 uppercase">Firma / Şirket Adı</label>
-                    <p className="text-base font-extrabold text-white mt-0.5">{userDashboard.company_name}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-400 uppercase">Vergi Dairesi</label>
-                      <p className="text-sm text-slate-200 mt-0.5">{userDashboard.tax_office || "Girilmemiş"}</p>
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-400 uppercase">Vergi Numarası</label>
-                      <p className="text-sm text-slate-200 mt-0.5">{userDashboard.tax_number || "Girilmemiş"}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-400 uppercase">MERSİS Numarası</label>
-                    <p className="text-sm text-slate-200 mt-0.5">{userDashboard.mersis_no || "Girilmemiş"}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4 bg-[#070b14] p-5 rounded-2xl border border-slate-800">
-                  <p className="text-xs font-bold text-[#10b981] uppercase tracking-wider">İletişim & Finans</p>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-400 uppercase">Yetkili Adı Soyadı</label>
-                    <p className="text-sm font-bold text-white mt-0.5">{userDashboard.first_name || ""} {userDashboard.last_name || ""}</p>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-400 uppercase">Telefon Numarası</label>
-                    <p className="text-sm text-slate-200 mt-0.5">{userDashboard.phone || "Belirtilmemiş"}</p>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-400 uppercase">Kayıtlı IBAN (Ödemeler İçin)</label>
-                    <p className="text-sm font-mono text-emerald-400 mt-0.5">{userDashboard.iban || "Tanımlanmamış"}</p>
-                  </div>
-                </div>
-              </div>
-
-              {userDashboard.role === 'carrier' && (
-                <div className="bg-[#070b14] p-5 rounded-2xl border border-slate-800 space-y-3">
-                  <p className="text-xs font-bold text-[#10b981] uppercase tracking-wider">Taşıyıcı / Filo Donanım Detayları</p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <span className="block text-[11px] text-slate-400 uppercase">Araç Plakası</span>
-                      <strong className="text-white">{userDashboard.vehicle_plate || "Belirtilmemiş"}</strong>
-                    </div>
-                    <div>
-                      <span className="block text-[11px] text-slate-400 uppercase">Araç Tipi</span>
-                      <strong className="text-white">{userDashboard.vehicle_type || "Belirtilmemiş"}</strong>
-                    </div>
-                    <div>
-                      <span className="block text-[11px] text-slate-400 uppercase">Özel Donanımlar</span>
-                      <span className="text-xs text-blue-400 font-semibold">
-                        {userDashboard.adr ? "ADR Uygun " : ""} {userDashboard.frigo ? "Frigo" : ""} {!userDashboard.adr && !userDashboard.frigo ? "Standart" : ""}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <h2 className="text-2xl font-black tracking-[-0.03em] text-white">
+                {authMode ===
+                "login"
+                  ? "Operasyon merkezine giriş yap."
+                  : "Tork hesabını oluştur."}
+              </h2>
             </div>
-          )}
 
-          {/* AYARLAR BÖLÜMÜ */}
-          {activeTab === "settings" && (
-            <form onSubmit={handleUpdateSettings} className="bg-[#0b1329]/90 backdrop-blur-xl p-8 rounded-3xl border border-slate-800/80 max-w-2xl mx-auto shadow-2xl space-y-5">
-              <div>
-                <h2 className="text-2xl font-black text-white">⚙️ Kurumsal Ayarlar & Bilgi Güncelleme</h2>
-                <p className="text-xs text-slate-400 mt-1">Şirket bilgilerinizi, vergi detaylarınızı ve araç bilgilerinizi buradan güncelleyebilirsiniz.</p>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Firma / Şirket Adı</label>
-                  <input type="text" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={editCompanyName} onChange={(e) => setEditCompanyName(e.target.value)} required />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Vergi Dairesi</label>
-                    <input type="text" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={editTaxOffice} onChange={(e) => setEditTaxOffice(e.target.value)} required />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Vergi Numarası</label>
-                    <input type="text" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={editTaxNumber} onChange={(e) => setEditTaxNumber(e.target.value)} required />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">MERSİS Numarası</label>
-                    <input type="text" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={editMersisNo} onChange={(e) => setEditMersisNo(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Telefon Numarası</label>
-                    <input type="text" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} required />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Şirket IBAN Numarası</label>
-                  <input type="text" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white font-mono focus:border-[#10b981] focus:outline-none" value={editIban} onChange={(e) => setEditIban(e.target.value)} required />
-                </div>
-
-                {userDashboard.role === 'carrier' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Araç Plakası</label>
-                      <input type="text" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={editPlate} onChange={(e) => setEditPlate(e.target.value)} required />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Araç Tipi</label>
-                      <div className="relative">
-                        <select className="w-full bg-[#070b14] p-3.5 pr-10 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none appearance-none cursor-pointer" value={editVehicleType} onChange={(e) => setEditVehicleType(e.target.value)}>
-                          <option value="TIR (Tenteli)" className="bg-[#0b1329] text-white">TIR (Tenteli)</option>
-                          <option value="Kamyon (10 Teker)" className="bg-[#0b1329] text-white">Kamyon (10 Teker)</option>
-                          <option value="Frigo (Soğutuculu)" className="bg-[#0b1329] text-white">Frigo (Soğutuculu)</option>
-                          <option value="Kırkayak" className="bg-[#0b1329] text-white">Kırkayak</option>
-                        </select>
-                        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#10b981]">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <button type="submit" disabled={loading} className="w-full bg-[#10b981] hover:bg-emerald-500 text-slate-950 font-extrabold py-4 rounded-xl shadow-lg transition-all text-sm">
-                {loading ? "Güncelleniyor..." : "💾 Değişiklikleri Kaydet"}
+            <div className="grid grid-cols-2 rounded-2xl border border-white/6 bg-black/15 p-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMode(
+                    "login",
+                  );
+                  setMessage(
+                    "",
+                  );
+                }}
+                className={`rounded-xl px-4 py-2.5 text-xs font-black ${
+                  authMode ===
+                  "login"
+                    ? "bg-white/[0.08] text-white"
+                    : "text-slate-600"
+                }`}
+              >
+                Giriş Yap
               </button>
-              {message && <p className="text-[#10b981] text-xs text-center font-medium">{message}</p>}
-            </form>
-          )}
 
-          {/* YENİ YÜK OLUŞTURMA */}
-          {userDashboard.role === "shipper" && activeTab === "create" && (
-            <form onSubmit={handleCreateLoad} className="bg-[#0b1329]/90 backdrop-blur-xl p-8 rounded-3xl border border-slate-800/80 max-w-2xl mx-auto shadow-2xl space-y-5">
-              <h2 className="text-2xl font-black text-white">📦 Yeni Yük İlanı Oluştur</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Yükleme Yeri (Nereden)</label>
-                  <input type="text" placeholder="Örn: Trabzon Arsin OSB" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={origin} onChange={(e) => setOrigin(e.target.value)} required />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Teslimat Yeri (Nereye)</label>
-                  <input type="text" placeholder="Örn: Ankara Sincan OSB" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={destination} onChange={(e) => setDestination(e.target.value)} required />
-                </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMode(
+                    "register",
+                  );
+                  setMessage(
+                    "",
+                  );
+                }}
+                className={`rounded-xl px-4 py-2.5 text-xs font-black ${
+                  authMode ===
+                  "register"
+                    ? "bg-white/[0.08] text-white"
+                    : "text-slate-600"
+                }`}
+              >
+                Kayıt Ol
+              </button>
+            </div>
+
+            {authMode ===
+            "login" ? (
+              <div className="mt-4 grid grid-cols-2 rounded-2xl border border-white/6 bg-black/15 p-1">
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLoginRole(
+                      "shipper",
+                    )
+                  }
+                  className={`rounded-xl px-3 py-2.5 text-[11px] font-bold ${
+                    loginRole ===
+                    "shipper"
+                      ? "bg-[#ffcc00]/10 text-[#ffcc00]"
+                      : "text-slate-600"
+                  }`}
+                >
+                  📦 Yük Veren
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLoginRole(
+                      "carrier",
+                    )
+                  }
+                  className={`rounded-xl px-3 py-2.5 text-[11px] font-bold ${
+                    loginRole ===
+                    "carrier"
+                      ? "bg-[#ffcc00]/10 text-[#ffcc00]"
+                      : "text-slate-600"
+                  }`}
+                >
+                  🚚 Nakliyeci
+                </button>
+
               </div>
+            ) : null}
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Tonaj (Ton)</label>
-                  <input type="number" placeholder="Örn: 24" className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" value={loadTonnage} onChange={(e) => setLoadTonnage(e.target.value)} required />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Yük Cinsi</label>
-                  <div className="relative">
-                    <select className="w-full bg-[#070b14] p-3.5 pr-10 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none appearance-none cursor-pointer" value={cargoType} onChange={(e) => setCargoType(e.target.value)}>
-                      <option value="Paletli Ürün" className="bg-[#0b1329] text-white">Paletli Ürün</option>
-                      <option value="Dökme Yük" className="bg-[#0b1329] text-white">Dökme Yük</option>
-                      <option value="Konteyner" className="bg-[#0b1329] text-white">Konteyner</option>
-                      <option value="Çuval / Paket" className="bg-[#0b1329] text-white">Çuval / Paket</option>
-                      <option value="Makine / Ekipman" className="bg-[#0b1329] text-white">Makine / Ekipman</option>
-                    </select>
-                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#10b981]">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Araç Tipi</label>
-                  <div className="relative">
-                    <select className="w-full bg-[#070b14] p-3.5 pr-10 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none appearance-none cursor-pointer" value={loadVehicle} onChange={(e) => setLoadVehicle(e.target.value)}>
-                      <option value="TIR (Tenteli)" className="bg-[#0b1329] text-white">TIR (Tenteli)</option>
-                      <option value="Kamyon (10 Teker)" className="bg-[#0b1329] text-white">Kamyon (10 Teker)</option>
-                      <option value="Frigo (Soğutuculu)" className="bg-[#0b1329] text-white">Frigo (Soğutuculu)</option>
-                      <option value="Kırkayak" className="bg-[#0b1329] text-white">Kırkayak</option>
-                    </select>
-                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#10b981]">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <form
+              onSubmit={
+                authMode ===
+                "login"
+                  ? handleLogin
+                  : handleSignUp
+              }
+              className="mt-6 space-y-4"
+            >
+              {authMode ===
+              "register" ? (
+                <>
+                  <Field
+                    label="Şirket adı"
+                    value={
+                      companyName
+                    }
+                    onChange={
+                      setCompanyName
+                    }
+                    placeholder="Şirketinizin adı"
+                  />
 
-              <button type="submit" className="w-full bg-[#10b981] hover:bg-emerald-500 text-slate-950 font-extrabold py-4 rounded-xl shadow-lg transition-all text-sm">🚀 İlanı Yayınla</button>
-              {message && <p className="text-[#10b981] text-xs text-center font-medium">{message}</p>}
+                  <Field
+                    label="Telefon"
+                    value={phone}
+                    onChange={
+                      setPhone
+                    }
+                    placeholder="0532 000 00 00"
+                  />
+
+                  <div>
+                    <label className="tork-eyebrow mb-2 block">
+                      Hesap tipi
+                    </label>
+
+                    <select
+                      className="tork-input px-4 py-3.5 text-sm"
+                      value={role}
+                      onChange={(e) =>
+                        setRole(
+                          e.target
+                            .value,
+                        )
+                      }
+                    >
+                      <option value="shipper">
+                        📦 Yük Veren
+                      </option>
+
+                      <option value="carrier">
+                        🚚 Nakliyeci
+                      </option>
+                    </select>
+                  </div>
+                </>
+              ) : null}
+
+              <Field
+                label="E-posta"
+                type="email"
+                value={email}
+                onChange={setEmail}
+                placeholder="ornek@tork.com"
+              />
+
+              <Field
+                label="Şifre"
+                type="password"
+                value={
+                  password
+                }
+                onChange={
+                  setPassword
+                }
+                placeholder="••••••••"
+              />
+
+              {authMode ===
+              "login" ? (
+                <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-500">
+                  <input
+                    type="checkbox"
+                    checked={
+                      rememberMe
+                    }
+                    onChange={(e) =>
+                      setRememberMe(
+                        e.target
+                          .checked,
+                      )
+                    }
+                    className="h-4 w-4 accent-[#ffcc00]"
+                  />
+
+                  Beni hatırla
+                </label>
+              ) : null}
+
+              <button
+                type="submit"
+                disabled={
+                  loading
+                }
+                className="tork-button-primary mt-2 w-full rounded-2xl py-4 text-sm font-black"
+              >
+                {loading
+                  ? "İşleniyor..."
+                  : authMode ===
+                      "login"
+                    ? loginRole ===
+                      "shipper"
+                      ? "Yük Veren Girişi →"
+                      : "Nakliyeci Girişi →"
+                    : "Hesap Oluştur →"}
+              </button>
             </form>
-          )}
 
-          {/* SHIPPER İLANLARIM */}
-          {userDashboard.role === "shipper" && activeTab === "loads" && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold mb-4">📦 Aktif İlanlarım</h2>
-              {myLoads.length === 0 ? (
-                <p className="text-slate-400 text-sm">Henüz yayınlanmış bir ilanınız yok.</p>
-              ) : (
-                myLoads.map((load) => (
-                  <div key={load.id} className="bg-[#0b1329]/90 p-6 rounded-2xl border border-slate-800 flex justify-between items-center shadow-xl">
-                    <div>
-                      <p className="font-bold text-lg text-white">{load.origin} → {load.destination}</p>
-                      <p className="text-xs text-slate-400 mt-1">{load.tonnage} Ton | Araç: {load.vehicle_type} | Durum: <span className="text-[#10b981] uppercase font-semibold">{load.status}</span></p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {/* GELEN TEKLİFLER */}
-          {userDashboard.role === "shipper" && activeTab === "bids" && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold mb-4">💰 İlanlarınıza Gelen Navlun Teklifleri</h2>
-              {incomingBids.length === 0 ? (
-                <p className="text-slate-400 text-sm">Henüz gelen teklif bulunmuyor.</p>
-              ) : (
-                incomingBids.map((bid) => (
-                  <div key={bid.id} className="bg-[#0b1329]/90 p-6 rounded-2xl border border-slate-800 flex justify-between items-center shadow-xl">
-                    <div>
-                      <p className="font-bold text-[#10b981] text-lg">{bid.amount} TL</p>
-                      <p className="text-sm text-white mt-1">Rota: {bid.loads?.origin} → {bid.loads?.destination}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">Nakliyeci: {bid.profiles?.company_name} ({bid.profiles?.phone})</p>
-                    </div>
-                    {bid.status === 'pending' ? (
-                      <div className="flex gap-2">
-                        <button onClick={() => handleUpdateBidStatus(bid.id, bid.load_id, 'accepted')} className="bg-[#10b981] hover:bg-emerald-500 px-4 py-2 rounded-xl text-xs font-bold text-slate-950 transition-all">Kabul Et</button>
-                        <button onClick={() => handleUpdateBidStatus(bid.id, bid.load_id, 'rejected')} className="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition-all border border-red-500/20">Reddet</button>
-                      </div>
-                    ) : (
-                      <span className={`text-xs font-bold uppercase px-3 py-1.5 rounded-lg ${bid.status === 'accepted' ? 'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
-                        {bid.status === 'accepted' ? 'Kabul Edildi' : 'Reddedildi'}
-                      </span>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {/* CARRIER UYGUN YÜKLER */}
-          {userDashboard.role === "carrier" && activeTab === "board" && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-bold mb-4">🚚 Uygun Yükler & Akıllı Rota Analizi</h2>
-              {loads.length === 0 ? (
-                <p className="text-slate-400 text-sm">Şu an sistemde açık yük bulunmuyor.</p>
-              ) : (
-                loads.map((load) => (
-                  <div key={load.id} className="bg-[#0b1329]/90 p-6 rounded-2xl border border-slate-800 flex flex-col gap-4 shadow-xl">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-extrabold text-lg text-white flex items-center gap-2">
-                          <span>{load.origin}</span>
-                          <span className="text-[#10b981]">→</span>
-                          <span>{load.destination}</span>
-                        </p>
-                        <p className="text-xs text-slate-400 mt-1">{load.tonnage} Ton | <span className="text-blue-400 font-semibold">{load.vehicle_type}</span></p>
-                      </div>
-                      {activeBidLoadId !== load.id ? (
-                        <button onClick={() => setActiveBidLoadId(load.id)} className="bg-[#10b981] hover:bg-emerald-500 px-5 py-2.5 rounded-xl font-bold text-sm text-slate-950 transition-all shadow-lg shadow-emerald-500/20">Teklif Ver</button>
-                      ) : null}
-                    </div>
-
-                    <div className="bg-[#070b14] p-6 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-blue-500/5 pointer-events-none"></div>
-                      <div className="flex items-center gap-4 z-10">
-                        <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-[#10b981] font-bold text-xl">📍</div>
-                        <div>
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Yükleme Noktası</p>
-                          <p className="text-base font-extrabold text-white">{load.origin}</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center z-10 px-4">
-                        <span className="text-xs font-bold text-[#10b981] mb-1">OTOYOL SEVKİYAT HATTI</span>
-                        <div className="w-32 md:w-48 h-0.5 bg-gradient-to-r from-[#10b981] to-blue-500 relative">
-                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white animate-ping"></div>
-                        </div>
-                        <span className="text-[10px] text-slate-400 mt-1">Güvenli Lojistik Koridoru</span>
-                      </div>
-                      <div className="flex items-center gap-4 z-10">
-                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xl">🏁</div>
-                        <div>
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Teslimat Noktası</p>
-                          <p className="text-base font-extrabold text-white">{load.destination}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {activeBidLoadId === load.id && (
-                      <div className="bg-[#070b14] p-4 rounded-xl border border-slate-800 flex gap-3 items-center mt-2 animate-fadeIn">
-                        <input type="number" placeholder="Navlun Teklif Tutarı (TL)" className="bg-[#0b1329] border border-slate-800 p-3 rounded-xl text-sm text-white flex-1 focus:border-[#10b981] focus:outline-none" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} />
-                        <button onClick={() => handleSendBid(load.id)} className="bg-[#10b981] hover:bg-emerald-500 px-5 py-3 rounded-xl text-sm font-bold text-slate-950">Gönder</button>
-                        <button onClick={() => setActiveBidLoadId(null)} className="bg-slate-800 hover:bg-slate-700 px-4 py-3 rounded-xl text-sm text-slate-300">İptal</button>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          )}
+            {message ? (
+              <div className="mt-5 rounded-2xl border border-[#ffcc00]/10 bg-[#ffcc00]/5 px-4 py-3 text-xs text-[#ffd633]">
+                {message}
+              </div>
+            ) : null}
+          </div>
         </div>
       </main>
     );
   }
 
-  // GİRİŞ VE KAYIT EKRANI
+  /* =======================================================
+     APPLICATION
+  ======================================================= */
+
   return (
-    <main className="min-h-screen bg-[#070b14] text-slate-100 flex items-center justify-center p-6 relative overflow-hidden font-sans">
-      <div className="absolute inset-0 z-0">
-        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000&auto=format&fit=crop" alt="Background" className="w-full h-full object-cover opacity-15 filter saturate-150" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#070b14] via-[#070b14]/90 to-[#0b1329]/80"></div>
-      </div>
+    <main className="tork-shell min-h-screen text-slate-100">
 
-      <div className="relative z-10 w-full max-w-lg bg-[#0b1329]/95 backdrop-blur-2xl p-8 rounded-3xl border border-slate-800 shadow-2xl my-8">
-        <div className="text-center mb-6">
-          <div className="inline-flex w-16 h-16 rounded-2xl bg-[#070b14] border border-slate-800 items-center justify-center shadow-xl shadow-emerald-500/10 mb-2 p-3">
-            <span className="text-[#10b981] font-black text-3xl tracking-tighter">T</span>
+      <div className="tork-grid" />
+      <div className="tork-noise" />
+
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-[1540px]">
+
+        {/* =================================================
+            SIDEBAR
+        ================================================= */}
+
+        <aside className="hidden w-[270px] shrink-0 border-r border-white/6 px-6 py-6 lg:flex lg:flex-col">
+
+          <div className="flex items-center gap-3">
+            <TorkLogo compact />
+
+            <div>
+              <div className="text-[15px] font-black text-white">
+                Tork
+                <span className="text-[#ffcc00]">
+                  .
+                </span>
+              </div>
+
+              <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
+                Freight Operations
+              </div>
+            </div>
           </div>
-          <h1 className="text-3xl font-black tracking-tight"><span className="text-[#10b981]">Tork</span> Lojistik</h1>
-          <p className="text-slate-400 text-xs mt-1 font-medium">B2B Akıllı Navlun ve Onboarding Portalı</p>
-        </div>
 
-        <div className="flex bg-[#070b14] p-1.5 rounded-2xl mb-6 border border-slate-800">
-          <button onClick={() => { setAuthMode("login"); setMessage(""); }} className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all ${authMode === 'login' ? 'bg-[#10b981] text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Giriş Yap</button>
-          <button onClick={() => { setAuthMode("register"); setMessage(""); }} className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all ${authMode === 'register' ? 'bg-[#10b981] text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'}`}>Kayıt Ol & Onboarding</button>
-        </div>
+          <div className="my-7 tork-accent-line" />
 
-        {authMode === "login" && (
-          <div className="flex bg-[#070b14] p-1 rounded-xl mb-6 border border-slate-800">
-            <button type="button" onClick={() => { setLoginRole("shipper"); setMessage(""); }} className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${loginRole === 'shipper' ? 'bg-slate-800 text-white border border-slate-700' : 'text-slate-500 hover:text-slate-300'}`}>📦 Yük Veren Girişi</button>
-            <button type="button" onClick={() => { setLoginRole("carrier"); setMessage(""); }} className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${loginRole === 'carrier' ? 'bg-slate-800 text-white border border-slate-700' : 'text-slate-500 hover:text-slate-300'}`}>🚚 Nakliyeci Girişi</button>
+          <div className="tork-eyebrow mb-3">
+            Çalışma alanı
           </div>
-        )}
 
-        <form onSubmit={authMode === "login" ? handleLogin : handleSignUp} className="space-y-4">
-          
-          {authMode === "register" && (
-            <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
-              <div className="p-3 bg-slate-900/60 rounded-2xl border border-slate-800/80 space-y-3">
-                <p className="text-xs font-bold text-[#10b981] uppercase tracking-wider">1. Rol & Yetki Seçimi</p>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Kayıt Olunacak Profil</label>
-                  <div className="relative">
-                    <select className="w-full bg-[#070b14] p-3 pr-10 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none appearance-none cursor-pointer" value={role} onChange={(e) => setRole(e.target.value)}>
-                      <option value="shipper" className="bg-[#0b1329] text-white">📦 Yük Veren (Shipper)</option>
-                      <option value="carrier" className="bg-[#0b1329] text-white">🚚 Nakliyeci / Taşıyıcı (Carrier)</option>
-                    </select>
-                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#10b981]">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
+          <nav className="space-y-1.5">
+            {tabs.map(
+              (tab) => {
+                const active =
+                  activeTab ===
+                  tab.id;
+
+                return (
+                  <button
+                    key={
+                      tab.id
+                    }
+                    onClick={() => {
+                      setActiveTab(
+                        tab.id,
+                      );
+                      setMessage(
+                        "",
+                      );
+                    }}
+                    className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm font-semibold transition ${
+                      active
+                        ? "border border-[#ffcc00]/15 bg-[#ffcc00]/8 text-white"
+                        : "text-slate-500 hover:bg-white/[0.03] hover:text-white"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs ${
+                        active
+                          ? "bg-[#ffcc00] font-black text-[#17130a]"
+                          : "bg-white/[0.035] text-slate-500"
+                      }`}
+                    >
+                      {
+                        tab.icon
+                      }
+                    </span>
+
+                    {
+                      tab.label
+                    }
+                  </button>
+                );
+              },
+            )}
+          </nav>
+
+          <div className="mt-auto space-y-3">
+
+            <div className="tork-panel rounded-2xl p-4">
+              <div className="tork-eyebrow mb-2">
+                Hesap
+              </div>
+
+              <div className="truncate text-sm font-bold text-white">
+                {userDashboard.company_name ||
+                  "Tork kullanıcısı"}
+              </div>
+
+              <div className="mt-1 text-xs text-slate-600">
+                {userDashboard.role ===
+                "shipper"
+                  ? "Yük Veren"
+                  : "Nakliyeci"}
+              </div>
+            </div>
+
+            <button
+              onClick={
+                handleLogout
+              }
+              className="w-full rounded-xl border border-red-500/15 bg-red-500/5 px-4 py-3 text-xs font-black text-red-400"
+            >
+              Çıkış Yap
+            </button>
+          </div>
+        </aside>
+
+        {/* =================================================
+            MAIN
+        ================================================= */}
+
+        <section className="min-w-0 flex-1 px-5 py-5 sm:px-7 lg:px-10">
+
+          <header className="mb-8 flex flex-col gap-5 border-b border-white/6 pb-6 md:flex-row md:items-center md:justify-between">
+
+            <div>
+              <div className="tork-eyebrow mb-1.5">
+                Tork Operations
+              </div>
+
+              <h1 className="text-2xl font-black tracking-[-0.03em] text-white sm:text-3xl">
+                {tabs.find(
+                  (tab) =>
+                    tab.id ===
+                    activeTab,
+                )?.label ||
+                  "Tork"}
+              </h1>
+
+              <p className="mt-1 text-sm text-slate-500">
+                {userDashboard.company_name ||
+                  "Tork kullanıcısı"}{" "}
+                · canlı operasyon merkezi
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+
+              <span className="tork-status-live">
+                NETWORK LIVE
+              </span>
+
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/[0.03] text-sm font-black text-[#ffcc00]">
+                {userDashboard.company_name
+                  ?.slice(
+                    0,
+                    1,
+                  )
+                  ?.toUpperCase() ||
+                  "T"}
+              </div>
+
+            </div>
+          </header>
+
+          {/* =================================================
+              OVERVIEW
+          ================================================= */}
+
+          {activeTab ===
+            "overview" && (
+            <div className="tork-fade-up space-y-6">
+
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+                <StatCard
+                  label={
+                    userDashboard.role ===
+                    "shipper"
+                      ? "Açık ilan"
+                      : "Açık yük"
+                  }
+                  value={
+                    userDashboard.role ===
+                    "shipper"
+                      ? shipperOpenCount
+                      : loads.length
+                  }
+                  detail="Tork marketplace"
+                />
+
+                <StatCard
+                  label="Cüzdan"
+                  value={`₺${walletBalance.toLocaleString(
+                    "tr-TR",
+                  )}`}
+                  detail="Kullanılabilir bakiye"
+                  accent="green"
+                />
+
+                <StatCard
+                  label={
+                    userDashboard.role ===
+                    "shipper"
+                      ? "Teklif"
+                      : "Aktif ağ"
+                  }
+                  value={
+                    userDashboard.role ===
+                    "shipper"
+                      ? incomingBids.length
+                      : "LIVE"
+                  }
+                  detail={
+                    userDashboard.role ===
+                    "shipper"
+                      ? "Gelen teklifler"
+                      : "Nakliyeci ağı"
+                  }
+                  accent="orange"
+                />
+
+                <StatCard
+                  label="Güvenlik"
+                  value="AKTİF"
+                  detail="Platform güvenlik politikaları"
+                  accent="green"
+                />
+
+              </div>
+
+              <div className="grid gap-5 xl:grid-cols-[1.35fr_.65fr]">
+
+                <div className="tork-panel rounded-3xl p-6">
+                  <SectionHeading
+                    eyebrow="Operations"
+                    title="Operasyon merkezi"
+                    description="Tork üzerindeki temel operasyonlarınıza hızlı erişim."
+                  />
+
+                  <div className="grid gap-4 md:grid-cols-2">
+
+                    <button
+                      onClick={() =>
+                        setActiveTab(
+                          userDashboard.role ===
+                            "shipper"
+                            ? "loads"
+                            : "board",
+                        )
+                      }
+                      className="rounded-2xl border border-white/6 bg-white/[0.02] p-5 text-left transition hover:border-[#ffcc00]/15 hover:bg-[#ffcc00]/[0.025]"
+                    >
+                      <div className="text-2xl text-[#ffcc00]">
+                        {userDashboard.role ===
+                        "shipper"
+                          ? "▣"
+                          : "◫"}
+                      </div>
+
+                      <div className="mt-4 text-sm font-black text-white">
+                        {userDashboard.role ===
+                        "shipper"
+                          ? "İlanlarım"
+                          : "Uygun Yükler"}
+                      </div>
+
+                      <div className="mt-1 text-xs leading-5 text-slate-600">
+                        {userDashboard.role ===
+                        "shipper"
+                          ? "Mevcut yüklerinizi ve ilan durumlarını yönetin."
+                          : "Taşımaya uygun açık yükleri inceleyin."}
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setActiveTab(
+                          "wallet",
+                        )
+                      }
+                      className="rounded-2xl border border-white/6 bg-white/[0.02] p-5 text-left transition hover:border-[#ffcc00]/15 hover:bg-[#ffcc00]/[0.025]"
+                    >
+                      <div className="text-2xl text-[#ffcc00]">
+                        ₺
+                      </div>
+
+                      <div className="mt-4 text-sm font-black text-white">
+                        Cüzdan ve Ödemeler
+                      </div>
+
+                      <div className="mt-1 text-xs leading-5 text-slate-600">
+                        Bakiye, hakediş ve ödeme hareketlerini yönetin.
+                      </div>
+                    </button>
+
                   </div>
                 </div>
-              </div>
 
-              <div className="p-3 bg-slate-900/60 rounded-2xl border border-slate-800/80 space-y-3">
-                <p className="text-xs font-bold text-[#10b981] uppercase tracking-wider">2. Şirket & Vergi Bilgileri</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <input type="text" placeholder="Firma Adı" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required />
-                  <input type="text" placeholder="MERSİS No" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={mersisNo} onChange={(e) => setMersisNo(e.target.value)} />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <input type="text" placeholder="Vergi Dairesi" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={taxOffice} onChange={(e) => setTaxOffice(e.target.value)} required />
-                  <input type="text" placeholder="Vergi Numarası" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={taxNumber} onChange={(e) => setTaxNumber(e.target.value)} required />
-                </div>
-                <input type="text" placeholder="Şirket IBAN (TR...)" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={iban} onChange={(e) => setIban(e.target.value)} required />
-              </div>
+                <div className="tork-panel rounded-3xl p-6">
 
-              {role === "carrier" && (
-                <div className="p-3 bg-slate-900/60 rounded-2xl border border-slate-800/80 space-y-3">
-                  <p className="text-xs font-bold text-[#10b981] uppercase tracking-wider">3. Araç ve Donanım Bilgileri</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input type="text" placeholder="Araç Plakası (Örn: 61 TR 2026)" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={vehiclePlate} onChange={(e) => setVehiclePlate(e.target.value)} required />
-                    <div className="relative">
-                      <select className="w-full bg-[#070b14] p-3 pr-10 rounded-xl border border-slate-800 text-sm text-white appearance-none cursor-pointer" value={vehicleType} onChange={(e) => setVehicleType(e.target.value)}>
-                        <option value="TIR (Tenteli)" className="bg-[#0b1329] text-white">TIR (Tenteli)</option>
-                        <option value="Kamyon (10 Teker)" className="bg-[#0b1329] text-white">Kamyon (10 Teker)</option>
-                        <option value="Frigo (Soğutuculu)" className="bg-[#0b1329] text-white">Frigo (Soğutuculu)</option>
-                        <option value="Kırkayak" className="bg-[#0b1329] text-white">Kırkayak</option>
+                  <div className="tork-eyebrow">
+                    Platform
+                  </div>
+
+                  <div className="mt-1 text-lg font-black text-white">
+                    Tork güvenlik merkezi
+                  </div>
+
+                  <div className="mt-5 space-y-3">
+
+                    <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3">
+                      <span className="text-xs text-slate-500">
+                        MFA politikası
+                      </span>
+
+                      <span className="text-[10px] font-black text-emerald-400">
+                        AKTİF
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3">
+                      <span className="text-xs text-slate-500">
+                        Kritik bildirimler
+                      </span>
+
+                      <span className="text-[10px] font-black text-emerald-400">
+                        ZORUNLU
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3">
+                      <span className="text-xs text-slate-500">
+                        Ağ durumu
+                      </span>
+
+                      <span className="tork-status-live">
+                        LIVE
+                      </span>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* =================================================
+              LOADS
+          ================================================= */}
+
+          {userDashboard.role ===
+            "shipper" &&
+            activeTab ===
+              "loads" && (
+              <div className="tork-fade-up">
+
+                <SectionHeading
+                  eyebrow="Marketplace"
+                  title="İlanlarım"
+                  description="Tork üzerinde oluşturduğunuz aktif ve geçmiş yükler."
+                  action={
+                    <button
+                      onClick={() =>
+                        setActiveTab(
+                          "create",
+                        )
+                      }
+                      className="tork-button-primary rounded-xl px-4 py-2.5 text-xs font-black"
+                    >
+                      + Yeni yük
+                    </button>
+                  }
+                />
+
+                {myLoads.length ===
+                0 ? (
+                  <EmptyState
+                    title="Henüz bir yük yayınlamadınız"
+                    text="İlk yükünüzü oluşturun ve taşıyıcılardan teklif almaya başlayın."
+                  />
+                ) : (
+                  <div className="grid gap-4">
+                    {myLoads.map(
+                      (load) => (
+                        <div
+                          key={
+                            load.id
+                          }
+                          className="tork-panel tork-panel-hover rounded-3xl p-5"
+                        >
+                          <div className="flex items-center justify-between gap-4">
+
+                            <div>
+                              <div className="text-lg font-black text-white">
+                                {
+                                  load.origin
+                                }
+
+                                <span className="mx-2 text-[#ffcc00]">
+                                  →
+                                </span>
+
+                                {
+                                  load.destination
+                                }
+                              </div>
+
+                              <div className="mt-2 text-xs text-slate-500">
+                                {
+                                  load.tonnage
+                                }{" "}
+                                Ton ·{" "}
+                                {
+                                  load.vehicle_type
+                                }
+                              </div>
+                            </div>
+
+                            <span className="rounded-full border border-[#ffcc00]/15 bg-[#ffcc00]/8 px-3 py-1.5 text-[10px] font-black uppercase text-[#ffcc00]">
+                              {
+                                load.status
+                              }
+                            </span>
+
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+          {/* =================================================
+              CREATE LOAD
+          ================================================= */}
+
+          {userDashboard.role ===
+            "shipper" &&
+            activeTab ===
+              "create" && (
+              <div className="tork-fade-up max-w-4xl">
+
+                <SectionHeading
+                  eyebrow="Marketplace"
+                  title="Yeni yük oluştur"
+                  description="Taşımanın temel operasyon bilgilerini girin."
+                />
+
+                <form
+                  onSubmit={
+                    handleCreateLoad
+                  }
+                  className="tork-panel rounded-3xl p-6 sm:p-8"
+                >
+
+                  <div className="grid gap-5 md:grid-cols-2">
+
+                    <Field
+                      label="Yükleme noktası"
+                      value={
+                        origin
+                      }
+                      onChange={
+                        setOrigin
+                      }
+                      placeholder="Trabzon Arsin OSB"
+                    />
+
+                    <Field
+                      label="Teslimat noktası"
+                      value={
+                        destination
+                      }
+                      onChange={
+                        setDestination
+                      }
+                      placeholder="Ankara Sincan OSB"
+                    />
+
+                    <Field
+                      label="Tonaj"
+                      type="number"
+                      value={
+                        tonnage
+                      }
+                      onChange={
+                        setTonnage
+                      }
+                      placeholder="24"
+                    />
+
+                    <div>
+                      <label className="tork-eyebrow mb-2 block">
+                        Araç tipi
+                      </label>
+
+                      <select
+                        className="tork-input px-4 py-3.5 text-sm"
+                        value={
+                          vehicle
+                        }
+                        onChange={(e) =>
+                          setVehicle(
+                            e.target.value,
+                          )
+                        }
+                      >
+                        <option>
+                          TIR (Tenteli)
+                        </option>
+                        <option>
+                          Kamyon
+                        </option>
+                        <option>
+                          Frigo
+                        </option>
+                        <option>
+                          Kırkayak
+                        </option>
                       </select>
-                      <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#10b981]">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+
+                    <div>
+                      <label className="tork-eyebrow mb-2 block">
+                        Yük cinsi
+                      </label>
+
+                      <select
+                        className="tork-input px-4 py-3.5 text-sm"
+                        value={
+                          cargoType
+                        }
+                        onChange={(e) =>
+                          setCargoType(
+                            e.target.value,
+                          )
+                        }
+                      >
+                        <option>
+                          Paletli Ürün
+                        </option>
+                        <option>
+                          Dökme Yük
+                        </option>
+                        <option>
+                          Konteyner
+                        </option>
+                        <option>
+                          Çuval / Paket
+                        </option>
+                        <option>
+                          Makine / Ekipman
+                        </option>
+                      </select>
+                    </div>
+
+                    <Field
+                      label="Koli / Palet"
+                      value={
+                        packageCount
+                      }
+                      onChange={
+                        setPackageCount
+                      }
+                      placeholder="33 Euro Palet"
+                    />
+
+                    <div className="md:col-span-2">
+                      <label className="tork-eyebrow mb-2 block">
+                        Açıklama
+                      </label>
+
+                      <textarea
+                        rows={5}
+                        value={
+                          loadDescription
+                        }
+                        onChange={(e) =>
+                          setLoadDescription(
+                            e.target.value,
+                          )
+                        }
+                        className="tork-input resize-none px-4 py-3.5 text-sm"
+                        placeholder="Operasyon notları..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-7 flex justify-end border-t border-white/6 pt-6">
+                    <button
+                      type="submit"
+                      disabled={
+                        loading
+                      }
+                      className="tork-button-primary rounded-xl px-6 py-3.5 text-xs font-black"
+                    >
+                      {loading
+                        ? "Yayınlanıyor..."
+                        : "İlanı yayınla →"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+          {/* =================================================
+              BIDS
+          ================================================= */}
+
+          {userDashboard.role ===
+            "shipper" &&
+            activeTab ===
+              "bids" && (
+              <div className="tork-fade-up">
+
+                <SectionHeading
+                  eyebrow="Marketplace"
+                  title="Gelen teklifler"
+                  description="Yüklerinize gelen taşıyıcı teklifleri."
+                />
+
+                {incomingBids.length ===
+                0 ? (
+                  <EmptyState
+                    title="Henüz teklif yok"
+                    text="Yayınladığınız yükler taşıyıcılar tarafından görüldükçe burada teklifler oluşacak."
+                  />
+                ) : (
+                  <div className="grid gap-4">
+
+                    {incomingBids.map(
+                      (bid) => (
+                        <div
+                          key={
+                            bid.id
+                          }
+                          className="tork-panel rounded-3xl p-6"
+                        >
+
+                          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+
+                            <div>
+                              <div className="tork-eyebrow mb-2">
+                                Navlun
+                              </div>
+
+                              <div className="text-3xl font-black text-[#ffcc00]">
+                                {
+                                  bid.amount
+                                }{" "}
+                                TL
+                              </div>
+
+                              <div className="mt-2 text-sm font-bold text-white">
+                                {
+                                  bid.loads
+                                    ?.origin
+                                }
+
+                                <span className="mx-2 text-[#ffcc00]">
+                                  →
+                                </span>
+
+                                {
+                                  bid.loads
+                                    ?.destination
+                                }
+                              </div>
+
+                              <div className="mt-1 text-xs text-slate-500">
+                                {
+                                  bid.profiles
+                                    ?.company_name ||
+                                  "Nakliyeci"
+                                }
+                              </div>
+                            </div>
+
+                            {bid.status ===
+                            "pending" ? (
+                              <div className="flex gap-2">
+
+                                <button
+                                  onClick={() =>
+                                    handleUpdateBidStatus(
+                                      bid.id,
+                                      bid.load_id,
+                                      "accepted",
+                                    )
+                                  }
+                                  className="tork-button-primary rounded-xl px-5 py-3 text-xs font-black"
+                                >
+                                  Kabul et
+                                </button>
+
+                                <button
+                                  onClick={() =>
+                                    handleUpdateBidStatus(
+                                      bid.id,
+                                      bid.load_id,
+                                      "rejected",
+                                    )
+                                  }
+                                  className="rounded-xl border border-red-500/15 bg-red-500/5 px-5 py-3 text-xs font-bold text-red-400"
+                                >
+                                  Reddet
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-xs font-black uppercase text-slate-500">
+                                {
+                                  bid.status
+                                }
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ),
+                    )}
+
+                  </div>
+                )}
+              </div>
+            )}
+
+          {/* =================================================
+              CARRIER BOARD
+          ================================================= */}
+
+          {userDashboard.role ===
+            "carrier" &&
+            activeTab ===
+              "board" && (
+              <div className="tork-fade-up">
+
+                <SectionHeading
+                  eyebrow="Marketplace"
+                  title="Uygun yükler"
+                  description="Tork ağına açılmış aktif taşıma talepleri."
+                />
+
+                {loads.length ===
+                0 ? (
+                  <EmptyState
+                    title="Şu anda açık yük yok"
+                    text="Yeni yükler yayınlandığında burada görünecek."
+                  />
+                ) : (
+                  <div className="grid gap-4">
+
+                    {loads.map(
+                      (load) => (
+                        <div
+                          key={
+                            load.id
+                          }
+                          className="tork-panel rounded-3xl p-6"
+                        >
+
+                          <div className="flex flex-col gap-5">
+
+                            <div className="flex items-center justify-between gap-4">
+
+                              <div>
+                                <div className="text-xl font-black text-white">
+                                  {
+                                    load.origin
+                                  }
+
+                                  <span className="mx-2 text-[#ffcc00]">
+                                    →
+                                  </span>
+
+                                  {
+                                    load.destination
+                                  }
+                                </div>
+
+                                <div className="mt-2 text-xs text-slate-500">
+                                  {
+                                    load.tonnage
+                                  }{" "}
+                                  Ton ·{" "}
+                                  {
+                                    load.vehicle_type
+                                  }
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() =>
+                                  setActiveBidLoadId(
+                                    load.id,
+                                  )
+                                }
+                                className="tork-button-primary rounded-xl px-5 py-3 text-xs font-black"
+                              >
+                                Teklif ver
+                              </button>
+
+                            </div>
+
+                            {activeBidLoadId ===
+                              load.id && (
+                              <div className="flex flex-col gap-3 border-t border-white/6 pt-4 sm:flex-row">
+
+                                <input
+                                  type="number"
+                                  value={
+                                    bidAmount
+                                  }
+                                  onChange={(e) =>
+                                    setBidAmount(
+                                      e.target.value,
+                                    )
+                                  }
+                                  className="tork-input flex-1 px-4 py-3 text-sm"
+                                  placeholder="Navlun teklifiniz (TL)"
+                                />
+
+                                <button
+                                  onClick={() =>
+                                    handleSendBid(
+                                      load.id,
+                                    )
+                                  }
+                                  className="tork-button-primary rounded-xl px-5 py-3 text-xs font-black"
+                                >
+                                  Gönder
+                                </button>
+
+                                <button
+                                  onClick={() => {
+                                    setActiveBidLoadId(
+                                      null,
+                                    );
+                                    setBidAmount(
+                                      "",
+                                    );
+                                  }}
+                                  className="tork-button-secondary rounded-xl px-5 py-3 text-xs font-bold"
+                                >
+                                  İptal
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ),
+                    )}
+
+                  </div>
+                )}
+              </div>
+            )}
+
+          {/* =================================================
+              WALLET
+          ================================================= */}
+
+          {activeTab ===
+            "wallet" && (
+            <div className="tork-fade-up max-w-5xl">
+
+              <SectionHeading
+                eyebrow="Finans"
+                title="Cüzdan"
+                description="Bakiye, hakediş ve ödeme süreçleri."
+              />
+
+              <div className="grid gap-5 md:grid-cols-[1.2fr_.8fr]">
+
+                <div className="tork-panel rounded-3xl p-7">
+
+                  <div className="tork-eyebrow">
+                    Kullanılabilir bakiye
+                  </div>
+
+                  <div className="mt-3 text-5xl font-black tracking-[-0.05em] text-[#ffcc00]">
+                    ₺
+                    {walletBalance.toLocaleString(
+                      "tr-TR",
+                      {
+                        minimumFractionDigits: 2,
+                      },
+                    )}
+                  </div>
+
+                  <div className="mt-2 text-sm text-slate-500">
+                    Tork cüzdanı
+                  </div>
+
+                  <div className="mt-7 grid gap-3 sm:grid-cols-2">
+
+                    <div className="rounded-2xl border border-white/6 bg-white/[0.02] p-4">
+                      <div className="text-xs text-slate-600">
+                        Bekleyen ödeme
+                      </div>
+
+                      <div className="mt-2 text-xl font-black text-white">
+                        ₺0
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-4 text-xs text-slate-300 pt-1">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={adrStatus} onChange={(e) => setAdrStatus(e.target.checked)} className="accent-[#10b981] w-4 h-4" />
-                      <span>ADR Uygunluk</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={frigoStatus} onChange={(e) => setFrigoStatus(e.target.checked)} className="accent-[#10b981] w-4 h-4" />
-                      <span>Frigo / Soğutuculu</span>
-                    </label>
-                  </div>
-                </div>
-              )}
 
-              <div className="p-3 bg-slate-900/60 rounded-2xl border border-slate-800/80 space-y-3">
-                <p className="text-xs font-bold text-[#10b981] uppercase tracking-wider">4. İletişim & Yetkili Bilgileri</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <input type="text" placeholder="Ad" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                  <input type="text" placeholder="Soyad" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                    <div className="rounded-2xl border border-white/6 bg-white/[0.02] p-4">
+                      <div className="text-xs text-slate-600">
+                        Toplam hakediş
+                      </div>
+
+                      <div className="mt-2 text-xl font-black text-white">
+                        ₺0
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
-                <input type="text" placeholder="Telefon (0532 000 00 00)" className="w-full bg-[#070b14] p-3 rounded-xl border border-slate-800 text-sm text-white" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+
+                <div className="tork-panel rounded-3xl p-6">
+
+                  <div className="tork-eyebrow">
+                    Finansal güvenlik
+                  </div>
+
+                  <div className="mt-2 text-lg font-black text-white">
+                    Güvenli ödeme altyapısı
+                  </div>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    Gerçek ödeme sağlayıcısı ve escrow entegrasyonu bağlandığında hakediş, ödeme ve işlem geçmişi burada yönetilecek.
+                  </p>
+
+                  <div className="mt-6 rounded-2xl border border-[#ffcc00]/10 bg-[#ffcc00]/5 p-4">
+                    <div className="text-xs font-black text-[#ffcc00]">
+                      HAZIR
+                    </div>
+
+                    <div className="mt-1 text-xs text-slate-500">
+                      Finans modülü için arayüz hazır.
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </div>
           )}
 
-          <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">E-posta Adresi</label>
-            <input type="email" placeholder="ornek@sirket.com" value={email} className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" onChange={(e) => setEmail(e.target.value)} required />
-          </div>
+          {/* =================================================
+              PROFILE
+          ================================================= */}
 
-          <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1 uppercase">Şifre</label>
-            <input type="password" placeholder="••••••••" value={password} className="w-full bg-[#070b14] p-3.5 rounded-xl border border-slate-800 text-sm text-white focus:border-[#10b981] focus:outline-none" onChange={(e) => setPassword(e.target.value)} required />
-          </div>
+          {activeTab ===
+            "profile" && (
+            <div className="tork-fade-up">
 
-          {authMode === "login" && (
-            <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input 
-                  type="checkbox" 
-                  checked={rememberMe} 
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded bg-[#070b14] border-slate-800 text-[#10b981] focus:ring-0 focus:ring-offset-0 accent-[#10b981] cursor-pointer" 
-                />
-                <span>Beni Hatırla</span>
-              </label>
+              <SectionHeading
+                eyebrow="Hesap & Güvenlik"
+                title="Profil ve kurumsal bilgiler"
+                description="Kimlik, şirket, finansal güvenlik, bildirim ve KVKK yönetimi."
+              />
+
+              <div className="grid gap-6 lg:grid-cols-[230px_1fr]">
+
+                {/* PROFILE NAV */}
+
+                <div className="tork-panel h-fit rounded-3xl p-3">
+
+                  {[
+                    {
+                      id: "company",
+                      label:
+                        "Kurumsal Bilgiler",
+                    },
+                    {
+                      id: "finance",
+                      label:
+                        "IBAN & Ödemeler",
+                    },
+                    {
+                      id: "notifications",
+                      label:
+                        "Bildirimler",
+                    },
+                    {
+                      id: "kvkk",
+                      label:
+                        "KVKK & Veri",
+                    },
+                    {
+                      id: "security",
+                      label:
+                        "Güvenlik",
+                    },
+                  ].map(
+                    (item) => (
+                      <button
+                        key={
+                          item.id
+                        }
+                        onClick={() =>
+                          setProfileSection(
+                            item.id,
+                          )
+                        }
+                        className={`w-full rounded-xl px-3 py-3 text-left text-xs font-bold transition ${
+                          profileSection ===
+                          item.id
+                            ? "bg-[#ffcc00]/8 text-[#ffcc00]"
+                            : "text-slate-500 hover:bg-white/[0.03] hover:text-white"
+                        }`}
+                      >
+                        {
+                          item.label
+                        }
+                      </button>
+                    ),
+                  )}
+
+                </div>
+
+                {/* PROFILE CONTENT */}
+
+                <div className="tork-panel rounded-3xl p-6 sm:p-8">
+
+                  {profileSection ===
+                    "company" && (
+                    <div>
+                      <div className="tork-eyebrow">
+                        Kurumsal & Kimlik
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        Şirket bilgileri
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Resmi şirket ve kimlik bilgilerinizin yönetimi.
+                      </p>
+
+                      <div className="mt-7 grid gap-5 md:grid-cols-2">
+
+                        <Field
+                          label="Şirket unvanı"
+                          value={
+                            legalCompanyName
+                          }
+                          onChange={
+                            setLegalCompanyName
+                          }
+                          placeholder="ABC Lojistik A.Ş."
+                        />
+
+                        <Field
+                          label="Telefon"
+                          value={
+                            phone
+                          }
+                          onChange={
+                            setPhone
+                          }
+                          placeholder="0532 000 00 00"
+                        />
+
+                        <Field
+                          label="Vergi numarası"
+                          value={
+                            taxNumber
+                          }
+                          onChange={
+                            setTaxNumber
+                          }
+                          placeholder="1234567890"
+                        />
+
+                        <Field
+                          label="Vergi dairesi"
+                          value={
+                            taxOffice
+                          }
+                          onChange={
+                            setTaxOffice
+                          }
+                          placeholder="Çankaya"
+                        />
+
+                        <Field
+                          label="MERSİS numarası"
+                          value={
+                            mersisNumber
+                          }
+                          onChange={
+                            setMersisNumber
+                          }
+                          placeholder="0000000000000000"
+                        />
+
+                        <Field
+                          label="Ticaret sicil numarası"
+                          value={
+                            commercialRegistryNumber
+                          }
+                          onChange={
+                            setCommercialRegistryNumber
+                          }
+                          placeholder="123456"
+                        />
+
+                        <div className="md:col-span-2">
+                          <Field
+                            label="Merkez adresi"
+                            value={
+                              companyAddress
+                            }
+                            onChange={
+                              setCompanyAddress
+                            }
+                            placeholder="Şirket merkez adresi"
+                          />
+                        </div>
+
+                      </div>
+
+                      <div className="mt-7 rounded-2xl border border-emerald-500/10 bg-emerald-500/5 p-4">
+                        <div className="text-xs font-black text-emerald-400">
+                          DOĞRULAMA DURUMU
+                        </div>
+
+                        <div className="mt-1 text-xs leading-5 text-slate-500">
+                          Şirket bilgilerinin resmi kaynaklarla doğrulanması sonraki KYC/KYB modülüne bağlanacaktır.
+                        </div>
+                      </div>
+
+                      <div className="mt-7 flex justify-end">
+                        <button
+                          onClick={
+                            handleProfileSave
+                          }
+                          disabled={
+                            loading
+                          }
+                          className="tork-button-primary rounded-xl px-6 py-3 text-xs font-black"
+                        >
+                          {loading
+                            ? "Kaydediliyor..."
+                            : "Bilgileri kaydet"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {profileSection ===
+                    "finance" && (
+                    <div>
+                      <div className="tork-eyebrow">
+                        Finansal Güvenlik
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        IBAN ve ödeme hesabı
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Hakediş ve ticari ödeme hesabınızı güvenli şekilde yönetin.
+                      </p>
+
+                      <div className="mt-7 rounded-2xl border border-white/6 bg-black/15 p-5">
+
+                        <div className="tork-eyebrow mb-2">
+                          Mevcut IBAN
+                        </div>
+
+                        <div className="text-base font-bold tracking-wide text-white">
+                          {iban
+                            ? iban.replace(
+                                /\d(?=\d{4})/g,
+                                "•",
+                              )
+                            : "Henüz IBAN tanımlanmadı"}
+                        </div>
+
+                      </div>
+
+                      <div className="mt-5 grid gap-5 md:grid-cols-2">
+
+                        <Field
+                          label="IBAN"
+                          value={
+                            iban
+                          }
+                          onChange={
+                            setIban
+                          }
+                          placeholder="TR00 0000 0000 0000 0000 0000 00"
+                          disabled={
+                            !ibanChangeRequested
+                          }
+                        />
+
+                        <div className="rounded-2xl border border-[#ffcc00]/10 bg-[#ffcc00]/5 p-4">
+
+                          <div className="text-xs font-black text-[#ffcc00]">
+                            GÜVENLİ DEĞİŞİKLİK
+                          </div>
+
+                          <div className="mt-1 text-xs leading-5 text-slate-500">
+                            IBAN değişikliği OTP ve soğuma süresi ile korunur.
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                      {!ibanChangeRequested ? (
+                        <button
+                          onClick={
+                            requestIbanChange
+                          }
+                          className="tork-button-secondary mt-6 rounded-xl px-5 py-3 text-xs font-black"
+                        >
+                          IBAN değişikliğini başlat
+                        </button>
+                      ) : (
+                        <div className="mt-6 space-y-4">
+
+                          {!ibanOtpSent ? (
+                            <button
+                              onClick={
+                                sendIbanOtp
+                              }
+                              className="tork-button-primary rounded-xl px-5 py-3 text-xs font-black"
+                            >
+                              OTP gönder
+                            </button>
+                          ) : (
+                            <>
+                              <Field
+                                label="6 haneli OTP"
+                                value={
+                                  ibanOtp
+                                }
+                                onChange={
+                                  setIbanOtp
+                                }
+                                placeholder="123456"
+                              />
+
+                              <button
+                                onClick={
+                                  verifyIbanOtp
+                                }
+                                className="tork-button-primary rounded-xl px-5 py-3 text-xs font-black"
+                              >
+                                OTP'yi doğrula
+                              </button>
+                            </>
+                          )}
+
+                        </div>
+                      )}
+
+                      <div className="mt-6 rounded-2xl border border-red-500/10 bg-red-500/5 p-4">
+                        <div className="text-xs font-black text-red-400">
+                          SOĞUMA SÜRESİ
+                        </div>
+
+                        <div className="mt-1 text-xs leading-5 text-slate-500">
+                          Güvenlik nedeniyle IBAN değişikliklerinden sonra ödeme işlemlerine geçici kısıt uygulanabilir.
+                        </div>
+                      </div>
+
+                    </div>
+                  )}
+
+                  {profileSection ===
+                    "notifications" && (
+                    <div>
+                      <div className="tork-eyebrow">
+                        Bildirim Merkezi
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        Bildirim tercihleri
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Tork'un sizinle hangi kanallardan iletişim kuracağını yönetin.
+                      </p>
+
+                      <div className="mt-6">
+
+                        <SettingRow
+                          title="SMS bildirimleri"
+                          description="Operasyon ve standart sistem bildirimleri."
+                        >
+                          <Toggle
+                            checked={
+                              notifications.sms
+                            }
+                            onChange={(
+                              value,
+                            ) =>
+                              setNotifications(
+                                (
+                                  current,
+                                ) => ({
+                                  ...current,
+                                  sms: value,
+                                }),
+                              )
+                            }
+                          />
+                        </SettingRow>
+
+                        <SettingRow
+                          title="E-posta bildirimleri"
+                          description="Operasyon, rapor ve hesap bildirimleri."
+                        >
+                          <Toggle
+                            checked={
+                              notifications.email
+                            }
+                            onChange={(
+                              value,
+                            ) =>
+                              setNotifications(
+                                (
+                                  current,
+                                ) => ({
+                                  ...current,
+                                  email:
+                                    value,
+                                }),
+                              )
+                            }
+                          />
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Anlık bildirimler"
+                          description="Mobil/web push bildirimleri."
+                        >
+                          <Toggle
+                            checked={
+                              notifications.push
+                            }
+                            onChange={(
+                              value,
+                            ) =>
+                              setNotifications(
+                                (
+                                  current,
+                                ) => ({
+                                  ...current,
+                                  push: value,
+                                }),
+                              )
+                            }
+                          />
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Kritik güvenlik ve ödeme uyarıları"
+                          description="Bu bildirimler güvenlik nedeniyle zorunludur."
+                        >
+                          <Toggle
+                            checked
+                            disabled
+                            onChange={() => {}}
+                          />
+                        </SettingRow>
+
+                      </div>
+                    </div>
+                  )}
+
+                  {profileSection ===
+                    "kvkk" && (
+                    <div>
+
+                      <div className="tork-eyebrow">
+                        KVKK & Veri Yönetimi
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        Gizlilik ve veri hakları
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Kişisel verileriniz ve hesap kapatma talepleriniz burada yönetilir.
+                      </p>
+
+                      <div className="mt-6">
+
+                        <SettingRow
+                          title="Pazarlama iletişimi"
+                          description="Kampanya ve tanıtım iletişimi için açık rıza."
+                        >
+                          <Toggle
+                            checked={
+                              kvkkMarketingConsent
+                            }
+                            onChange={(
+                              value,
+                            ) =>
+                              setKvkkMarketingConsent(
+                                value,
+                              )
+                            }
+                          />
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Veri silme / anonimleştirme talebi"
+                          description="Yasal saklama yükümlülükleri dikkate alınarak hesabınızın veri yönetim talebini başlatır."
+                        >
+                          <button
+                            onClick={
+                              requestDataDeletion
+                            }
+                            className="rounded-xl border border-red-500/15 bg-red-500/5 px-4 py-2.5 text-xs font-black text-red-400"
+                          >
+                            {dataDeletionRequested
+                              ? "TALEP ALINDI"
+                              : "Talep oluştur"}
+                          </button>
+                        </SettingRow>
+
+                      </div>
+
+                      <div className="mt-6 rounded-2xl border border-white/6 bg-white/[0.02] p-5">
+                        <div className="text-xs font-black text-white">
+                          Veri erişim ve silme
+                        </div>
+
+                        <p className="mt-2 text-xs leading-5 text-slate-600">
+                          Kimlik, şirket, iletişim ve işlem verileri yasal gereklilikler doğrultusunda saklanabilir. Silme talepleri gerekli hukuki inceleme sonrasında uygulanır.
+                        </p>
+                      </div>
+
+                    </div>
+                  )}
+
+                  {profileSection ===
+                    "security" && (
+                    <div>
+
+                      <div className="tork-eyebrow">
+                        Hesap Güvenliği
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        Güvenlik merkezi
+                      </h3>
+
+                      <div className="mt-6">
+
+                        <SettingRow
+                          title="Çok faktörlü doğrulama"
+                          description="Hesap girişlerini ikinci bir doğrulama katmanıyla korur."
+                        >
+                          <span className="rounded-full border border-emerald-500/10 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black text-emerald-400">
+                            AKTİF
+                          </span>
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Kritik değişiklik koruması"
+                          description="IBAN ve ödeme bilgisi değişikliklerinde OTP ve soğuma süresi uygulanır."
+                        >
+                          <span className="rounded-full border border-[#ffcc00]/10 bg-[#ffcc00]/5 px-3 py-1.5 text-[10px] font-black text-[#ffcc00]">
+                            AKTİF
+                          </span>
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Oturum güvenliği"
+                          description="Şüpheli oturumlar ve kritik hesap hareketleri izlenir."
+                        >
+                          <span className="rounded-full border border-emerald-500/10 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black text-emerald-400">
+                            İZLENİYOR
+                          </span>
+                        </SettingRow>
+
+                      </div>
+
+                    </div>
+                  )}
+
+                </div>
+              </div>
             </div>
           )}
 
-          <button type="submit" disabled={loading} className="w-full font-extrabold py-4 rounded-xl shadow-xl text-sm mt-2 bg-[#10b981] hover:bg-emerald-500 text-slate-950 transition-all">
-            {loading ? "İşlem Yapılıyor..." : (authMode === "login" ? (loginRole === "shipper" ? "Yük Veren Girişi Yap" : "Nakliyeci Girişi Yap") : "Onboarding Başvurusunu Tamamla")}
-          </button>
-        </form>
+          {/* =================================================
+              SETTINGS
+          ================================================= */}
 
-        {message && <div className="mt-4 p-3.5 rounded-xl text-xs font-medium border border-slate-800 bg-[#070b14] text-[#10b981] text-center">{message}</div>}
+          {activeTab ===
+            "settings" && (
+            <div className="tork-fade-up">
+
+              <SectionHeading
+                eyebrow="Platform Configuration"
+                title="Ayarlar"
+                description="Operasyon kuralları, entegrasyonlar, güvenlik ve yetkilendirme."
+              />
+
+              <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+
+                {/* SETTINGS NAV */}
+
+                <div className="tork-panel h-fit rounded-3xl p-3">
+
+                  {[
+                    {
+                      id: "operations",
+                      label:
+                        "Operasyonel Parametreler",
+                    },
+                    {
+                      id: "system",
+                      label:
+                        "Sistem & Entegrasyon",
+                    },
+                    {
+                      id: "roles",
+                      label:
+                        "Rol & Yetkilendirme",
+                    },
+                    {
+                      id: "security",
+                      label:
+                        "Güvenlik Politikaları",
+                    },
+                  ].map(
+                    (item) => (
+                      <button
+                        key={
+                          item.id
+                        }
+                        onClick={() =>
+                          setSettingsSection(
+                            item.id,
+                          )
+                        }
+                        className={`w-full rounded-xl px-3 py-3 text-left text-xs font-bold ${
+                          settingsSection ===
+                          item.id
+                            ? "bg-[#ffcc00]/8 text-[#ffcc00]"
+                            : "text-slate-500 hover:bg-white/[0.03] hover:text-white"
+                        }`}
+                      >
+                        {
+                          item.label
+                        }
+                      </button>
+                    ),
+                  )}
+
+                </div>
+
+                {/* SETTINGS CONTENT */}
+
+                <div className="tork-panel rounded-3xl p-6 sm:p-8">
+
+                  {/* OPERATIONS */}
+
+                  {settingsSection ===
+                    "operations" && (
+                    <div>
+
+                      <div className="tork-eyebrow">
+                        Operations Engine
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        Operasyonel parametreler
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Navlun, GPS, gecikme ve güven skoru gibi platform kurallarını yönetin.
+                      </p>
+
+                      <div className="mt-6">
+
+                        <SettingRow
+                          title="Sistem komisyon oranı"
+                          description="Tamamlanan taşımalarda platformun uygulayacağı varsayılan komisyon."
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={
+                                commissionRate
+                              }
+                              onChange={(e) =>
+                                setCommissionRate(
+                                  Number(
+                                    e.target.value,
+                                  ),
+                                )
+                              }
+                              className="tork-input w-20 px-3 py-2 text-center text-sm"
+                              min="0"
+                              max="100"
+                            />
+
+                            <span className="text-xs text-slate-500">
+                              %
+                            </span>
+                          </div>
+                        </SettingRow>
+
+                        <SettingRow
+                          title="GPS takip sıklığı"
+                          description="Sürücü konumunun saniye cinsinden varsayılan güncelleme aralığı."
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={
+                                gpsFrequency
+                              }
+                              onChange={(e) =>
+                                setGpsFrequency(
+                                  Number(
+                                    e.target.value,
+                                  ),
+                                )
+                              }
+                              className="tork-input w-24 px-3 py-2 text-center text-sm"
+                              min="5"
+                              max="300"
+                            />
+
+                            <span className="text-xs text-slate-500">
+                              sn
+                            </span>
+                          </div>
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Teslimat gecikme eşiği"
+                          description="ETA bu süreyi aştığında gecikme alarmı üretilir."
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={
+                                delayThreshold
+                              }
+                              onChange={(e) =>
+                                setDelayThreshold(
+                                  Number(
+                                    e.target.value,
+                                  ),
+                                )
+                              }
+                              className="tork-input w-24 px-3 py-2 text-center text-sm"
+                              min="1"
+                            />
+
+                            <span className="text-xs text-slate-500">
+                              dk
+                            </span>
+                          </div>
+                        </SettingRow>
+
+                      </div>
+
+                      <div className="mt-7 border-t border-white/6 pt-6">
+
+                        <div className="tork-eyebrow mb-2">
+                          Matching / Trust
+                        </div>
+
+                        <div className="text-sm font-bold text-white">
+                          Güven skoru ağırlıkları
+                        </div>
+
+                        <div className="mt-1 text-xs text-slate-600">
+                          Toplam %100 olmalıdır.
+                        </div>
+
+                        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+
+                          {[
+                            [
+                              "Konum",
+                              trustWeightLocation,
+                              setTrustWeightLocation,
+                            ],
+                            [
+                              "Araç uygunluğu",
+                              trustWeightVehicle,
+                              setTrustWeightVehicle,
+                            ],
+                            [
+                              "Fiyat",
+                              trustWeightPrice,
+                              setTrustWeightPrice,
+                            ],
+                            [
+                              "Performans",
+                              trustWeightPerformance,
+                              setTrustWeightPerformance,
+                            ],
+                            [
+                              "Güvenilirlik",
+                              trustWeightReliability,
+                              setTrustWeightReliability,
+                            ],
+                          ].map(
+                            (item) => (
+                              <div
+                                key={
+                                  item[0]
+                                }
+                              >
+                                <label className="tork-eyebrow mb-2 block">
+                                  {
+                                    item[0]
+                                  }
+                                </label>
+
+                                <input
+                                  type="number"
+                                  value={
+                                    item[1]
+                                  }
+                                  onChange={(e) =>
+                                    item[2](
+                                      Number(
+                                        e.target
+                                          .value,
+                                      ),
+                                    )
+                                  }
+                                  className="tork-input px-4 py-3 text-sm"
+                                  min="0"
+                                  max="100"
+                                />
+                              </div>
+                            ),
+                          )}
+
+                        </div>
+                      </div>
+
+                      <div className="mt-7 flex justify-end">
+                        <button
+                          onClick={
+                            saveOperationalSettings
+                          }
+                          className="tork-button-primary rounded-xl px-6 py-3 text-xs font-black"
+                        >
+                          Parametreleri kaydet
+                        </button>
+                      </div>
+
+                    </div>
+                  )}
+
+                  {/* SYSTEM */}
+
+                  {settingsSection ===
+                    "system" && (
+                    <div>
+
+                      <div className="tork-eyebrow">
+                        Infrastructure
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        Sistem ve entegrasyonlar
+                      </h3>
+
+                      <div className="mt-6">
+
+                        <SettingRow
+                          title="TomTom Truck Routing"
+                          description="Kamyon rota hesaplama, trafik ve ETA altyapısı."
+                        >
+                          <Toggle
+                            checked={
+                              tomtomEnabled
+                            }
+                            onChange={
+                              setTomtomEnabled
+                            }
+                          />
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Harita servisi"
+                          description="Canlı operasyon haritası ve rota görselleştirme."
+                        >
+                          <Toggle
+                            checked={
+                              mapsEnabled
+                            }
+                            onChange={
+                              setMapsEnabled
+                            }
+                          />
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Ödeme entegrasyonu"
+                          description="Escrow, ödeme alma ve hakediş altyapısı."
+                        >
+                          <Toggle
+                            checked={
+                              paymentIntegrationEnabled
+                            }
+                            onChange={
+                              setPaymentIntegrationEnabled
+                            }
+                          />
+                        </SettingRow>
+
+                        <SettingRow
+                          title="API Gateway"
+                          description="Harici servis ve platform API çağrılarının merkezi yönetimi."
+                        >
+                          <Toggle
+                            checked={
+                              apiGatewayEnabled
+                            }
+                            onChange={
+                              setApiGatewayEnabled
+                            }
+                          />
+                        </SettingRow>
+
+                      </div>
+
+                      <div className="mt-6 rounded-2xl border border-[#ffcc00]/10 bg-[#ffcc00]/5 p-5">
+
+                        <div className="text-xs font-black text-[#ffcc00]">
+                          API GÜVENLİĞİ
+                        </div>
+
+                        <p className="mt-2 text-xs leading-5 text-slate-500">
+                          API anahtarları frontend içine yazılmamalıdır. Harita, ödeme ve dış servis anahtarları server-side environment variable / secret manager üzerinden tutulmalıdır.
+                        </p>
+
+                      </div>
+
+                      <div className="mt-6 flex justify-end">
+                        <button
+                          onClick={
+                            saveSystemSettings
+                          }
+                          className="tork-button-primary rounded-xl px-6 py-3 text-xs font-black"
+                        >
+                          Sistem ayarlarını kaydet
+                        </button>
+                      </div>
+
+                    </div>
+                  )}
+
+                  {/* ROLES */}
+
+                  {settingsSection ===
+                    "roles" && (
+                    <div>
+
+                      <div className="tork-eyebrow">
+                        Access Control
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        Rol ve yetkilendirme
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500">
+                        Kurumsal hesap altında çalışan kullanıcıların erişim düzeylerini yönetin.
+                      </p>
+
+                      <div className="mt-6">
+
+                        <SettingRow
+                          title="Çok kullanıcılı şirket hesabı"
+                          description="Aynı şirket hesabı altında birden fazla personel çalıştırmayı etkinleştirir."
+                        >
+                          <Toggle
+                            checked={
+                              multiUserEnabled
+                            }
+                            onChange={
+                              setMultiUserEnabled
+                            }
+                          />
+                        </SettingRow>
+
+                      </div>
+
+                      {multiUserEnabled ? (
+                        <div className="mt-6">
+
+                          <div className="rounded-2xl border border-white/6 bg-black/15 p-5">
+
+                            <div className="text-sm font-black text-white">
+                              Personel ekle
+                            </div>
+
+                            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+
+                              <input
+                                value={
+                                  newEmployeeName
+                                }
+                                onChange={(e) =>
+                                  setNewEmployeeName(
+                                    e.target
+                                      .value,
+                                  )
+                                }
+                                className="tork-input px-4 py-3 text-sm"
+                                placeholder="Ad Soyad"
+                              />
+
+                              <input
+                                value={
+                                  newEmployeeEmail
+                                }
+                                onChange={(e) =>
+                                  setNewEmployeeEmail(
+                                    e.target
+                                      .value,
+                                  )
+                                }
+                                className="tork-input px-4 py-3 text-sm"
+                                placeholder="personel@sirket.com"
+                              />
+
+                            </div>
+
+                            <div className="mt-4 flex justify-end">
+                              <button
+                                onClick={
+                                  addEmployee
+                                }
+                                className="tork-button-primary rounded-xl px-5 py-3 text-xs font-black"
+                              >
+                                Personel ekle
+                              </button>
+                            </div>
+
+                          </div>
+
+                          <div className="mt-4 space-y-3">
+
+                            {employees.map(
+                              (
+                                employee,
+                              ) => (
+                                <div
+                                  key={
+                                    employee.id
+                                  }
+                                  className="flex flex-col gap-4 rounded-2xl border border-white/6 bg-white/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between"
+                                >
+
+                                  <div>
+                                    <div className="text-sm font-bold text-white">
+                                      {
+                                        employee.name
+                                      }
+                                    </div>
+
+                                    <div className="mt-1 text-xs text-slate-600">
+                                      {
+                                        employee.email
+                                      }
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-3">
+
+                                    <select
+                                      value={
+                                        employee.role
+                                      }
+                                      onChange={(e) => {
+                                        const newRole =
+                                          e.target
+                                            .value;
+
+                                        setEmployees(
+                                          (
+                                            current,
+                                          ) =>
+                                            current.map(
+                                              (
+                                                item,
+                                              ) =>
+                                                item.id ===
+                                                employee.id
+                                                  ? {
+                                                      ...item,
+                                                      role:
+                                                        newRole,
+                                                    }
+                                                  : item,
+                                            ),
+                                        );
+                                      }}
+                                      className="tork-input w-36 px-3 py-2 text-xs"
+                                    >
+                                      <option value="ADMIN">
+                                        Admin
+                                      </option>
+
+                                      <option value="OPERATIONS">
+                                        Operasyon
+                                      </option>
+
+                                      <option value="FINANCE">
+                                        Finans
+                                      </option>
+
+                                      <option value="SUPPORT">
+                                        Destek
+                                      </option>
+
+                                      <option value="OPERATOR">
+                                        Operatör
+                                      </option>
+                                    </select>
+
+                                    <button
+                                      onClick={() =>
+                                        removeEmployee(
+                                          employee.id,
+                                        )
+                                      }
+                                      className="rounded-xl border border-red-500/10 bg-red-500/5 px-3 py-2 text-xs font-bold text-red-400"
+                                    >
+                                      Sil
+                                    </button>
+
+                                  </div>
+                                </div>
+                              ),
+                            )}
+
+                          </div>
+
+                        </div>
+                      ) : null}
+
+                    </div>
+                  )}
+
+                  {/* SECURITY */}
+
+                  {settingsSection ===
+                    "security" && (
+                    <div>
+
+                      <div className="tork-eyebrow">
+                        Security Policy
+                      </div>
+
+                      <h3 className="mt-1 text-xl font-black text-white">
+                        Güvenlik politikaları
+                      </h3>
+
+                      <div className="mt-6">
+
+                        <SettingRow
+                          title="MFA zorunluluğu"
+                          description="Kurumsal hesaplarda çok faktörlü doğrulama zorunlu tutulur."
+                        >
+                          <Toggle
+                            checked={
+                              mfaRequired
+                            }
+                            onChange={
+                              setMfaRequired
+                            }
+                          />
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Oturum zaman aşımı"
+                          description="Pasif kullanıcı oturumunun dakika cinsinden varsayılan süresi."
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              value={
+                                sessionTimeout
+                              }
+                              onChange={(e) =>
+                                setSessionTimeout(
+                                  Number(
+                                    e.target.value,
+                                  ),
+                                )
+                              }
+                              className="tork-input w-24 px-3 py-2 text-center text-sm"
+                              min="5"
+                              max="1440"
+                            />
+
+                            <span className="text-xs text-slate-500">
+                              dk
+                            </span>
+                          </div>
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Kritik finansal değişiklik doğrulaması"
+                          description="IBAN ve ödeme bilgisi değişikliklerinde OTP + soğuma süresi uygulanır."
+                        >
+                          <span className="rounded-full border border-emerald-500/10 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black text-emerald-400">
+                            ZORUNLU
+                          </span>
+                        </SettingRow>
+
+                        <SettingRow
+                          title="Kritik bildirimler"
+                          description="Güvenlik ve ödeme bildirimleri kullanıcı tarafından kapatılamaz."
+                        >
+                          <span className="rounded-full border border-[#ffcc00]/10 bg-[#ffcc00]/5 px-3 py-1.5 text-[10px] font-black text-[#ffcc00]">
+                            ZORUNLU
+                          </span>
+                        </SettingRow>
+
+                      </div>
+
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            </div>
+          )}
+
+          {message ? (
+            <div className="mt-6 rounded-2xl border border-[#ffcc00]/10 bg-[#ffcc00]/5 px-4 py-3 text-xs font-medium text-[#ffd633]">
+              {message}
+            </div>
+          ) : null}
+
+        </section>
       </div>
     </main>
   );
