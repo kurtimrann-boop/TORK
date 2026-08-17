@@ -789,53 +789,85 @@ export default function TorkApp() {
       loadId,
       newStatus,
     ) => {
-      setLoading(true);
+      const normalizedStatus =
+        String(
+          newStatus || "",
+        ).trim();
 
-      const {
-        error: bidError,
-      } =
-        await supabase
-          .from("bids")
-          .update({
-            status:
-              newStatus,
-          })
-          .eq(
-            "id",
-            bidId,
-          );
-
-      if (bidError) {
+      if (
+        ![
+          "accepted",
+          "rejected",
+        ].includes(
+          normalizedStatus,
+        )
+      ) {
         setMessage(
-          "Teklif güncellenemedi: " +
-            bidError.message,
+          "Teklif durumu sadece kabul veya reddet olarak değiştirilebilir.",
         );
-
-        setLoading(false);
         return;
       }
 
-      if (
-        newStatus ===
-        "accepted"
-      ) {
-        await supabase
-          .from("loads")
-          .update({
-            status:
-              "assigned",
-          })
-          .eq(
-            "id",
-            loadId,
-          );
+      setLoading(true);
+
+      try {
+        if (normalizedStatus === "accepted") {
+          const { data, error: acceptError } =
+            await supabase.rpc(
+              "accept_bid_and_assign_load",
+              {
+                p_bid_id: bidId,
+              },
+            );
+
+          if (acceptError || !data) {
+            setMessage(
+              "Teklif kabul edilemedi: " +
+                (acceptError?.message || "Bilinmeyen hata"),
+            );
+            setLoading(false);
+            return;
+          }
+
+          setMessage("Teklif kabul edildi.");
+        } else {
+          const {
+            data,
+            error: bidError,
+          } =
+            await supabase.rpc(
+              "set_bid_status",
+              {
+                p_bid_id: bidId,
+                p_new_status:
+                  normalizedStatus,
+              },
+            );
+
+          if (bidError) {
+            setMessage(
+              "Teklif güncellenemedi: " +
+                bidError.message,
+            );
+
+            setLoading(false);
+            return;
+          }
+
+          setMessage("Teklif reddedildi.");
+        }
+
+        await fetchShipperData(
+          userDashboard.id,
+        );
+      } catch (err) {
+        setMessage(
+          "Teklif güncellenemedi: " +
+            err.message,
+        );
+      } finally {
+        setLoading(false);
       }
-
-      await fetchShipperData(
-        userDashboard.id,
-      );
-
-      setLoading(false);
     };
 
   /* =======================================================

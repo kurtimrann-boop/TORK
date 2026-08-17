@@ -2,6 +2,7 @@
   "name": "tork-web",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,6 +18,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
+    "acorn": "^8.18.0",
+    "acorn-jsx": "^5.3.2",
     "autoprefixer": "^10.5.4",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",

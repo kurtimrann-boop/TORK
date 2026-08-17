@@ -1,7 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://mmeaypygvurijotudjtk.supabase.co";
-// Aşağıdaki tırnak işaretlerinin arasına kopyaladığın şifreyi yapıştır
-const supabaseAnonKey = "sb_publishable_tEC1wEBAC2SCwAvsu6LA5A_osFUoMSX"; 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    "Supabase yapılandırması eksik. Lütfen .env.local dosyasında NEXT_PUBLIC_SUPABASE_URL ve NEXT_PUBLIC_SUPABASE_ANON_KEY değerlerini tanımlayın."
+  );
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
