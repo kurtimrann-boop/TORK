@@ -27,23 +27,100 @@ import WeatherIndicator from "../components/WeatherIndicator";
 ========================================================= */
 
 const SHIPPER_TABS = [
-  { id: "overview", label: "Genel Bakış", icon: "⌂" },
-  { id: "loads", label: "İlanlarım", icon: "▣" },
-  { id: "create", label: "Yeni Yük", icon: "+" },
-  { id: "bids", label: "Gelen Teklifler", icon: "◇" },
-  { id: "wallet", label: "Cüzdan", icon: "₺" },
-  { id: "profile", label: "Profilim", icon: "○" },
-  { id: "settings", label: "Ayarlar", icon: "⚙" },
+  { id: "overview", label: "Genel Bakış", icon: <IconHome className="h-4 w-4" /> },
+  { id: "loads", label: "İlanlarım", icon: <IconPackage className="h-4 w-4" /> },
+  { id: "create", label: "Yeni Yük", icon: <IconPlus className="h-4 w-4" /> },
+  { id: "bids", label: "Gelen Teklifler", icon: <IconInbox className="h-4 w-4" /> },
+  { id: "wallet", label: "Cüzdan", icon: <IconWallet className="h-4 w-4" /> },
+  { id: "profile", label: "Profilim", icon: <IconUser className="h-4 w-4" /> },
+  { id: "settings", label: "Ayarlar", icon: <IconSettings className="h-4 w-4" /> },
 ];
 
 const CARRIER_TABS = [
-  { id: "overview", label: "Genel Bakış", icon: "⌂" },
-  { id: "board", label: "Uygun Yükler", icon: "◫" },
-  { id: "transports", label: "Aktif Taşımalar", icon: "►" },
-  { id: "wallet", label: "Cüzdan", icon: "₺" },
-  { id: "profile", label: "Profilim", icon: "○" },
-  { id: "settings", label: "Ayarlar", icon: "⚙" },
+  { id: "overview", label: "Genel Bakış", icon: <IconHome className="h-4 w-4" /> },
+  { id: "board", label: "Uygun Yükler", icon: <IconPackage className="h-4 w-4" /> },
+  { id: "transports", label: "Aktif Taşımalar", icon: <IconTruck className="h-4 w-4" /> },
+  { id: "wallet", label: "Cüzdan", icon: <IconWallet className="h-4 w-4" /> },
+  { id: "profile", label: "Profilim", icon: <IconUser className="h-4 w-4" /> },
+  { id: "settings", label: "Ayarlar", icon: <IconSettings className="h-4 w-4" /> },
 ];
+
+/* =========================================================
+   ICONS
+========================================================= */
+
+function IconHome({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+  );
+}
+
+function IconPackage({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+    </svg>
+  );
+}
+
+function IconInbox({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+    </svg>
+  );
+}
+
+function IconWallet({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+    </svg>
+  );
+}
+
+function IconUser({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  );
+}
+
+function IconSettings({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  );
+}
+
+function IconTruck({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 17h8M8 17a2 2 0 11-4 0 2 2 0 014 0zM8 17H4a1 1 0 01-1-1v-3.28a1 1 0 01.213-.537l2.36-2.94A1 1 0 016.414 9.1l.008.01L8.414 11a1 1 0 01.293.707V17zm8 0a2 2 0 104 0 2 2 0 00-4 0zM16 17V9.414a1 1 0 01.293-.707l2.36-2.94a1 1 0 01.213-.537V7a1 1 0 00-1-1h-3.586a1 1 0 00-.707.293l-2.36 2.94a1 1 0 01-.213.537V17h4z" />
+    </svg>
+  );
+}
+
+function IconBox({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+    </svg>
+  );
+}
+
+function IconPlus({ className = "h-4 w-4" }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+  );
+}
 
 /* =========================================================
    SMALL UI COMPONENTS
@@ -317,6 +394,33 @@ export default function TorkApp() {
   const [activeTransports, setActiveTransports] =
     useState([]);
 
+  const [bidFilter, setBidFilter] =
+    useState("active");
+
+  const [bidSort, setBidSort] =
+    useState("lowest");
+
+  const [selectedBids, setSelectedBids] =
+    useState([]);
+
+  const [showComparison, setShowComparison] =
+    useState(false);
+
+  const [loadFilter, setLoadFilter] =
+    useState("all");
+
+  const [loadSearch, setLoadSearch] =
+    useState("");
+
+  const [editingLoad, setEditingLoad] =
+    useState(null);
+
+  const [deleteConfirmLoad, setDeleteConfirmLoad] =
+    useState(null);
+
+  const [loadActionLoading, setLoadActionLoading] =
+    useState(false);
+
   /* =======================================================
      PROFILE
   ======================================================= */
@@ -545,6 +649,190 @@ export default function TorkApp() {
     );
   };
 
+  const startEditLoad = (load) => {
+    if (load.status !== "open") return;
+
+    const originParts =
+      typeof load.origin === "string"
+        ? load.origin.split(" / ")
+        : [];
+    const destinationParts =
+      typeof load.destination === "string"
+        ? load.destination.split(" / ")
+        : [];
+
+    setOriginProvince(
+      originParts[0]
+        ? getProvinceByName(
+            originParts[0]
+          )
+        : null
+    );
+    setOriginDistrict(originParts[1] || null);
+    setDestinationProvince(
+      destinationParts[0]
+        ? getProvinceByName(
+            destinationParts[0]
+          )
+        : null
+    );
+    setDestinationDistrict(
+      destinationParts[1] || null
+    );
+    setTonnage(
+      load.tonnage != null
+        ? String(load.tonnage)
+        : ""
+    );
+    setVehicle(load.vehicle_type || "TIR (Tenteli)");
+    setCargoType(load.cargo_type || "Paletli Ürün");
+    setPackageCount(
+      load.package_count || ""
+    );
+    setLoadDescription(
+      load.description || ""
+    );
+    setEditingLoad(load);
+    setCreateLoadStep(0);
+    setActiveTab("create");
+  };
+
+  const resetCreateForm = () => {
+    setEditingLoad(null);
+    setCreateLoadStep(0);
+    setOrigin("");
+    setDestination("");
+    setOriginProvince(null);
+    setDestinationProvince(null);
+    setOriginDistrict(null);
+    setDestinationDistrict(null);
+    setTonnage("");
+    setVehicle("TIR (Tenteli)");
+    setCargoType("Paletli Ürün");
+    setPackageCount("");
+    setLoadDescription("");
+  };
+
+  const handleUpdateLoad =
+    async (e) => {
+      e.preventDefault();
+
+      if (!editingLoad) return;
+
+      setLoadActionLoading(true);
+      setMessage("");
+
+      if (
+        !originProvince ||
+        !destinationProvince
+      ) {
+        setMessage(
+          "Lütfen başlangıç ve bitiş illerini seçiniz."
+        );
+        setLoadActionLoading(false);
+        return;
+      }
+
+      if (
+        originProvince.code ===
+        destinationProvince.code
+      ) {
+        setMessage(
+          "Başlangıç ve bitiş illeri farklı olmalıdır."
+        );
+        setLoadActionLoading(false);
+        return;
+      }
+
+      const originDistrictPart =
+        originDistrict
+          ? ` / ${originDistrict}`
+          : "";
+      const destinationDistrictPart =
+        destinationDistrict
+          ? ` / ${destinationDistrict}`
+          : "";
+
+      const originDisplay =
+        `${originProvince.name}${originDistrictPart}`;
+      const destinationDisplay =
+        `${destinationProvince.name}${destinationDistrictPart}`;
+
+      const { error } =
+        await supabase
+          .from("loads")
+          .update({
+            origin: originDisplay,
+            destination: destinationDisplay,
+            tonnage,
+            vehicle_type: vehicle,
+            cargo_type: cargoType,
+            package_count: packageCount,
+            description: loadDescription,
+          })
+          .eq("id", editingLoad.id)
+          .eq(
+            "shipper_id",
+            userDashboard.id
+          )
+          .eq("status", "open");
+
+      if (error) {
+        setMessage(
+          "Güncelleme hatası: " +
+            error.message
+        );
+      } else {
+        setMessage(
+          "Yük ilanı başarıyla güncellendi."
+        );
+
+        resetCreateForm();
+
+        await fetchShipperData(
+          userDashboard.id
+        );
+        setActiveTab("loads");
+      }
+
+      setLoadActionLoading(false);
+    };
+
+  const confirmDeleteLoad = async () => {
+    if (!deleteConfirmLoad) return;
+
+    setLoadActionLoading(true);
+    setMessage("");
+
+    const { error } =
+      await supabase
+        .from("loads")
+        .delete()
+        .eq("id", deleteConfirmLoad.id)
+        .eq(
+          "shipper_id",
+          userDashboard.id
+        )
+        .eq("status", "open");
+
+    if (error) {
+      setMessage(
+        "Silme hatası: " +
+          error.message
+      );
+    } else {
+      setMessage(
+        "Yük ilanı başarıyla silindi."
+      );
+      setDeleteConfirmLoad(null);
+      await fetchShipperData(
+        userDashboard.id
+      );
+    }
+
+    setLoadActionLoading(false);
+  };
+
   useEffect(() => {
     if (!userDashboard) {
       return;
@@ -755,6 +1043,11 @@ export default function TorkApp() {
     async (e) => {
       e.preventDefault();
 
+      if (editingLoad) {
+        await handleUpdateLoad(e);
+        return;
+      }
+
       setLoading(true);
       setMessage("");
 
@@ -806,6 +1099,9 @@ export default function TorkApp() {
             tonnage,
             vehicle_type:
               vehicle,
+            cargo_type: cargoType,
+            package_count: packageCount,
+            description: loadDescription,
             status: "open",
           });
 
@@ -820,16 +1116,7 @@ export default function TorkApp() {
         );
 
         // Reset form
-        setOrigin("");
-        setDestination("");
-        setOriginProvince(null);
-        setDestinationProvince(null);
-        setOriginDistrict(null);
-        setDestinationDistrict(null);
-        setTonnage("");
-        setPackageCount("");
-        setLoadDescription("");
-        setCreateLoadStep(0);
+        resetCreateForm();
 
         await fetchShipperData(
           userDashboard.id,
@@ -1292,7 +1579,7 @@ export default function TorkApp() {
           </div>
 
           {/* RIGHT: Auth Panel */}
-          <div>
+          <div className="flex flex-col justify-center">
             <div className="mb-7 lg:hidden">
               <div className="flex items-center justify-center gap-3">
                 <TorkLogo compact />
@@ -1397,7 +1684,8 @@ export default function TorkApp() {
                       : "text-slate-600"
                   }`}
                 >
-                  📦 Yük Veren
+                  <IconBox className="h-3.5 w-3.5" />
+                  Yük Veren
                 </button>
 
                 <button
@@ -1414,7 +1702,8 @@ export default function TorkApp() {
                       : "text-slate-600"
                   }`}
                 >
-                  🚚 Nakliyeci
+                  <IconTruck className="h-3.5 w-3.5" />
+                  Nakliyeci
                 </button>
 
               </div>
@@ -1468,11 +1757,11 @@ export default function TorkApp() {
                       }
                     >
                       <option value="shipper">
-                        📦 Yük Veren
+                        Yük Veren
                       </option>
 
                       <option value="carrier">
-                        🚚 Nakliyeci
+                        Nakliyeci
                       </option>
                     </select>
                   </div>
@@ -1793,7 +2082,10 @@ export default function TorkApp() {
                        {userDashboard.role === "shipper" ? (
                          <>
                            <button
-                             onClick={() => setActiveTab("create")}
+                              onClick={() => {
+                                resetCreateForm();
+                                setActiveTab("create");
+                              }}
                              className="w-full rounded-xl border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-4 py-3 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] transition-all hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
                            >
                              + Yük Oluştur
@@ -1843,10 +2135,11 @@ export default function TorkApp() {
                        </div>
                      </div>
                    </div>
-                 </div>
+                   </div>
+
+                   </div>
                </div>
-            </div>
-          )}
+             )}
 
           {/* =================================================
               LOADS
@@ -1881,32 +2174,127 @@ export default function TorkApp() {
                   }
                 />
               ) : (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-xs font-bold text-[#9AA7B5]">
-                      Toplam {myLoads.length} yük
-                    </p>
-                    <button
-                      onClick={() => setActiveTab("create")}
-                      className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-3 py-2 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
-                    >
-                      + Yeni Yük
-                    </button>
+                <div className="space-y-4">
+                  {/* SUMMARY CARDS */}
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-4">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
+                        Toplam
+                      </div>
+                      <div className="mt-1 text-2xl font-black text-white">
+                        {myLoads.length}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-[#00E5A0]/15 bg-[#00E5A0]/5 p-4">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#00E5A0]">
+                        Teklife Açık
+                      </div>
+                      <div className="mt-1 text-2xl font-black text-[#00E5A0]">
+                        {myLoads.filter((l) => l.status === "open").length}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/5 p-4">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-300">
+                        Atanmış
+                      </div>
+                      <div className="mt-1 text-2xl font-black text-cyan-300">
+                        {myLoads.filter((l) => l.status === "assigned").length}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-4">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
+                        Tamamlanan
+                      </div>
+                      <div className="mt-1 text-2xl font-black text-white">
+                        {myLoads.filter((l) => l.status === "completed").length}
+                      </div>
+                    </div>
                   </div>
 
-                   {myLoads.map((load) => {
-                     const bidCount = incomingBids.filter(
-                       (b) => b.load_id === load.id
-                     ).length;
-                     return (
-                       <LoadCard
-                         key={load.id}
-                         load={load}
-                         bidCount={bidCount}
-                         onViewDetails={() => setActiveDetailLoadId(load.id)}
-                       />
-                     );
-                   })}
+                  {/* FILTER + SEARCH + ACTION */}
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex gap-2">
+                      {["all", "open", "assigned", "completed"].map((filter) => (
+                        <button
+                          key={filter}
+                          type="button"
+                          onClick={() => setLoadFilter(filter)}
+                          className={`rounded-xl px-3 py-2 text-[11px] font-black transition ${
+                            loadFilter === filter
+                              ? "bg-white/[0.08] text-white"
+                              : "text-[#667085] hover:text-[#9AA7B5]"
+                          }`}
+                        >
+                          {filter === "all" ? "Tümü" : filter === "open" ? "Açık" : filter === "assigned" ? "Atanmış" : "Tamamlanan"}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={loadSearch}
+                        onChange={(e) => setLoadSearch(e.target.value)}
+                        placeholder="Ara..."
+                        className="tork-input px-4 py-2.5 text-xs"
+                      />
+                      <button
+                        onClick={() => setActiveTab("create")}
+                        className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-3 py-2 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
+                      >
+                        + Yeni Yük
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* FILTERED LOAD LIST */}
+                  {(() => {
+                    const filtered = myLoads.filter((load) => {
+                      if (loadFilter !== "all" && load.status !== loadFilter) return false;
+                      if (!loadSearch.trim()) return true;
+                      const q = loadSearch.toLowerCase();
+                      return (
+                        (load.origin || "").toLowerCase().includes(q) ||
+                        (load.destination || "").toLowerCase().includes(q) ||
+                        (load.id || "").toLowerCase().includes(q)
+                      );
+                    });
+
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
+                          <div className="text-sm font-bold text-[#667085]">
+                            Filtrelere uygun ilan bulunamadı.
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="space-y-3">
+                        {filtered.map((load) => {
+                          const bidCount = incomingBids.filter(
+                            (b) => b.load_id === load.id
+                          ).length;
+                          const canEdit = load.status === "open";
+                          const canDelete = load.status === "open";
+
+                          return (
+                            <LoadCard
+                              key={load.id}
+                              load={load}
+                              bidCount={bidCount}
+                              onViewDetails={() => setActiveDetailLoadId(load.id)}
+                              onEdit={canEdit ? () => startEditLoad(load) : undefined}
+                              onDelete={canDelete ? () => setDeleteConfirmLoad(load) : undefined}
+                              canEdit={canEdit}
+                              canDelete={canDelete}
+                            />
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>
@@ -1922,11 +2310,19 @@ export default function TorkApp() {
                "create" && (
                  <div className="tork-fade-up max-w-5xl space-y-6">
 
-                   <SectionHeading
-                     eyebrow="Pazaryeri"
-                     title="Yeni yük oluştur"
-                     description="Taşımanız için adım adım teklif alabilirsiniz."
-                   />
+                    <SectionHeading
+                      eyebrow="Pazaryeri"
+                      title={
+                        editingLoad
+                          ? "İlanı düzenle"
+                          : "Yeni yük oluştur"
+                      }
+                      description={
+                        editingLoad
+                          ? "Açık ilan bilgilerini güncelleyin."
+                          : "Taşımanız için adım adım teklif alabilirsiniz."
+                      }
+                    />
 
                     {/* HARİTA + ROTA ÖZETİ */}
                     <div className="tork-panel rounded-3xl overflow-hidden">
@@ -2345,45 +2741,55 @@ export default function TorkApp() {
                       </div>
                     )}
 
-                    {/* ACTION BUTTONS */}
-                    <div className="flex justify-between border-t border-white/6 pt-6">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (
-                            createLoadStep > 0
-                          ) {
-                            setCreateLoadStep(
-                              createLoadStep -
-                                1
-                            );
-                          }
-                        }}
-                        disabled={
-                          createLoadStep === 0
-                        }
-                        className={`rounded-xl px-6 py-3 text-xs font-bold transition ${
-                          createLoadStep === 0
-                            ? "cursor-not-allowed text-[#667085]"
-                            : "border border-white/10 bg-white/[0.03] text-[#9AA7B5] hover:border-white/20 hover:bg-white/[0.05]"
-                        }`}
-                      >
-                        ← Geri
-                      </button>
+                     {/* ACTION BUTTONS */}
+                     <div className="flex justify-between border-t border-white/6 pt-6">
+                       <div className="flex gap-2">
+                         {editingLoad && (
+                           <button
+                             type="button"
+                              onClick={() => {
+                                resetCreateForm();
+                                setActiveTab("loads");
+                              }}
+                             className="rounded-xl px-6 py-3 text-xs font-bold text-[#9AA7B5] transition hover:text-white"
+                           >
+                             İptal
+                           </button>
+                         )}
+                         <button
+                           type="button"
+                           onClick={() => {
+                             if (createLoadStep > 0) {
+                               setCreateLoadStep(
+                                 createLoadStep - 1
+                               );
+                             }
+                           }}
+                           disabled={createLoadStep === 0}
+                           className={`rounded-xl px-6 py-3 text-xs font-bold transition ${
+                             createLoadStep === 0
+                               ? "cursor-not-allowed text-[#667085]"
+                               : "border border-white/10 bg-white/[0.03] text-[#9AA7B5] hover:border-white/20 hover:bg-white/[0.05]"
+                           }`}
+                         >
+                           ← Geri
+                         </button>
+                       </div>
 
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="tork-button-primary rounded-xl px-8 py-3 text-xs font-black"
-                      >
-                        {loading
-                          ? "İşleniyor..."
-                          : createLoadStep ===
-                              4
-                            ? "İlanı yayınla →"
-                            : "Devam et →"}
-                      </button>
-                    </div>
+                       <button
+                         type="submit"
+                         disabled={loading || loadActionLoading}
+                         className="tork-button-primary rounded-xl px-8 py-3 text-xs font-black"
+                       >
+                         {loading || loadActionLoading
+                           ? "İşleniyor..."
+                           : editingLoad
+                             ? "Değişiklikleri Kaydet →"
+                             : createLoadStep === 4
+                               ? "İlanı yayınla →"
+                               : "Devam et →"}
+                       </button>
+                     </div>
                   </form>
 
                 </div>
@@ -2611,90 +3017,174 @@ export default function TorkApp() {
                BIDS
            ================================================= */}
 
-          {userDashboard.role === "shipper" &&
-            activeTab === "bids" && (
-            <div className="tork-fade-up">
-              <div className="mb-8">
-                <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
-                  Teklif Yönetimi
-                </div>
-                <h1 className="text-3xl font-black tracking-[-0.04em] text-[#F5F7FA]">
-                  Gelen Teklifler
-                </h1>
-                <p className="mt-2 text-sm text-[#9AA7B5]">
-                  Taşıyıcılardan gelen teklifleri inceleyin ve yönetin
-                </p>
-              </div>
+           {userDashboard.role === "shipper" &&
+             activeTab === "bids" && (
+             <div className="tork-fade-up">
+               <div className="mb-8">
+                 <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
+                   Teklif Yönetimi
+                 </div>
+                 <h1 className="text-3xl font-black tracking-[-0.04em] text-[#F5F7FA]">
+                   Gelen Teklifler
+                 </h1>
+                 <p className="mt-2 text-sm text-[#9AA7B5]">
+                   Taşıyıcılardan gelen teklifleri inceleyin ve yönetin
+                 </p>
+               </div>
 
-              {incomingBids.length === 0 ? (
-                <EmptyState
-                  title="Henüz teklif yok"
-                  text="Taşıyıcılar yüklerinize teklif verdiğinde burada görünecek."
-                />
-              ) : (
-                <div className="space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <MetricGroup
-                      title="Teklif Özeti"
-                      metrics={[
-                        { label: "Toplam Teklif", value: incomingBids.length },
-                        {
-                          label: "En İyi Teklif",
-                          value: `₺${Math.min(
-                            ...incomingBids.map((b) => Number(b.amount) || 0)
-                          ).toLocaleString("tr-TR")}`,
-                          color: "text-[#00E5A0]",
-                        },
-                        {
-                          label: "Ortalama",
-                          value: `₺${Math.round(
-                            incomingBids.reduce((s, b) => s + Number(b.amount || 0), 0) /
-                              incomingBids.length
-                          ).toLocaleString("tr-TR")}`,
-                        },
-                        {
-                          label: "Bekleyen",
-                          value: incomingBids.filter((b) => b.status === "pending").length,
-                          color: "text-[#FBBF24]",
-                        },
-                      ]}
-                    />
-                  </div>
-
-                   <div className="grid gap-4">
-                     {incomingBids
-                       .sort((a, b) => Number(b.amount) - Number(a.amount))
-                       .map((bid) => {
-                         const loadBids = incomingBids.filter(
-                           (b) => b.load_id === bid.load_id
-                         );
-                         const minAmount = Math.min(
-                           ...loadBids.map((b) => Number(b.amount) || 0)
-                         );
-                         const isBest = Number(bid.amount) === minAmount && loadBids.length > 1;
-                         return (
-                           <BidCard
-                             key={bid.id}
-                             bid={bid}
-                             isBestBid={isBest}
-                             onAccept={() =>
-                               handleUpdateBidStatus(bid.id, bid.load_id, "accepted")
-                             }
-                             onReject={() =>
-                               handleUpdateBidStatus(bid.id, bid.load_id, "rejected")
-                             }
-                           />
-                         );
-                       })}
+               {incomingBids.length === 0 ? (
+                 <EmptyState
+                   title="Henüz teklif yok"
+                   text="Taşıyıcılar yüklerinize teklif verdiğinde burada görünecek."
+                 />
+               ) : (
+                 <div className="space-y-4">
+                   {/* SUMMARY */}
+                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                     <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-4">
+                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
+                         Gelen Teklif
+                       </div>
+                       <div className="mt-1 text-2xl font-black text-white">
+                         {incomingBids.length}
+                       </div>
+                     </div>
+                     <div className="rounded-2xl border border-[#00E5A0]/15 bg-[#00E5A0]/5 p-4">
+                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#00E5A0]">
+                         En Düşük
+                       </div>
+                       <div className="mt-1 text-2xl font-black text-[#00E5A0]">
+                         ₺{Math.min(...incomingBids.map((b) => Number(b.amount) || 0)).toLocaleString("tr-TR")}
+                       </div>
+                     </div>
+                     <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-4">
+                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
+                         Ortalama
+                       </div>
+                       <div className="mt-1 text-2xl font-black text-white">
+                         ₺{Math.round(incomingBids.reduce((s, b) => s + Number(b.amount || 0), 0) / incomingBids.length).toLocaleString("tr-TR")}
+                       </div>
+                     </div>
+                     <div className="rounded-2xl border border-[#FBBF24]/15 bg-[#FBBF24]/5 p-4">
+                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#FBBF24]">
+                         Bekleyen
+                       </div>
+                       <div className="mt-1 text-2xl font-black text-[#FBBF24]">
+                         {incomingBids.filter((b) => b.status === "pending").length}
+                       </div>
+                     </div>
                    </div>
+
+                   {/* FILTERS + SORT + ACTIONS */}
+                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                     <div className="flex gap-2">
+                       {[
+                         { key: "active", label: "Aktif" },
+                         { key: "accepted", label: "Kabul" },
+                         { key: "rejected", label: "Reddedilen" },
+                         { key: "all", label: "Tümü" },
+                       ].map((filter) => (
+                         <button
+                           key={filter.key}
+                           type="button"
+                           onClick={() => setBidFilter(filter.key)}
+                           className={`rounded-xl px-3 py-2 text-[11px] font-black transition ${
+                             bidFilter === filter.key
+                               ? "bg-white/[0.08] text-white"
+                               : "text-[#667085] hover:text-[#9AA7B5]"
+                           }`}
+                         >
+                           {filter.label}
+                         </button>
+                       ))}
+                     </div>
+
+                     <div className="flex gap-2">
+                       <select
+                         value={bidSort}
+                         onChange={(e) => setBidSort(e.target.value)}
+                         className="tork-input px-3 py-2 text-xs"
+                       >
+                         <option value="lowest">En düşük tutar</option>
+                         <option value="highest">En yüksek tutar</option>
+                         <option value="newest">En yeni</option>
+                         <option value="oldest">En eski</option>
+                       </select>
+
+                       {selectedBids.length >= 2 && (
+                         <button
+                           onClick={() => setShowComparison(true)}
+                           className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-3 py-2 text-xs font-black text-[#00E5A0]"
+                         >
+                           Karşılaştır ({selectedBids.length})
+                         </button>
+                       )}
+                     </div>
+                   </div>
+
+                   {/* BID LIST */}
+                   {(() => {
+                     const filtered = incomingBids.filter((bid) => {
+                       if (bidFilter === "active") return bid.status === "pending";
+                       if (bidFilter === "all") return true;
+                       return bid.status === bidFilter;
+                     });
+
+                     const sorted = [...filtered].sort((a, b) => {
+                       if (bidSort === "lowest") return Number(a.amount) - Number(b.amount);
+                       if (bidSort === "highest") return Number(b.amount) - Number(a.amount);
+                       if (bidSort === "newest") return new Date(b.created_at) - new Date(a.created_at);
+                       if (bidSort === "oldest") return new Date(a.created_at) - new Date(b.created_at);
+                       return 0;
+                     });
+
+                     if (sorted.length === 0) {
+                       return (
+                         <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
+                           <div className="text-sm font-bold text-[#667085]">
+                             Filtrelere uygun teklif bulunamadı.
+                           </div>
+                         </div>
+                       );
+                     }
+
+                      return (
+                        <div className="space-y-3">
+                          {sorted.map((bid) => {
+                            const isSelected = selectedBids.includes(bid.id);
+                            return (
+                              <BidCard
+                                key={bid.id}
+                                bid={bid}
+                                isBestBid={bidFilter === "active" && Number(bid.amount) === Math.min(...incomingBids.filter(b => b.status === "pending").map(b => Number(b.amount) || 0))}
+                                isSelected={isSelected}
+                                onSelect={(bidId) => {
+                                  setSelectedBids((prev) =>
+                                    prev.includes(bidId)
+                                      ? prev.filter((id) => id !== bidId)
+                                      : [...prev, bidId]
+                                  );
+                                }}
+                                onAccept={() =>
+                                  handleUpdateBidStatus(bid.id, bid.load_id, "accepted")
+                                }
+                                onReject={() =>
+                                  handleUpdateBidStatus(bid.id, bid.load_id, "rejected")
+                                }
+                              />
+                            );
+                          })}
+                        </div>
+                      );
+                      })()}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          {/* =================================================
-              CARRIER BOARD
-          ================================================= */}
+            {/* =================================================
+                CARRIER BOARD
+            ================================================= */}
 
           {userDashboard.role === "carrier" &&
             activeTab === "board" && (
@@ -4218,6 +4708,52 @@ export default function TorkApp() {
 
         </section>
       </div>
-    </main>
-  );
-}
+
+      {/* DELETE CONFIRMATION MODAL */}
+       {deleteConfirmLoad && (
+         <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+           <div className="tork-panel w-full max-w-md rounded-3xl p-6 sm:p-8">
+             <div className="mb-6">
+               <div className="tork-eyebrow mb-2">İlanı Sil</div>
+               <h3 className="text-xl font-black text-white">
+                 Bu ilanı silmek istediğinize emin misiniz?
+               </h3>
+               <p className="mt-2 text-sm text-[#9AA7B5]">
+                 Bu işlem geri alınamaz. İlan kalıcı olarak silinecektir.
+               </p>
+             </div>
+ 
+             <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-4">
+               <div className="text-xs text-[#9AA7B5]">
+                 {deleteConfirmLoad.origin} → {deleteConfirmLoad.destination}
+               </div>
+               <div className="mt-1 text-sm font-black text-white">
+                 {deleteConfirmLoad.tonnage} ton · {deleteConfirmLoad.vehicle_type}
+               </div>
+             </div>
+ 
+             <div className="mt-6 flex gap-3">
+               <button
+                 type="button"
+                 onClick={() => setDeleteConfirmLoad(null)}
+                 disabled={loadActionLoading}
+                 className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs font-black text-[#9AA7B5] transition hover:border-white/20 hover:bg-white/[0.05] hover:text-white disabled:opacity-50"
+               >
+                 İptal
+               </button>
+               <button
+                 type="button"
+                 onClick={confirmDeleteLoad}
+                 disabled={loadActionLoading}
+                 className="flex-1 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs font-black text-red-400 transition hover:border-red-500/40 hover:bg-red-500/15 disabled:opacity-50"
+               >
+                 {loadActionLoading ? "Siliniyor..." : "Evet, Sil"}
+               </button>
+                  </div>
+                  </div>
+                  </div>
+          )}
+       </main>
+     );
+   }
+// 

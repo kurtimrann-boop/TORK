@@ -6,6 +6,10 @@ export default function LoadCard({
   bidCount = 0,
   onViewDetails,
   onBid,
+  onEdit,
+  onDelete,
+  canEdit = false,
+  canDelete = false,
 }) {
   return (
     <div className="group rounded-2xl border border-white/8 bg-[#0F1723] p-6 transition-all duration-200 hover:border-[#00E5A0]/20 hover:shadow-[0_8px_32px_rgba(0,229,160,0.1)]">
@@ -56,13 +60,31 @@ export default function LoadCard({
           </div>
         </div>
 
-        <div className="flex gap-2 lg:flex-col">
+        <div className="flex flex-wrap gap-2 lg:flex-col">
           {onViewDetails && (
             <button
               onClick={onViewDetails}
               className="flex-1 rounded-xl border border-[#00E5A0]/25 bg-[#00E5A0]/8 px-4 py-2.5 text-xs font-black text-[#00E5A0] transition-all hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/12 lg:flex-none lg:w-32"
             >
               Detayları Gör
+            </button>
+          )}
+
+          {canEdit && onEdit && (
+            <button
+              onClick={onEdit}
+              className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-xs font-black text-[#9AA7B5] transition-all hover:border-white/20 hover:bg-white/[0.05] hover:text-white lg:flex-none lg:w-32"
+            >
+              Düzenle
+            </button>
+          )}
+
+          {canDelete && onDelete && (
+            <button
+              onClick={onDelete}
+              className="flex-1 rounded-xl border border-red-500/15 bg-red-500/5 px-4 py-2.5 text-xs font-black text-red-400 transition-all hover:border-red-500/25 hover:bg-red-500/8 lg:flex-none lg:w-32"
+            >
+              Sil
             </button>
           )}
 

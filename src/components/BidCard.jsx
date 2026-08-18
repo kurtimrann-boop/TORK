@@ -7,20 +7,36 @@ export default function BidCard({
   onAccept,
   onReject,
   isBestBid = false,
+  isSelected = false,
+  onSelect,
 }) {
   const isPending = bid.status === "pending";
 
   return (
-    <div className="rounded-2xl border border-white/8 bg-[#0F1723] p-6 transition-all duration-200 hover:border-white/12 hover:shadow-lg">
+    <div
+      className={`rounded-2xl border bg-[#0F1723] p-6 transition-all duration-200 hover:shadow-lg ${
+        isSelected
+          ? "border-[#00E5A0]/30 bg-[#00E5A0]/5"
+          : "border-white/8 hover:border-white/12"
+      }`}
+    >
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex-1">
           <div className="mb-3 flex items-center gap-2">
+            {onSelect && isCarrierView === false && (
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={() => onSelect(bid.id)}
+                className="h-4 w-4 accent-[#00E5A0]"
+              />
+            )}
             <span className="text-sm font-bold text-[#9AA7B5]">
               {isCarrierView ? "Teklifim" : "Taşıyıcı"}
             </span>
             {isBestBid && !isCarrierView && (
               <span className="rounded-full border border-[#00E5A0]/20 bg-[#00E5A0]/10 px-2 py-0.5 text-[10px] font-black text-[#00E5A0]">
-                EN İYİ TEKLİF
+                EN DÜŞÜK
               </span>
             )}
           </div>
@@ -77,7 +93,7 @@ export default function BidCard({
 
               <button
                 onClick={onReject}
-                className="rounded-lg border border-red-500/15 bg-red-500/5 px-3.5 py-2 text-xs font-bold text-red-400 transition-all hover:border-red-500/25 hover:bg-red-500/8"
+                className="rounded-lg border border-red-500/15 bg-red-500/5 px-3.5 py-2 text-xs font-black text-red-400 transition-all hover:border-red-500/25 hover:bg-red-500/8"
               >
                 Reddet
               </button>
