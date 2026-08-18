@@ -22,6 +22,7 @@ import { getMarkerLocation, buildLocationObject, getRouteDistance } from "../uti
 import { getProvinceByName } from "../data/turkeyProvinces";
 import { formatCurrencyTR, formatRelativeTimeTR } from "../utils/turkish";
 import WeatherIndicator from "../components/WeatherIndicator";
+import DashboardOperationsHub from "../components/DashboardOperationsHub";
 
 /* =========================================================
    NAVIGATION
@@ -1809,25 +1810,23 @@ export default function TorkApp() {
 
            {activeTab === "overview" && (
              <div className="tork-fade-up space-y-8">
-               {/* HERO + GLOBE */}
-               <div className="relative overflow-hidden rounded-3xl border border-white/8 bg-[#0B111A] px-6 py-8 sm:px-10 lg:min-h-[340px]">
-                 <div className="relative z-10 max-w-2xl">
-                   <h2 className="text-3xl font-black tracking-[-0.04em] text-[#F5F7FA]">
-                     {new Date().getHours() < 12 ? "Günaydın" : "İyi günler"}, {(userDashboard.company_name || "Operatör").split(" ")[0]}
-                   </h2>
-                   <p className="mt-2 text-sm text-[#9AA7B5]">
-                     Canlı operasyon özeti ve hızlı işlemler
-                   </p>
-                 </div>
+               {/* REAL OPERATIONS HUB + MINI MAP + QUICK ACTIONS */}
+               <DashboardOperationsHub
+                 userDashboard={userDashboard}
+                 onNavigate={(tabId) => {
+                   setActiveTab(tabId);
+                   setMessage("");
+                 }}
+                 onResetCreateForm={resetCreateForm}
+                 counts={{
+                   bidsCount: incomingBids.filter((b) => b.status === "pending").length,
+                   activeTransportsCount: activeTransports.length,
+                   loadsCount: loads.length,
+                   myLoadsCount: myLoads.length,
+                 }}
+               />
 
-                <div className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[55%] lg:block">
-                  <div className="h-full w-full">
-                    <GlobeAnimation />
-                  </div>
-                </div>
-               </div>
-
-                {/* OPERASYON ÖZETİ */}
+               {/* OPERASYON İSTATİSTİK ÖZETİ */}
                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                  {userDashboard.role === "shipper" ? (
                    <>
@@ -1886,7 +1885,7 @@ export default function TorkApp() {
                  )}
                </div>
 
-               {/* MAIN OPERATIONS GRID */}
+               {/* MAIN OPERATIONS DETAILS GRID */}
                <div className="grid gap-6 lg:grid-cols-5">
                  {/* LEFT: RECENT LOADS / BIDS */}
                  <div className="lg:col-span-3 space-y-6">
@@ -1993,7 +1992,7 @@ export default function TorkApp() {
                    )}
                  </div>
 
-                 {/* RIGHT: ANALYTICS + QUICK ACTIONS + SYSTEM STATUS */}
+                 {/* RIGHT: ANALYTICS + SYSTEM STATUS */}
                  <div className="lg:col-span-2 space-y-6">
                    <div className="rounded-2xl border border-white/8 bg-[#0F1723] p-6">
                      <h3 className="mb-2 text-sm font-black text-[#F5F7FA]">
@@ -2002,48 +2001,8 @@ export default function TorkApp() {
                      <p className="text-xs text-[#9AA7B5]">
                        {userDashboard.role === "shipper" ? "Son 30 günün maliyet analizi" : "Kabul edilen teklifler ve kazanma oranı"}
                      </p>
-                     <div className="mt-6 flex h-[260px] items-center justify-center rounded-xl border border-dashed border-white/8 text-xs text-[#667085]">
+                     <div className="mt-6 flex h-[200px] items-center justify-center rounded-xl border border-dashed border-white/8 text-xs text-[#667085]">
                        Yeterli veri bulunmuyor
-                     </div>
-                   </div>
-
-                   <div className="rounded-2xl border border-white/8 bg-[#0F1723] p-6">
-                     <h3 className="mb-4 text-sm font-black text-[#F5F7FA]">Hızlı İşlemler</h3>
-                     <div className="space-y-3">
-                       {userDashboard.role === "shipper" ? (
-                         <>
-                           <button
-                              onClick={() => {
-                                resetCreateForm();
-                                setActiveTab("create");
-                              }}
-                             className="w-full rounded-xl border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-4 py-3 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] transition-all hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
-                           >
-                             + Yük Oluştur
-                           </button>
-                           <button
-                             onClick={() => setActiveTab("bids")}
-                             className="w-full rounded-xl border border-[#06B6D4]/25 bg-[#06B6D4]/8 px-4 py-3 text-xs font-bold text-[#06B6D4] transition-all hover:border-[#06B6D4]/40 hover:bg-[#06B6D4]/12"
-                           >
-                             Tüm Teklifleri Gör
-                           </button>
-                         </>
-                       ) : (
-                         <>
-                           <button
-                             onClick={() => setActiveTab("board")}
-                             className="w-full rounded-xl border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-4 py-3 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] transition-all hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
-                           >
-                             Yükleri Gör
-                           </button>
-                           <button
-                             onClick={() => setActiveTab("wallet")}
-                             className="w-full rounded-xl border border-[#FBBF24]/25 bg-[#FBBF24]/8 px-4 py-3 text-xs font-bold text-[#FBBF24] transition-all hover:border-[#FBBF24]/40 hover:bg-[#FBBF24]/12"
-                           >
-                             Cüzdanı Yönet
-                           </button>
-                         </>
-                       )}
                      </div>
                    </div>
 
@@ -2066,11 +2025,11 @@ export default function TorkApp() {
                        </div>
                      </div>
                    </div>
-                   </div>
+                 </div>
 
-                   </div>
                </div>
-             )}
+             </div>
+           )}
 
           {/* =================================================
               LOADS
@@ -2255,146 +2214,127 @@ export default function TorkApp() {
                       }
                     />
 
-                    {/* HARİTA + ROTA ÖZETİ */}
-                    <div className="tork-panel rounded-3xl overflow-hidden">
-                      <div className="relative">
-                         <RouteVisualization
-                           origin={buildLocationObject({
-                             provinceCode: originProvince?.code,
-                             provinceName: originProvince?.name,
-                             districtName: originDistrict,
-                           })}
-                           destination={buildLocationObject({
-                             provinceCode: destinationProvince?.code,
-                             provinceName: destinationProvince?.name,
-                             districtName: destinationDistrict,
-                           })}
-                           originLabel={
-                             originProvince?.name +
-                               (originDistrict
-                                 ? " / " + originDistrict
-                                 : "")
-                           }
-                           destinationLabel={
-                             destinationProvince?.name +
-                               (destinationDistrict
-                                 ? " / " + destinationDistrict
-                                 : "")
-                           }
-                           loadId={editingLoad?.id}
-                         />
-                        <div className="absolute top-3 right-3 z-[1000] flex gap-2">
-                          <button
-                            type="button"
-                            className="rounded-lg border border-white/10 bg-[#0B111A]/90 px-3 py-1.5 text-[10px] font-bold text-[#F5F7FA] backdrop-blur-sm"
-                          >
-                            Yol
-                          </button>
-                          <button
-                            type="button"
-                            disabled
-                            className="rounded-lg border border-white/6 bg-[#0B111A]/60 px-3 py-1.5 text-[10px] font-bold text-[#667085] backdrop-blur-sm opacity-60"
-                            title="Uydu görüntüsü yakında"
-                          >
-                            Uydu
-                          </button>
-                        </div>
+                    <div className="tork-panel rounded-3xl p-6 sm:p-8">
+
+                      {/* STEP INDICATOR */}
+                      <div className="mb-8">
+                        <StepIndicator
+                          steps={[
+                            { id: "route", label: "Rota" },
+                            { id: "cargo", label: "Yük" },
+                            { id: "vehicle", label: "Araç" },
+                            { id: "price", label: "Fiyat" },
+                            { id: "review", label: "İnceleme" },
+                          ]}
+                          currentStep={createLoadStep}
+                        />
                       </div>
-                    </div>
 
-                   <div className="tork-panel rounded-3xl p-6 sm:p-8">
+                      <form
+                        onSubmit={(e) => {
+                          if (createLoadStep === 4) {
+                            handleCreateLoad(e);
+                          } else {
+                            e.preventDefault();
+                            setCreateLoadStep(
+                              createLoadStep + 1
+                            );
+                          }
+                        }}
+                        className="space-y-8"
+                      >
 
-                     {/* STEP INDICATOR */}
-                     <div className="mb-8">
-                       <StepIndicator
-                         steps={[
-                           { id: "route", label: "Rota" },
-                           { id: "cargo", label: "Yük" },
-                           { id: "vehicle", label: "Araç" },
-                           { id: "price", label: "Fiyat" },
-                           { id: "review", label: "İnceleme" },
-                         ]}
-                         currentStep={createLoadStep}
-                       />
-                     </div>
-
-                     <form
-                       onSubmit={(e) => {
-                         if (createLoadStep === 4) {
-                           handleCreateLoad(e);
-                         } else {
-                           e.preventDefault();
-                           setCreateLoadStep(
-                             createLoadStep + 1
-                           );
-                         }
-                       }}
-                       className="space-y-8"
-                     >
-
-                       {/* STEP 1: ROUTE */}
-                       {createLoadStep === 0 && (
-                         <div className="space-y-6">
-                           <div>
-                             <h3 className="mb-1 text-lg font-black text-[#F5F7FA]">
-                               Rota bilgilerini girin
-                             </h3>
-                             <p className="text-sm text-[#9AA7B5]">
-                               Yükün yükleneceği ve
-                               teslim edileceği
-                               noktaları belirleyin.
-                             </p>
-                           </div>
-
-                            <div className="space-y-6">
-                              <ProvinceSelect
-                                label="Yükleme ili"
-                                value={originProvince}
-                                onChange={(val) => {
-                                  setOriginProvince(val);
-                                  setOriginDistrict(null);
-                                }}
-                                placeholder="İl seçiniz..."
-                              />
-
-                              <DistrictSelect
-                                label="Yükleme ilçesi"
-                                value={originDistrict}
-                                onChange={setOriginDistrict}
-                                provinceCode={
-                                  originProvince?.code
-                                }
-                                placeholder="İlçe seçiniz..."
-                              />
-
-                              <ProvinceSelect
-                                label="Teslimat ili"
-                                value={destinationProvince}
-                                onChange={(val) => {
-                                  setDestinationProvince(
-                                    val,
-                                  );
-                                  setDestinationDistrict(
-                                    null,
-                                  );
-                                }}
-                                placeholder="İl seçiniz..."
-                              />
-
-                              <DistrictSelect
-                                label="Teslimat ilçesi"
-                                value={destinationDistrict}
-                                onChange={
-                                  setDestinationDistrict
-                                }
-                                provinceCode={
-                                  destinationProvince?.code
-                                }
-                                placeholder="İlçe seçiniz..."
-                              />
+                        {/* STEP 1: ROUTE */}
+                        {createLoadStep === 0 && (
+                          <div className="space-y-6">
+                            <div>
+                              <h3 className="mb-1 text-lg font-black text-[#F5F7FA]">
+                                Rota bilgilerini belirleyin
+                              </h3>
+                              <p className="text-sm text-[#9AA7B5]">
+                                Yükleme ve teslimat noktalarını seçtiğinizde canlı rota ve mesafe otomatik hesaplanır.
+                              </p>
                             </div>
-                         </div>
-                       )}
+
+                            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
+                              {/* LEFT (5 COLS): Location Selectors */}
+                              <div className="space-y-5 lg:col-span-5">
+                                <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5 space-y-4">
+                                  <div className="flex items-center gap-2 text-xs font-bold text-[#00E5A0]">
+                                    <span className="h-2 w-2 rounded-full bg-[#00E5A0]" />
+                                    YÜKLEME NOKTASI (ORIGIN)
+                                  </div>
+                                  <ProvinceSelect
+                                    label="Yükleme ili"
+                                    value={originProvince}
+                                    onChange={(val) => {
+                                      setOriginProvince(val);
+                                      setOriginDistrict(null);
+                                    }}
+                                    placeholder="İl seçiniz..."
+                                  />
+
+                                  <DistrictSelect
+                                    label="Yükleme ilçesi"
+                                    value={originDistrict}
+                                    onChange={setOriginDistrict}
+                                    provinceCode={originProvince?.code}
+                                    placeholder="İlçe seçiniz..."
+                                  />
+                                </div>
+
+                                <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5 space-y-4">
+                                  <div className="flex items-center gap-2 text-xs font-bold text-[#FFCC00]">
+                                    <span className="h-2 w-2 rounded-full bg-[#FFCC00]" />
+                                    TESLİMAT NOKTASI (DESTINATION)
+                                  </div>
+                                  <ProvinceSelect
+                                    label="Teslimat ili"
+                                    value={destinationProvince}
+                                    onChange={(val) => {
+                                      setDestinationProvince(val);
+                                      setDestinationDistrict(null);
+                                    }}
+                                    placeholder="İl seçiniz..."
+                                  />
+
+                                  <DistrictSelect
+                                    label="Teslimat ilçesi"
+                                    value={destinationDistrict}
+                                    onChange={setDestinationDistrict}
+                                    provinceCode={destinationProvince?.code}
+                                    placeholder="İlçe seçiniz..."
+                                  />
+                                </div>
+                              </div>
+
+                              {/* RIGHT (7 COLS): Live Apple-Style Route Map & Summary */}
+                              <div className="lg:col-span-7">
+                                <RouteVisualization
+                                  origin={buildLocationObject({
+                                    provinceCode: originProvince?.code,
+                                    provinceName: originProvince?.name,
+                                    districtName: originDistrict,
+                                  })}
+                                  destination={buildLocationObject({
+                                    provinceCode: destinationProvince?.code,
+                                    provinceName: destinationProvince?.name,
+                                    districtName: destinationDistrict,
+                                  })}
+                                  originLabel={
+                                    originProvince?.name +
+                                    (originDistrict ? " / " + originDistrict : "")
+                                  }
+                                  destinationLabel={
+                                    destinationProvince?.name +
+                                    (destinationDistrict ? " / " + destinationDistrict : "")
+                                  }
+                                  loadId={editingLoad?.id}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
                     {/* STEP 2: CARGO */}
                     {createLoadStep === 1 && (

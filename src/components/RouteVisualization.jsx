@@ -3,22 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import RouteSummary from "./RouteSummary";
-import { createRouteData, createVisualPolyline, setRouteDistance } from "../utils/location";
+import { setRouteDistance } from "../utils/location";
 
-// Leaflet only client-side
+// Leaflet dynamic load (SSR safe)
 const MapComponent = dynamic(() => import("./TorkMap"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[320px] items-center justify-center rounded-2xl border border-white/8 bg-[#0B111A] text-sm text-[#9AA7B5]">
-      Harita yükleniyor...
+    <div className="flex h-[360px] sm:h-[420px] lg:h-[460px] w-full items-center justify-center rounded-3xl border border-white/8 bg-[#090D14] text-sm text-[#9AA7B5]">
+      <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-4 py-2 text-xs font-bold text-slate-300">
+        <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-pulse" />
+        Harita yükleniyor...
+      </div>
     </div>
   ),
 });
 
 /**
  * Session içi rota cache'i.
- * Aynı origin/destination için gereksiz API çağrısını engeller.
- * key: `latlng-latlng`
+ * key: `profile:lat,lng-lat,lng`
  */
 const routeCache = new Map();
 
@@ -33,7 +35,6 @@ export default function RouteVisualization({
   destination,
   originLabel,
   destinationLabel,
-  routePoints = [],
   showSummary = true,
   profile = "driving-car",
   loadId,
@@ -55,31 +56,27 @@ export default function RouteVisualization({
       ? `${profile}:${origin.lat.toFixed(4)},${origin.lng.toFixed(4)}-${destination.lat.toFixed(4)},${destination.lng.toFixed(4)}`
       : null;
 
-  // Rota hesaplama: yalnızca koordinatlar değişince tetiklenir
+  // Rota hesaplama: koordinatlar mevcut olduğunda çalışır
   useEffect(() => {
     if (!originCoord || !destinationCoord) {
-      setRouteState({
-        status: "idle",
-        distanceText: null,
-        durationText: null,
-        points: [],
-      });
       return;
     }
 
-    // Cache'te varsa yeniden fetch yapma
+    // Cache'te varsa hemen kullan
     if (cacheKey && routeCache.has(cacheKey)) {
       const cached = routeCache.get(cacheKey);
-      setRouteState({
-        status: "success",
-        distanceText: cached.distanceText,
-        durationText: cached.durationText,
-        points: cached.geometry,
+      Promise.resolve().then(() => {
+        setRouteState({
+          status: "success",
+          distanceText: cached.distanceText,
+          durationText: cached.durationText,
+          points: cached.geometry,
+        });
       });
       return;
     }
 
-    // Eski request'i iptal et (hızlı route değişiminde eski response yeni route'u ezmesin)
+    // Eski request'i iptal et
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -87,9 +84,9 @@ export default function RouteVisualization({
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
-    setRouteState({ status: "loading", distanceText: null, durationText: null, points: [] });
-
     async function fetchRoute() {
+      setRouteState({ status: "loading", distanceText: null, durationText: null, points: [] });
+
       try {
         const response = await fetch("/api/routes", {
           method: "POST",
@@ -108,7 +105,7 @@ export default function RouteVisualization({
           throw new Error(data.error || "Rota hesaplanamadı.");
         }
 
-        // Cache'e yaz (session/client memory)
+        // Cache'e kaydet
         if (cacheKey) {
           routeCache.set(cacheKey, {
             distanceText: data.distanceText,
@@ -129,7 +126,6 @@ export default function RouteVisualization({
         }
       } catch (err) {
         if (err.name === "AbortError") {
-          // Eski istek iptal edildi — yeni istek zaten yolda, sessizce geç
           return;
         }
         console.error("[routes] Rota hesaplama hatası:", err.message);
@@ -147,24 +143,19 @@ export default function RouteVisualization({
     return () => {
       controller.abort();
     };
-  }, [originCoord, destinationCoord, origin?.lat, origin?.lng, destination?.lat, destination?.lng, cacheKey, profile]);
+  }, [originCoord, destinationCoord, origin?.lat, origin?.lng, destination?.lat, destination?.lng, cacheKey, profile, loadId]);
 
-  const routeData = createRouteData({
-    origin,
-    destination,
-    points: routeState.points,
-  });
+  const activeStatus = !originCoord || !destinationCoord ? "idle" : routeState.status;
 
   // Haritada gösterilecek noktalar: gerçek rota varsa o, yoksa boş
   const visualPoints =
-    routeState.status === "success" && routeState.points?.length > 0
+    activeStatus === "success" && routeState.points?.length > 0
       ? routeState.points
       : [];
 
-  // Loading veya error bilgisini haritanın üstüne yerleştir
   return (
     <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-2xl border border-white/8 bg-[#0B111A]">
+      <div className="relative overflow-hidden rounded-3xl">
         <MapComponent
           origin={origin}
           destination={destination}
@@ -173,25 +164,28 @@ export default function RouteVisualization({
           routePoints={visualPoints}
         />
 
-        {routeState.status === "loading" && (
-          <div className="absolute inset-x-0 top-3 z-[1000] flex justify-center">
-            <span className="rounded-full border border-[#00E5A0]/20 bg-[#0B111A]/90 px-4 py-2 text-xs font-bold text-[#00E5A0] shadow-lg">
+        {/* Loading Floating Indicator */}
+        {activeStatus === "loading" && (
+          <div className="absolute inset-x-0 top-3 z-[1000] flex justify-center pointer-events-none">
+            <div className="flex items-center gap-2 rounded-full border border-[#00E5A0]/25 bg-black/80 px-4 py-2 text-xs font-black text-[#00E5A0] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-ping" />
               Rota hesaplanıyor...
-            </span>
+            </div>
           </div>
         )}
 
-        {routeState.status === "error" && (
+        {/* Error Floating Banner with Retry Action */}
+        {activeStatus === "error" && (
           <div className="absolute inset-x-0 top-3 z-[1000] flex justify-center">
-            <div className="flex items-center gap-2 rounded-full border border-red-500/20 bg-[#0B111A]/90 px-4 py-2 text-xs font-bold text-red-400 shadow-lg">
-              Rota hesaplanamadı.
+            <div className="flex items-center gap-2.5 rounded-full border border-red-500/25 bg-black/85 px-4 py-2 text-xs font-bold text-red-400 shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md">
+              <span>Rota hesaplanamadı.</span>
               <button
                 type="button"
                 onClick={() => {
                   if (cacheKey) routeCache.delete(cacheKey);
                   setRouteState({ status: "idle", distanceText: null, durationText: null, points: [] });
                 }}
-                className="underline hover:text-red-300"
+                className="underline hover:text-red-300 font-bold"
               >
                 Tekrar dene
               </button>
@@ -205,20 +199,20 @@ export default function RouteVisualization({
           originLabel={originLabel || "Başlangıç"}
           destinationLabel={destinationLabel || "Varış"}
           distanceText={
-            routeState.status === "loading"
+            activeStatus === "loading"
               ? "Rota hesaplanıyor..."
-              : routeState.status === "success"
+              : activeStatus === "success"
                 ? routeState.distanceText
-                : routeState.status === "error"
+                : activeStatus === "error"
                   ? "Rota hesaplanamadı."
                   : "Henüz hesaplanmadı"
           }
           durationText={
-            routeState.status === "loading"
+            activeStatus === "loading"
               ? "Rota hesaplanıyor..."
-              : routeState.status === "success"
+              : activeStatus === "success"
                 ? routeState.durationText
-                : routeState.status === "error"
+                : activeStatus === "error"
                   ? "Rota hesaplanamadı."
                   : "Henüz hesaplanmadı"
           }

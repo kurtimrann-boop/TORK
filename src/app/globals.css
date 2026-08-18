@@ -754,7 +754,8 @@ select.tork-input option {
    TORK MAP MARKERS
    ========================================================= */
 
-.tork-map-marker {
+.tork-map-marker,
+.tork-map-marker-wrap {
   background: transparent !important;
   border: none !important;
 }
