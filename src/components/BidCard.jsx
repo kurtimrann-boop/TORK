@@ -1,14 +1,21 @@
 import StatusBadge from "./StatusBadge";
 import { formatRelativeTimeTR, formatCurrencyTR } from "../utils/turkish";
 
+function formatPricePerKm(value) {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  return `${value.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} TL/km`;
+}
+
 export default function BidCard({
   bid,
   isCarrierView = false,
   onAccept,
   onReject,
   isBestBid = false,
+  isBestPricePerKm = false,
   isSelected = false,
   onSelect,
+  pricePerKm,
 }) {
   const isPending = bid.status === "pending";
 
@@ -39,6 +46,11 @@ export default function BidCard({
                 EN DÜŞÜK
               </span>
             )}
+            {isBestPricePerKm && !isCarrierView && pricePerKm !== null && (
+              <span className="rounded-full border border-[#06B6D4]/20 bg-[#06B6D4]/10 px-2 py-0.5 text-[10px] font-black text-[#06B6D4]">
+                EN DÜŞÜK FİYAT/KM
+              </span>
+            )}
           </div>
 
           <div className="mb-4 flex items-baseline justify-between lg:mb-0">
@@ -49,6 +61,12 @@ export default function BidCard({
               {formatRelativeTimeTR(bid.created_at)}
             </div>
           </div>
+
+          {pricePerKm !== null && (
+            <div className="mt-1 text-xs font-bold text-[#06B6D4]">
+              {formatPricePerKm(pricePerKm)}
+            </div>
+          )}
 
           <div className="mt-3 flex items-center gap-2">
             <span className="text-sm font-bold text-[#F5F7FA]">

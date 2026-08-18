@@ -124,20 +124,39 @@ export async function POST(request) {
     const destination = body?.destination;
     const profile = body?.profile || "driving-car";
 
-    if (
-      !origin?.lat ||
-      !origin?.lng ||
-      !destination?.lat ||
-      !destination?.lng
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Başlangıç ve varış koordinatları zorunludur.",
-        },
-        { status: 400 }
-      );
-    }
+    const validateCoord = (value, name) => {
+      if (typeof value !== "number" || !Number.isFinite(value)) {
+        return NextResponse.json(
+          { success: false, error: `${name} koordinatı geçerli bir sayı olmalı.` },
+          { status: 400 }
+        );
+      }
+      if (name === "latitude" && (value < -90 || value > 90)) {
+        return NextResponse.json(
+          { success: false, error: `${name} -90 ile 90 arasında olmalı.` },
+          { status: 400 }
+        );
+      }
+      if (name === "longitude" && (value < -180 || value > 180)) {
+        return NextResponse.json(
+          { success: false, error: `${name} -180 ile 180 arasında olmalı.` },
+          { status: 400 }
+        );
+      }
+      return null;
+    };
+
+    const originLatErr = validateCoord(origin?.lat, "Başlangıç enlem");
+    if (originLatErr) return originLatErr;
+
+    const originLngErr = validateCoord(origin?.lng, "Başlangıç boylam");
+    if (originLngErr) return originLngErr;
+
+    const destLatErr = validateCoord(destination?.lat, "Varış enlem");
+    if (destLatErr) return destLatErr;
+
+    const destLngErr = validateCoord(destination?.lng, "Varış boylam");
+    if (destLngErr) return destLngErr;
 
     if (!SUPPORTED_PROFILES.includes(profile)) {
       return NextResponse.json(
@@ -218,6 +237,32 @@ export async function POST(request) {
     const distanceMeters = Math.round(summary?.distance || segments.reduce((sum, segment) => sum + (segment.distance || 0), 0));
     const durationSeconds = Math.round(summary?.duration || segments.reduce((sum, segment) => sum + (segment.duration || 0), 0));
 
+    if (distanceMeters <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Rota bulunamadı.",
+        },
+        { status: 404 }
+      );
+    }
+
+    const geometry = decodeGeometry(geometryCoordinates);
+
+    const validGeometry = geometry.filter(
+      (p) => typeof p.lat === "number" && Number.isFinite(p.lat) && typeof p.lng === "number" && Number.isFinite(p.lng)
+    );
+
+    if (validGeometry.length < 2) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Rota geometrisi geçersiz.",
+        },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       provider: "openrouteservice",
@@ -228,7 +273,7 @@ export async function POST(request) {
       durationMinutes: Math.round(durationSeconds / 60),
       distanceText: formatDistanceTR(distanceMeters),
       durationText: formatDurationTR(durationSeconds / 60),
-      geometry: decodeGeometry(geometryCoordinates),
+      geometry: validGeometry,
     });
   } catch (err) {
     console.error("[routes] İstek işlenirken hata:", err.message);

@@ -144,7 +144,7 @@ export default function TorkMap({
       bounds.push([destination.lat, destination.lng]);
     }
 
-    // Rota çizgisi: gerçek yol noktaları varsa onları, yoksa görsel bağlantı çiz
+    // Rota çizgisi: gerçek yol noktaları varsa onları çiz
     if (routePoints && routePoints.length >= 2) {
       const validPoints = routePoints.filter(
         (p) => p?.lat != null && p?.lng != null
@@ -163,22 +163,6 @@ export default function TorkMap({
 
         polylineRef.current = polyline;
       }
-    } else if (hasOrigin && hasDestination) {
-      // Görsel bağlantı: gerçek yol rotası değil, yalnızca iki marker arası çizgi
-      const visualLine = L.polyline(
-        [
-          [origin.lat, origin.lng],
-          [destination.lat, destination.lng],
-        ],
-        {
-          color: "#06B6D4",
-          weight: 2,
-          opacity: 0.4,
-          dashArray: "4 8",
-        }
-      ).addTo(map);
-
-      polylineRef.current = visualLine;
     }
 
     // fitBounds

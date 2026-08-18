@@ -142,10 +142,10 @@ export default function WeatherIndicator() {
   if (loading) {
     return (
       <div
-        className="flex items-center gap-2 text-[11px] text-slate-500"
+        className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-black/20 px-3.5 py-1 text-[10px] text-slate-500 backdrop-blur-md"
         aria-hidden="true"
       >
-        <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-slate-600" />
+        <span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-[#ffcc00]" />
         <span>Konum alınıyor...</span>
       </div>
     );
@@ -154,7 +154,7 @@ export default function WeatherIndicator() {
   if (error || !weather) {
     return (
       <div
-        className="flex items-center gap-2 text-[11px] text-slate-500"
+        className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-black/20 px-3.5 py-1 text-[10px] text-slate-500 backdrop-blur-md"
         aria-label="Konum alınamadı"
       >
         <span aria-hidden="true">📍</span>
@@ -165,20 +165,23 @@ export default function WeatherIndicator() {
 
   return (
     <div
-      className="flex items-center gap-3 rounded-full border border-white/6 bg-black/15 px-4 py-2"
+      className="inline-flex items-center gap-2.5 rounded-full border border-white/8 bg-black/35 px-4 py-1.5 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition hover:border-white/15"
       aria-label={`${weather.locationName}, ${weather.temp} derece, ${weather.label}`}
     >
       <span className="text-sm" aria-hidden="true">
         {weather.emoji}
       </span>
-      <div className="text-left">
-        <div className="text-xs font-black text-white">
-          {weather.temp}°C
-        </div>
-        <div className="text-[10px] text-slate-500">
-          {weather.label}
-        </div>
-      </div>
+      <span className="text-[11px] font-bold text-slate-200">
+        {weather.locationName}
+      </span>
+      <span className="h-2.5 w-px bg-white/12" />
+      <span className="text-[11px] font-black text-[#ffcc00]">
+        {weather.temp}°C
+      </span>
+      <span className="h-2.5 w-px bg-white/12" />
+      <span className="text-[10px] font-medium text-slate-400">
+        {weather.label}
+      </span>
     </div>
   );
 }

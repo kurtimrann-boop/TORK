@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import RouteSummary from "./RouteSummary";
-import { createRouteData, createVisualPolyline } from "../utils/location";
+import { createRouteData, createVisualPolyline, setRouteDistance } from "../utils/location";
 
 // Leaflet only client-side
 const MapComponent = dynamic(() => import("./TorkMap"), {
@@ -36,6 +36,7 @@ export default function RouteVisualization({
   routePoints = [],
   showSummary = true,
   profile = "driving-car",
+  loadId,
 }) {
   const [routeState, setRouteState] = useState({
     status: "idle", // idle | loading | success | error
@@ -51,7 +52,7 @@ export default function RouteVisualization({
 
   const cacheKey =
     originCoord && destinationCoord
-      ? `${origin.lat.toFixed(4)},${origin.lng.toFixed(4)}-${destination.lat.toFixed(4)},${destination.lng.toFixed(4)}`
+      ? `${profile}:${origin.lat.toFixed(4)},${origin.lng.toFixed(4)}-${destination.lat.toFixed(4)},${destination.lng.toFixed(4)}`
       : null;
 
   // Rota hesaplama: yalnızca koordinatlar değişince tetiklenir
@@ -122,6 +123,10 @@ export default function RouteVisualization({
           durationText: data.durationText,
           points: data.geometry || [],
         });
+
+        if (loadId && data.distanceKm != null) {
+          setRouteDistance(loadId, data.distanceKm, data.durationMinutes || null);
+        }
       } catch (err) {
         if (err.name === "AbortError") {
           // Eski istek iptal edildi — yeni istek zaten yolda, sessizce geç
@@ -150,15 +155,11 @@ export default function RouteVisualization({
     points: routeState.points,
   });
 
-  // Haritada gösterilecek noktalar: gerçek rota varsa o, yoksa görsel fallback
+  // Haritada gösterilecek noktalar: gerçek rota varsa o, yoksa boş
   const visualPoints =
-    routeState.points?.length > 0
+    routeState.status === "success" && routeState.points?.length > 0
       ? routeState.points
-      : routePoints?.length > 0
-        ? routePoints
-        : originCoord && destinationCoord
-          ? createVisualPolyline(origin, destination)
-          : [];
+      : [];
 
   // Loading veya error bilgisini haritanın üstüne yerleştir
   return (

@@ -18,8 +18,9 @@ import ProvinceSelect from "../components/ProvinceSelect";
 import DistrictSelect from "../components/DistrictSelect";
 import GlobeAnimation from "../components/GlobeAnimation";
 import ShipmentTimeline from "../components/ShipmentTimeline";
-import { getMarkerLocation, buildLocationObject } from "../utils/location";
+import { getMarkerLocation, buildLocationObject, getRouteDistance } from "../utils/location";
 import { getProvinceByName } from "../data/turkeyProvinces";
+import { formatCurrencyTR, formatRelativeTimeTR } from "../utils/turkish";
 import WeatherIndicator from "../components/WeatherIndicator";
 
 /* =========================================================
@@ -1523,317 +1524,247 @@ export default function TorkApp() {
 
   if (!userDashboard) {
     return (
-      <main className="tork-shell flex min-h-screen items-center justify-center overflow-hidden px-5 py-8 sm:px-8">
+      <main className="tork-shell relative flex min-h-screen items-center justify-center overflow-x-hidden px-4 py-8 sm:px-6 lg:px-12">
+        {/* Background Grid & Noise */}
         <div className="tork-grid" />
         <div className="tork-noise" />
 
-        <div className="pointer-events-none absolute -left-24 top-1/4 h-80 w-80 rounded-full bg-[#ffcc00]/5 blur-3xl" />
+        {/* Ambient Glows */}
+        <div className="pointer-events-none absolute -left-28 top-1/4 h-96 w-96 rounded-full bg-[#ffcc00]/[0.035] blur-[120px]" />
+        <div className="pointer-events-none absolute -right-28 bottom-1/4 h-96 w-96 rounded-full bg-[#f59e0b]/[0.035] blur-[120px]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#00E5A0]/[0.015] blur-[140px]" />
 
-        <div className="pointer-events-none absolute -right-24 bottom-1/4 h-80 w-80 rounded-full bg-[#f59e0b]/6 blur-3xl" />
+        {/* Central Symmetric Container */}
+        <div className="relative z-10 mx-auto w-full max-w-6xl">
+          {/* Main Grid: perfectly balanced 2 columns on lg screens */}
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14">
+            
+            {/* =========================================================
+                LEFT COLUMN: Globe + Brand + Hero + Subhead + Weather
+               ========================================================= */}
+            <div className="flex flex-col items-center text-center">
+              {/* 1. GLOBE */}
+              <div className="relative w-full max-w-[380px] h-[220px] sm:h-[240px] flex items-center justify-center">
+                <GlobeAnimation className="h-full w-full" />
+              </div>
 
-        <div className="relative z-10 grid w-full max-w-6xl items-center gap-8 lg:grid-cols-2">
-          {/* LEFT: Globe + Brand + Weather */}
-          <div className="hidden lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-6">
-            <div className="w-full max-w-md">
-              <GlobeAnimation className="h-48 w-full" />
-            </div>
-
-            <div className="text-center">
-              <div className="mb-7 flex items-center justify-center gap-4">
+              {/* 2. TORK LOGO + WORDMARK */}
+              <div className="mt-4 flex items-center justify-center gap-3.5">
                 <TorkLogo />
-
-                <div>
-                  <div className="text-2xl font-black tracking-[-0.04em] text-white">
-                    Tork
+                <div className="text-left">
+                  <div className="flex items-baseline gap-0.5 text-2xl font-black tracking-[-0.04em] text-white">
+                    <span>Tork</span>
                     <span className="text-[#ffcc00]">.</span>
                   </div>
-
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-600">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
                     Navlun Operasyon Platformu
                   </div>
                 </div>
               </div>
 
-              <div className="tork-eyebrow mb-4">
-                B2B Akıllı Navlun Pazaryeri
+              {/* 3. HERO HEADLINE */}
+              <div className="mt-5 flex flex-col items-center">
+                <div className="tork-eyebrow mb-2.5 tracking-[0.2em] text-slate-400">
+                  B2B Akıllı Navlun Pazaryeri
+                </div>
+
+                <h1 className="text-4xl font-black leading-[1.08] tracking-[-0.045em] text-white sm:text-5xl lg:text-6xl">
+                  Yükü yayınla.
+                  <br />
+                  <span className="tork-brand">
+                    Teklifi topla.
+                    <br />
+                    Rota&apos;yı izle.
+                  </span>
+                </h1>
+
+                {/* 4. SUBHEAD */}
+                <p className="mt-4 max-w-md text-sm font-medium leading-relaxed text-slate-400 sm:text-base">
+                  Türkiye&apos;nin dijital taşımacılık ağı.
+                </p>
               </div>
 
-              <h1 className="max-w-2xl text-5xl font-black leading-[0.95] tracking-[-0.055em] text-white xl:text-7xl">
-                Yükü yayınla.
-                <br />
-                <span className="tork-brand">
-                  Teklifi topla.
-                  <br />
-                  Rota&apos;yı izle.
-                </span>
-              </h1>
-
-              <p className="mt-7 max-w-xl text-base leading-7 text-slate-500">
-                Türkiye&apos;nin dijital taşımacılık ağı.
-              </p>
-
+              {/* 5. WEATHER */}
               <div className="mt-6 flex justify-center">
                 <WeatherIndicator />
               </div>
             </div>
-          </div>
 
-          {/* RIGHT: Auth Panel */}
-          <div className="flex flex-col justify-center">
-            <div className="mb-7 lg:hidden">
-              <div className="flex items-center justify-center gap-3">
-                <TorkLogo compact />
-
-                <div>
-                  <div className="text-xl font-black text-white">
-                    Tork
-                    <span className="text-[#ffcc00]">.</span>
+            {/* =========================================================
+                RIGHT COLUMN: Auth Card
+               ========================================================= */}
+            <div className="flex w-full items-center justify-center">
+              <div className="w-full max-w-[440px]">
+                <div className="tork-panel tork-fade-up rounded-[28px] border border-white/10 bg-[#0c1017]/90 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-8">
+                  
+                  {/* Card Header */}
+                  <div className="mb-6 text-center sm:text-left">
+                    <div className="tork-eyebrow mb-1.5 text-slate-400">
+                      {authMode === "login" ? "Hoş geldiniz" : "Tork'a katılın"}
+                    </div>
+                    <h2 className="text-2xl font-black tracking-[-0.03em] text-white">
+                      {authMode === "login"
+                        ? "Operasyon merkezine giriş yap."
+                        : "Tork hesabını oluştur."}
+                    </h2>
                   </div>
 
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600">
-                    Navlun Operasyonları
+                  {/* Mode Tabs: Giriş Yap | Kayıt Ol */}
+                  <div className="grid grid-cols-2 rounded-2xl border border-white/8 bg-black/30 p-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthMode("login");
+                        setMessage("");
+                      }}
+                      className={`rounded-xl py-2.5 text-xs font-black transition ${
+                        authMode === "login"
+                          ? "border border-white/10 bg-white/[0.08] text-white shadow-sm"
+                          : "text-slate-500 hover:text-slate-300"
+                      }`}
+                    >
+                      Giriş Yap
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthMode("register");
+                        setMessage("");
+                      }}
+                      className={`rounded-xl py-2.5 text-xs font-black transition ${
+                        authMode === "register"
+                          ? "border border-white/10 bg-white/[0.08] text-white shadow-sm"
+                          : "text-slate-500 hover:text-slate-300"
+                      }`}
+                    >
+                      Kayıt Ol
+                    </button>
                   </div>
+
+                  {/* Role Selector Tabs (when in Login mode) */}
+                  {authMode === "login" ? (
+                    <div className="mt-3.5 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setLoginRole("shipper")}
+                        className={`flex items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-bold transition ${
+                          loginRole === "shipper"
+                            ? "border-[#ffcc00]/35 bg-[#ffcc00]/10 text-[#ffcc00] shadow-[0_0_12px_rgba(255,204,0,0.12)]"
+                            : "border-white/6 bg-white/[0.02] text-slate-500 hover:border-white/12 hover:text-slate-300"
+                        }`}
+                      >
+                        <IconBox className="h-4 w-4" />
+                        <span>Yük Veren</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setLoginRole("carrier")}
+                        className={`flex items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-bold transition ${
+                          loginRole === "carrier"
+                            ? "border-[#ffcc00]/35 bg-[#ffcc00]/10 text-[#ffcc00] shadow-[0_0_12px_rgba(255,204,0,0.12)]"
+                            : "border-white/6 bg-white/[0.02] text-slate-500 hover:border-white/12 hover:text-slate-300"
+                        }`}
+                      >
+                        <IconTruck className="h-4 w-4" />
+                        <span>Nakliyeci</span>
+                      </button>
+                    </div>
+                  ) : null}
+
+                  {/* Form */}
+                  <form
+                    onSubmit={authMode === "login" ? handleLogin : handleSignUp}
+                    className="mt-5 space-y-4"
+                  >
+                    {authMode === "register" ? (
+                      <>
+                        <Field
+                          label="Şirket adı"
+                          value={companyName}
+                          onChange={setCompanyName}
+                          placeholder="Şirketinizin adı"
+                        />
+
+                        <Field
+                          label="Telefon"
+                          value={phone}
+                          onChange={setPhone}
+                          placeholder="0532 000 00 00"
+                        />
+
+                        <div>
+                          <label className="tork-eyebrow mb-2 block text-slate-400">
+                            Hesap tipi
+                          </label>
+                          <select
+                            className="tork-input px-4 py-3.5 text-sm"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                          >
+                            <option value="shipper">Yük Veren</option>
+                            <option value="carrier">Nakliyeci</option>
+                          </select>
+                        </div>
+                      </>
+                    ) : null}
+
+                    <Field
+                      label="E-posta"
+                      type="email"
+                      value={email}
+                      onChange={setEmail}
+                      placeholder="ornek@tork.com"
+                    />
+
+                    <Field
+                      label="Şifre"
+                      type="password"
+                      value={password}
+                      onChange={setPassword}
+                      placeholder="••••••••"
+                    />
+
+                    {authMode === "login" ? (
+                      <div className="flex items-center justify-between pt-0.5">
+                        <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-400 hover:text-slate-300">
+                          <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="h-4 w-4 rounded border-white/20 accent-[#ffcc00]"
+                          />
+                          <span>Beni hatırla</span>
+                        </label>
+                      </div>
+                    ) : null}
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="tork-button-primary mt-3 w-full rounded-xl py-3.5 text-sm font-black shadow-[0_4px_24px_rgba(255,204,0,0.2)] transition active:scale-[0.99] disabled:opacity-50"
+                    >
+                      {loading
+                        ? "İşleniyor..."
+                        : authMode === "login"
+                          ? loginRole === "shipper"
+                            ? "Yük Veren Girişi →"
+                            : "Nakliyeci Girişi →"
+                          : "Hesap Oluştur →"}
+                    </button>
+                  </form>
+
+                  {/* Feedback Message */}
+                  {message ? (
+                    <div className="mt-4 rounded-xl border border-[#ffcc00]/20 bg-[#ffcc00]/5 px-4 py-3 text-xs font-bold text-[#ffd633] backdrop-blur-sm">
+                      {message}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
 
-            <div className="mb-6 lg:hidden">
-              <div className="w-full max-w-xs mx-auto">
-                <GlobeAnimation className="h-40 w-full" />
-              </div>
-            </div>
-
-            <div className="mb-6 flex justify-center lg:hidden">
-              <WeatherIndicator />
-            </div>
-
-            <div className="tork-panel tork-fade-up rounded-[28px] p-6 sm:p-8">
-
-            <div className="mb-6">
-              <div className="tork-eyebrow mb-2">
-                {authMode === "login"
-                  ? "Hoş geldiniz"
-                  : "Tork'a katılın"}
-              </div>
-
-              <h2 className="text-2xl font-black tracking-[-0.03em] text-white">
-                {authMode ===
-                "login"
-                  ? "Operasyon merkezine giriş yap."
-                  : "Tork hesabını oluştur."}
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 rounded-2xl border border-white/6 bg-black/15 p-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode(
-                    "login",
-                  );
-                  setMessage(
-                    "",
-                  );
-                }}
-                className={`rounded-xl px-4 py-2.5 text-xs font-black ${
-                  authMode ===
-                  "login"
-                    ? "bg-white/[0.08] text-white"
-                    : "text-slate-600"
-                }`}
-              >
-                Giriş Yap
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode(
-                    "register",
-                  );
-                  setMessage(
-                    "",
-                  );
-                }}
-                className={`rounded-xl px-4 py-2.5 text-xs font-black ${
-                  authMode ===
-                  "register"
-                    ? "bg-white/[0.08] text-white"
-                    : "text-slate-600"
-                }`}
-              >
-                Kayıt Ol
-              </button>
-            </div>
-
-            {authMode ===
-            "login" ? (
-              <div className="mt-4 grid grid-cols-2 rounded-2xl border border-white/6 bg-black/15 p-1">
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setLoginRole(
-                      "shipper",
-                    )
-                  }
-                  className={`rounded-xl px-3 py-2.5 text-[11px] font-bold ${
-                    loginRole ===
-                    "shipper"
-                      ? "bg-[#ffcc00]/10 text-[#ffcc00]"
-                      : "text-slate-600"
-                  }`}
-                >
-                  <IconBox className="h-3.5 w-3.5" />
-                  Yük Veren
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setLoginRole(
-                      "carrier",
-                    )
-                  }
-                  className={`rounded-xl px-3 py-2.5 text-[11px] font-bold ${
-                    loginRole ===
-                    "carrier"
-                      ? "bg-[#ffcc00]/10 text-[#ffcc00]"
-                      : "text-slate-600"
-                  }`}
-                >
-                  <IconTruck className="h-3.5 w-3.5" />
-                  Nakliyeci
-                </button>
-
-              </div>
-            ) : null}
-
-            <form
-              onSubmit={
-                authMode ===
-                "login"
-                  ? handleLogin
-                  : handleSignUp
-              }
-              className="mt-6 space-y-4"
-            >
-              {authMode ===
-              "register" ? (
-                <>
-                  <Field
-                    label="Şirket adı"
-                    value={
-                      companyName
-                    }
-                    onChange={
-                      setCompanyName
-                    }
-                    placeholder="Şirketinizin adı"
-                  />
-
-                  <Field
-                    label="Telefon"
-                    value={phone}
-                    onChange={
-                      setPhone
-                    }
-                    placeholder="0532 000 00 00"
-                  />
-
-                  <div>
-                    <label className="tork-eyebrow mb-2 block">
-                      Hesap tipi
-                    </label>
-
-                    <select
-                      className="tork-input px-4 py-3.5 text-sm"
-                      value={role}
-                      onChange={(e) =>
-                        setRole(
-                          e.target
-                            .value,
-                        )
-                      }
-                    >
-                      <option value="shipper">
-                        Yük Veren
-                      </option>
-
-                      <option value="carrier">
-                        Nakliyeci
-                      </option>
-                    </select>
-                  </div>
-                </>
-              ) : null}
-
-              <Field
-                label="E-posta"
-                type="email"
-                value={email}
-                onChange={setEmail}
-                placeholder="ornek@tork.com"
-              />
-
-              <Field
-                label="Şifre"
-                type="password"
-                value={
-                  password
-                }
-                onChange={
-                  setPassword
-                }
-                placeholder="••••••••"
-              />
-
-              {authMode ===
-              "login" ? (
-                <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-500">
-                  <input
-                    type="checkbox"
-                    checked={
-                      rememberMe
-                    }
-                    onChange={(e) =>
-                      setRememberMe(
-                        e.target
-                          .checked,
-                      )
-                    }
-                    className="h-4 w-4 accent-[#ffcc00]"
-                  />
-
-                  Beni hatırla
-                </label>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={
-                  loading
-                }
-                className="tork-button-primary mt-2 w-full rounded-2xl py-4 text-sm font-black"
-              >
-                {loading
-                  ? "İşleniyor..."
-                  : authMode ===
-                      "login"
-                    ? loginRole ===
-                      "shipper"
-                      ? "Yük Veren Girişi →"
-                      : "Nakliyeci Girişi →"
-                    : "Hesap Oluştur →"}
-              </button>
-            </form>
-
-            {message ? (
-              <div className="mt-5 rounded-2xl border border-[#ffcc00]/10 bg-[#ffcc00]/5 px-4 py-3 text-xs text-[#ffd633]">
-                {message}
-              </div>
-            ) : null}
-            </div>
           </div>
         </div>
       </main>
@@ -2327,30 +2258,31 @@ export default function TorkApp() {
                     {/* HARİTA + ROTA ÖZETİ */}
                     <div className="tork-panel rounded-3xl overflow-hidden">
                       <div className="relative">
-                        <RouteVisualization
-                          origin={buildLocationObject({
-                            provinceCode: originProvince?.code,
-                            provinceName: originProvince?.name,
-                            districtName: originDistrict,
-                          })}
-                          destination={buildLocationObject({
-                            provinceCode: destinationProvince?.code,
-                            provinceName: destinationProvince?.name,
-                            districtName: destinationDistrict,
-                          })}
-                          originLabel={
-                            originProvince?.name +
-                              (originDistrict
-                                ? " / " + originDistrict
-                                : "")
-                          }
-                          destinationLabel={
-                            destinationProvince?.name +
-                              (destinationDistrict
-                                ? " / " + destinationDistrict
-                                : "")
-                          }
-                        />
+                         <RouteVisualization
+                           origin={buildLocationObject({
+                             provinceCode: originProvince?.code,
+                             provinceName: originProvince?.name,
+                             districtName: originDistrict,
+                           })}
+                           destination={buildLocationObject({
+                             provinceCode: destinationProvince?.code,
+                             provinceName: destinationProvince?.name,
+                             districtName: destinationDistrict,
+                           })}
+                           originLabel={
+                             originProvince?.name +
+                               (originDistrict
+                                 ? " / " + originDistrict
+                                 : "")
+                           }
+                           destinationLabel={
+                             destinationProvince?.name +
+                               (destinationDistrict
+                                 ? " / " + destinationDistrict
+                                 : "")
+                           }
+                           loadId={editingLoad?.id}
+                         />
                         <div className="absolute top-3 right-3 z-[1000] flex gap-2">
                           <button
                             type="button"
@@ -2890,26 +2822,27 @@ export default function TorkApp() {
                    <div className="lg:col-span-2 space-y-6">
                      {originDetail &&
                        destinationDetail && (
-                        <RouteVisualization
-                          origin={
-                            originDetail
-                          }
-                          destination={
-                            destinationDetail
-                          }
-                          originLabel={
-                            originName +
-                              (originDistrict
-                                ? " / " + originDistrict
-                                : "")
-                          }
-                          destinationLabel={
-                            destinationName +
-                              (destinationDistrict
-                                ? " / " + destinationDistrict
-                                : "")
-                          }
-                        />
+                         <RouteVisualization
+                           origin={
+                             originDetail
+                           }
+                           destination={
+                             destinationDetail
+                           }
+                           originLabel={
+                             originName +
+                               (originDistrict
+                                 ? " / " + originDistrict
+                                 : "")
+                           }
+                           destinationLabel={
+                             destinationName +
+                               (destinationDistrict
+                                 ? " / " + destinationDistrict
+                                 : "")
+                           }
+                           loadId={load.id}
+                         />
                      )}
 
                      <div className="grid gap-4 sm:grid-cols-2">
@@ -3099,88 +3032,221 @@ export default function TorkApp() {
                        ))}
                      </div>
 
-                     <div className="flex gap-2">
-                       <select
-                         value={bidSort}
-                         onChange={(e) => setBidSort(e.target.value)}
-                         className="tork-input px-3 py-2 text-xs"
-                       >
-                         <option value="lowest">En düşük tutar</option>
-                         <option value="highest">En yüksek tutar</option>
-                         <option value="newest">En yeni</option>
-                         <option value="oldest">En eski</option>
-                       </select>
+                      <div className="flex gap-2">
+                        <select
+                          value={bidSort}
+                          onChange={(e) => setBidSort(e.target.value)}
+                          className="tork-input px-3 py-2 text-xs"
+                        >
+                          <option value="lowest">En düşük tutar</option>
+                          <option value="highest">En yüksek tutar</option>
+                          <option value="pricePerKm">En düşük fiyat/km</option>
+                          <option value="newest">En yeni</option>
+                          <option value="oldest">En eski</option>
+                        </select>
 
-                       {selectedBids.length >= 2 && (
-                         <button
-                           onClick={() => setShowComparison(true)}
-                           className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-3 py-2 text-xs font-black text-[#00E5A0]"
-                         >
-                           Karşılaştır ({selectedBids.length})
-                         </button>
-                       )}
-                     </div>
+                        {selectedBids.length >= 2 && (
+                          <button
+                            onClick={() => setShowComparison(true)}
+                            className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-3 py-2 text-xs font-black text-[#00E5A0]"
+                          >
+                            Karşılaştır ({selectedBids.length})
+                          </button>
+                        )}
+                      </div>
                    </div>
 
-                   {/* BID LIST */}
-                   {(() => {
-                     const filtered = incomingBids.filter((bid) => {
-                       if (bidFilter === "active") return bid.status === "pending";
-                       if (bidFilter === "all") return true;
-                       return bid.status === bidFilter;
-                     });
+                    {/* BID LIST */}
+                    {(() => {
+                      const filtered = incomingBids.filter((bid) => {
+                        if (bidFilter === "active") return bid.status === "pending";
+                        if (bidFilter === "all") return true;
+                        return bid.status === bidFilter;
+                      });
 
-                     const sorted = [...filtered].sort((a, b) => {
-                       if (bidSort === "lowest") return Number(a.amount) - Number(b.amount);
-                       if (bidSort === "highest") return Number(b.amount) - Number(a.amount);
-                       if (bidSort === "newest") return new Date(b.created_at) - new Date(a.created_at);
-                       if (bidSort === "oldest") return new Date(a.created_at) - new Date(b.created_at);
-                       return 0;
-                     });
+                      const getPricePerKm = (bid) => {
+                        const route = getRouteDistance(bid.load_id);
+                        if (!route || !route.distanceKm || route.distanceKm <= 0) return null;
+                        const amount = Number(bid.amount);
+                        if (!Number.isFinite(amount) || amount <= 0) return null;
+                        return amount / route.distanceKm;
+                      };
 
-                     if (sorted.length === 0) {
+                      const sorted = [...filtered].sort((a, b) => {
+                        if (bidSort === "lowest") return Number(a.amount) - Number(b.amount);
+                        if (bidSort === "highest") return Number(b.amount) - Number(a.amount);
+                        if (bidSort === "pricePerKm") {
+                          const priceA = getPricePerKm(a);
+                          const priceB = getPricePerKm(b);
+                          if (priceA === null && priceB === null) return 0;
+                          if (priceA === null) return 1;
+                          if (priceB === null) return -1;
+                          return priceA - priceB;
+                        }
+                        if (bidSort === "newest") return new Date(b.created_at) - new Date(a.created_at);
+                        if (bidSort === "oldest") return new Date(a.created_at) - new Date(b.created_at);
+                        return 0;
+                      });
+
+                      if (sorted.length === 0) {
+                        return (
+                          <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
+                            <div className="text-sm font-bold text-[#667085]">
+                              Filtrelere uygun teklif bulunamadı.
+                            </div>
+                          </div>
+                        );
+                      }
+
                        return (
-                         <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-10 text-center">
-                           <div className="text-sm font-bold text-[#667085]">
-                             Filtrelere uygun teklif bulunamadı.
-                           </div>
+                         <div className="space-y-3">
+                           {sorted.map((bid) => {
+                             const isSelected = selectedBids.includes(bid.id);
+                             const route = getRouteDistance(bid.load_id);
+                             const pricePerKm = route && route.distanceKm > 0
+                               ? Number(bid.amount) / route.distanceKm
+                               : null;
+                             const isBestPricePerKm = bidFilter === "active" && pricePerKm !== null && sorted.length > 1 && pricePerKm === getPricePerKm(sorted[0]);
+
+                             return (
+                               <BidCard
+                                 key={bid.id}
+                                 bid={bid}
+                                 isBestBid={bidFilter === "active" && Number(bid.amount) === Math.min(...incomingBids.filter(b => b.status === "pending").map(b => Number(b.amount) || 0))}
+                                 isBestPricePerKm={isBestPricePerKm}
+                                 pricePerKm={pricePerKm}
+                                 isSelected={isSelected}
+                                 onSelect={(bidId) => {
+                                   setSelectedBids((prev) =>
+                                     prev.includes(bidId)
+                                       ? prev.filter((id) => id !== bidId)
+                                       : [...prev, bidId]
+                                   );
+                                 }}
+                                 onAccept={() =>
+                                   handleUpdateBidStatus(bid.id, bid.load_id, "accepted")
+                                 }
+                                 onReject={() =>
+                                   handleUpdateBidStatus(bid.id, bid.load_id, "rejected")
+                                 }
+                               />
+                             );
+                           })}
                          </div>
                        );
-                     }
-
-                      return (
-                        <div className="space-y-3">
-                          {sorted.map((bid) => {
-                            const isSelected = selectedBids.includes(bid.id);
-                            return (
-                              <BidCard
-                                key={bid.id}
-                                bid={bid}
-                                isBestBid={bidFilter === "active" && Number(bid.amount) === Math.min(...incomingBids.filter(b => b.status === "pending").map(b => Number(b.amount) || 0))}
-                                isSelected={isSelected}
-                                onSelect={(bidId) => {
-                                  setSelectedBids((prev) =>
-                                    prev.includes(bidId)
-                                      ? prev.filter((id) => id !== bidId)
-                                      : [...prev, bidId]
-                                  );
-                                }}
-                                onAccept={() =>
-                                  handleUpdateBidStatus(bid.id, bid.load_id, "accepted")
-                                }
-                                onReject={() =>
-                                  handleUpdateBidStatus(bid.id, bid.load_id, "rejected")
-                                }
-                              />
-                            );
-                          })}
-                        </div>
-                      );
-                      })()}
-                    </div>
-                  )}
+                       })()}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* BID COMPARISON MODAL */}
+          {showComparison && selectedBids.length >= 2 && (() => {
+            const selected = incomingBids.filter((b) => selectedBids.includes(b.id));
+            const getPricePerKm = (bid) => {
+              const route = getRouteDistance(bid.load_id);
+              if (!route || !route.distanceKm || route.distanceKm <= 0) return null;
+              const amount = Number(bid.amount);
+              if (!Number.isFinite(amount) || amount <= 0) return null;
+              return amount / route.distanceKm;
+            };
+
+            const bestPricePerKm = selected.reduce((best, bid) => {
+              const price = getPricePerKm(bid);
+              if (price === null) return best;
+              if (best === null || price < best.price) return { price, bid };
+              return best;
+            }, null);
+
+            return (
+              <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                <div className="tork-panel w-full max-w-4xl max-h-[80vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div>
+                      <div className="tork-eyebrow mb-2">Teklif Karşılaştırma</div>
+                      <h3 className="text-xl font-black text-white">
+                        {selectedBids.length} teklif seçildi
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowComparison(false)}
+                      className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-black text-[#9AA7B5] transition hover:border-white/20 hover:bg-white/[0.05] hover:text-white"
+                    >
+                      Kapat
+                    </button>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[600px] text-left">
+                      <thead>
+                        <tr className="border-b border-white/8">
+                          <th className="pb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">Kriter</th>
+                          {selected.map((bid) => {
+                            const route = getRouteDistance(bid.load_id);
+                            const pricePerKm = route && route.distanceKm > 0 ? Number(bid.amount) / route.distanceKm : null;
+                            const isBest = bestPricePerKm && bestPricePerKm.bid.id === bid.id;
+                            return (
+                              <th key={bid.id} className="pb-3 pl-4 text-right">
+                                <div className="text-sm font-black text-white">
+                                  {bid.profiles?.company_name || "Taşıyıcı"}
+                                </div>
+                                <div className="text-[10px] font-bold text-[#00E5A0]">
+                                  {formatCurrencyTR(bid.amount)}
+                                </div>
+                                {pricePerKm !== null && (
+                                  <div className="text-[10px] font-bold text-[#06B6D4]">
+                                    {pricePerKm.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} TL/km
+                                    {isBest && " · EN DÜŞÜK"}
+                                  </div>
+                                )}
+                              </th>
+                            );
+                          })}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/6">
+                        <tr>
+                          <td className="py-3 text-xs font-bold text-[#9AA7B5]">Durum</td>
+                          {selected.map((bid) => (
+                            <td key={bid.id} className="py-3 pl-4 text-right">
+                              <StatusBadge status={bid.status} />
+                            </td>
+                          ))}
+                        </tr>
+                        <tr>
+                          <td className="py-3 text-xs font-bold text-[#9AA7B5]">Rota</td>
+                          {selected.map((bid) => (
+                            <td key={bid.id} className="py-3 pl-4 text-right text-sm font-black text-white">
+                              {bid.loads?.origin || "—"} → {bid.loads?.destination || "—"}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr>
+                          <td className="py-3 text-xs font-bold text-[#9AA7B5]">Teklif Tarihi</td>
+                          {selected.map((bid) => (
+                            <td key={bid.id} className="py-3 pl-4 text-right text-sm font-black text-white">
+                              {formatRelativeTimeTR(bid.created_at)}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="mt-6 flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowComparison(false)}
+                      className="rounded-xl border border-white/10 bg-white/[0.03] px-6 py-3 text-xs font-black text-[#9AA7B5] transition hover:border-white/20 hover:bg-white/[0.05] hover:text-white"
+                    >
+                      Kapat
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
 
             {/* =================================================
                 CARRIER BOARD

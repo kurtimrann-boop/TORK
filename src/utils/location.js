@@ -165,3 +165,23 @@ export function createRouteData({ origin, destination, points = [] }) {
     provider: null,
   };
 }
+
+/**
+ * Shared session cache for route distances.
+ * Keyed by loadId so bid cards can access route data without re-fetching.
+ */
+const routeDistanceCache = new Map();
+
+export function setRouteDistance(loadId, distanceKm, durationMinutes) {
+  if (!loadId) return;
+  routeDistanceCache.set(loadId, {
+    distanceKm,
+    durationMinutes,
+    updatedAt: Date.now(),
+  });
+}
+
+export function getRouteDistance(loadId) {
+  if (!loadId) return null;
+  return routeDistanceCache.get(loadId) || null;
+}
