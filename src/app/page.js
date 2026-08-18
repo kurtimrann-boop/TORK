@@ -25,6 +25,11 @@ import WeatherIndicator from "../components/WeatherIndicator";
 import DashboardOperationsHub from "../components/DashboardOperationsHub";
 import PricingEngineCard from "../components/PricingEngineCard";
 import CarrierSmartBiddingWidget from "../components/CarrierSmartBiddingWidget";
+import TransportStatusStepper from "../components/TransportStatusStepper";
+import TransportActualsModal from "../components/TransportActualsModal";
+import TransportVarianceCard from "../components/TransportVarianceCard";
+import TransportPodUpload from "../components/TransportPodUpload";
+import SettlementCard from "../components/SettlementCard";
 
 /* =========================================================
    NAVIGATION
@@ -445,6 +450,13 @@ export default function TorkApp() {
 
   const [loadActionLoading, setLoadActionLoading] =
     useState(false);
+
+  // Hürmüz Phase 6.1 Trip Actuals & Settlement UI State
+  const [actualsModalTransport, setActualsModalTransport] = useState(null);
+  const [transportActuals, setTransportActuals] = useState({});
+  const [transportDocuments, setTransportDocuments] = useState({});
+  const [transportStatuses, setTransportStatuses] = useState({});
+  const [transportSettlements, setTransportSettlements] = useState({});
 
   /* =======================================================
      PROFILE
@@ -3869,7 +3881,7 @@ export default function TorkApp() {
                         destinationParts[1] || null;
 
                       const originDetail =
-                        originName
+                       originName
                           ? buildLocationObject({
                               provinceCode: getProvinceByName(
                                 originName
@@ -3889,55 +3901,155 @@ export default function TorkApp() {
                             })
                           : null;
 
-                     return (
-                       <div
-                         key={transport.id}
-                         className="tork-panel rounded-3xl overflow-hidden"
-                       >
-                         <div className="p-6 sm:p-8">
-                           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                             <div>
-                               <div className="tork-eyebrow mb-1">
-                                   Taşıma
-                                 </div>
-                               <h3 className="text-xl font-black text-[#F5F7FA]">
-                                 {transport.origin} → {transport.destination}
-                               </h3>
-                               <p className="mt-1 text-xs text-[#9AA7B5]">
-                                 {transport.tonnage} ton · {transport.vehicle_type}
-                               </p>
-                             </div>
-                             <div className="flex items-center gap-2">
-                               <span className="rounded-full border border-[#00E5A0]/20 bg-[#00E5A0]/8 px-3 py-1.5 text-[10px] font-black text-[#00E5A0]">
-                                 ATANDI
-                               </span>
-                               <span className="rounded-full border border-white/8 bg-white/[0.03] px-3 py-1.5 text-[10px] font-bold text-[#9AA7B5]">
-                                 ₺{Number(transport.acceptedAmount || 0).toLocaleString("tr-TR")}
-                               </span>
-                             </div>
-                           </div>
-                         </div>
 
-                           {originDetail && destinationDetail && (
-                             <RouteVisualization
-                               origin={originDetail}
-                               destination={destinationDetail}
-                               originLabel={originName + (originDistrict ? " / " + originDistrict : "")}
-                               destinationLabel={destinationName + (destinationDistrict ? " / " + destinationDistrict : "")}
-                             />
-                           )}
+                      const currentStatus = transportStatuses[transport.id] || transport.status || "assigned";
+                      const currentActuals = transportActuals[transport.id] || {};
+                      const currentDocs = transportDocuments[transport.id] || [];
+                      const acceptedAmt = Number(transport.acceptedAmount || transport.bid_amount || 40000);
+                      const estCost = 30813;
+                      const estProfit = Math.round(acceptedAmt - estCost);
+                      const estMargin = Math.round((estProfit / acceptedAmt) * 1000) / 10;
 
-                          <div className="border-t border-white/6 p-6 sm:p-8">
-                            <div className="tork-eyebrow mb-4">Operasyon Takibi</div>
-                            <ShipmentTimeline
-                              currentStage={getLifecycleStage(transport.status)}
-                            />
+                      const { totalActualCost, dataCompleteness } = calculateActualCost(currentActuals);
+                      const actProfit = calculateActualProfit(acceptedAmt, totalActualCost);
+                      const actMargin = calculateActualMargin(acceptedAmt, actProfit);
+
+                      return (
+                        <div
+                          key={transport.id}
+                          className="tork-panel rounded-3xl overflow-hidden space-y-6 p-6 sm:p-8"
+                        >
+                          {/* Header */}
+                          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between border-b border-white/8 pb-6">
+                            <div>
+                              <div className="tork-eyebrow mb-1">
+                                Aktif Sefer #{transport.id?.toString().substring(0, 8)}
+                              </div>
+                              <h3 className="text-xl sm:text-2xl font-black text-[#F5F7FA]">
+                                {transport.origin} → {transport.destination}
+                              </h3>
+                              <p className="mt-1 text-xs text-[#9AA7B5]">
+                                {transport.tonnage} ton · {transport.vehicle_type} · ~730 km
+                              </p>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-3">
+                              <div className="text-right">
+                                <div className="text-[10px] uppercase font-bold text-slate-400">Anlaşılan Navlun</div>
+                                <div className="text-xl font-black text-emerald-400">
+                                  ₺{acceptedAmt.toLocaleString("tr-TR")}
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => setActualsModalTransport(transport)}
+                                className="rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-4 py-2.5 text-xs font-black text-emerald-400 hover:bg-emerald-500/25 transition-all shadow-[0_0_12px_rgba(16,185,129,0.2)]"
+                              >
+                                ⚡ Harcamaları Gir
+                              </button>
+                            </div>
                           </div>
+
+                          {/* Transport Lifecycle Stepper */}
+                          <div className="rounded-2xl border border-white/6 bg-white/[0.02] p-5">
+                            <div className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">
+                              Sefer Aşaması & İlerleme
+                            </div>
+                            <TransportStatusStepper
+                              currentStatus={currentStatus}
+                              isCarrier={true}
+                            />
+
+                            {/* Status Transition Action Buttons */}
+                            <div className="mt-5 pt-4 border-t border-white/6 flex flex-wrap items-center justify-between gap-2">
+                              <span className="text-xs text-slate-400">
+                                Mevcut Durum: <strong className="text-emerald-400 uppercase">{currentStatus}</strong>
+                              </span>
+
+                              <div className="flex gap-2">
+                                {currentStatus === "assigned" && (
+                                  <button
+                                    onClick={() => setTransportStatuses(prev => ({ ...prev, [transport.id]: "pickup_pending" }))}
+                                    className="rounded-lg border border-teal-500/30 bg-teal-500/20 px-3 py-1.5 text-xs font-black text-teal-300 hover:bg-teal-500/30"
+                                  >
+                                    Yükleme Başlat →
+                                  </button>
+                                )}
+                                {currentStatus === "pickup_pending" && (
+                                  <button
+                                    onClick={() => setTransportStatuses(prev => ({ ...prev, [transport.id]: "in_transit" }))}
+                                    className="rounded-lg border border-emerald-500/30 bg-emerald-500/20 px-3 py-1.5 text-xs font-black text-emerald-300 hover:bg-emerald-500/30"
+                                  >
+                                    Yola Çık (Sevkiyat Başlat) →
+                                  </button>
+                                )}
+                                {currentStatus === "in_transit" && (
+                                  <button
+                                    onClick={() => setTransportStatuses(prev => ({ ...prev, [transport.id]: "delivered" }))}
+                                    className="rounded-lg border border-emerald-500/40 bg-emerald-500/25 px-4 py-1.5 text-xs font-black text-emerald-300 hover:bg-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.3)]"
+                                  >
+                                    ✓ Teslim Edildi Olarak İşaretle
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Route Visualization */}
+                          {originDetail && destinationDetail && (
+                            <RouteVisualization
+                              origin={originDetail}
+                              destination={destinationDetail}
+                              originLabel={originName + (originDistrict ? " / " + originDistrict : "")}
+                              destinationLabel={destinationName + (destinationDistrict ? " / " + destinationDistrict : "")}
+                            />
+                          )}
+
+                          {/* Phase 6.1: Variance Analysis (Estimated vs Actual) */}
+                          <TransportVarianceCard
+                            estimatedCost={estCost}
+                            actualCost={totalActualCost}
+                            estimatedProfit={estProfit}
+                            actualProfit={actProfit}
+                            estimatedMargin={estMargin}
+                            actualMargin={actMargin}
+                            dataCompleteness={dataCompleteness}
+                            bidAmount={acceptedAmt}
+                          />
+
+                          {/* Phase 6.1: POD & Documents Upload */}
+                          <TransportPodUpload
+                            transportId={transport.id}
+                            documents={currentDocs}
+                            onUploadDocument={(newDoc) => {
+                              setTransportDocuments(prev => ({
+                                ...prev,
+                                [transport.id]: [...(prev[transport.id] || []), newDoc],
+                              }));
+                            }}
+                            isCarrier={true}
+                          />
+
+                          {/* Phase 6.1: Carrier Settlement Card */}
+                          <SettlementCard
+                            settlement={{
+                              bid_amount: acceptedAmt,
+                              settlement_amount: acceptedAmt,
+                              estimated_cost: estCost,
+                              actual_cost: totalActualCost,
+                              estimated_profit: estProfit,
+                              actual_profit: actProfit,
+                              status: currentStatus === "delivered"
+                                ? (currentDocs.length > 0 ? "ready" : "pending_pod")
+                                : (currentStatus === "settled" ? "approved" : "draft"),
+                            }}
+                            isShipper={false}
+                          />
                         </div>
-                     );
-                   })}
-                 </div>
-               )}
+                      );
+                    })}
+                  </div>
+                )}
              </div>
            )}
 
@@ -5506,6 +5618,23 @@ export default function TorkApp() {
             </>
           )}
         </nav>
+
+        {/* Phase 6.1: Transport Actual Costs Modal */}
+        {actualsModalTransport && (
+          <TransportActualsModal
+            isOpen={Boolean(actualsModalTransport)}
+            onClose={() => setActualsModalTransport(null)}
+            initialActuals={transportActuals[actualsModalTransport.id] || {}}
+            estimatedCost={30813}
+            onSave={(actualsPayload) => {
+              setTransportActuals((prev) => ({
+                ...prev,
+                [actualsModalTransport.id]: actualsPayload,
+              }));
+              setMessage("Gerçekleşen sefer maliyetleri başarıyla kaydedildi.");
+            }}
+          />
+        )}
       </main>
     );
   }
