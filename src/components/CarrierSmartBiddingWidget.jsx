@@ -6,6 +6,8 @@ import {
   calculateOperatingPricing,
   evaluateCarrierBid,
 } from "../utils/pricingService";
+import { verifyPricingCalculation } from "../utils/torkVerifiedService";
+import TorkVerifiedCard from "./TorkVerifiedCard";
 
 export default function CarrierSmartBiddingWidget({
   load,
@@ -80,6 +82,41 @@ export default function CarrierSmartBiddingWidget({
     return evaluateCarrierBid(bidAmount, pricing);
   }, [bidAmount, pricing]);
 
+  // Compute verified audit for carrier bid
+  const verifiedAudit = useMemo(() => {
+    if (!pricing) return null;
+    return verifyPricingCalculation({
+      inputParams: {
+        distanceKm,
+        durationMinutes,
+        vehicleType: selectedVehicle,
+        fuelPricePerLiter,
+        customConsumption: parsedCustomConsumption,
+        loadProfile,
+        isRoundTrip,
+        returnBufferPercent: returnBuffer,
+      },
+      calculatedPricing: pricing,
+      bidParams: {
+        bidAmount,
+        estimatedProfit: bidAnalytics?.estimatedProfit,
+        estimatedMarginPercent: bidAnalytics?.marginPercent,
+      },
+    });
+  }, [
+    pricing,
+    distanceKm,
+    durationMinutes,
+    selectedVehicle,
+    fuelPricePerLiter,
+    parsedCustomConsumption,
+    loadProfile,
+    isRoundTrip,
+    returnBuffer,
+    bidAmount,
+    bidAnalytics,
+  ]);
+
   if (!pricing) return null;
 
   const { totals, breakdown, vehicle, route, load: normalizedLoad } = pricing;
@@ -111,13 +148,18 @@ export default function CarrierSmartBiddingWidget({
       aria-label="Taşıyıcı Akıllı Maliyet ve Kârlılık Görünümü"
       className={`rounded-3xl border border-white/[0.06] bg-[#0B111A] p-5 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.4)] select-none ${className}`}
     >
-      {/* Top Header & Vehicle Selector */}
+      {/* Top Header & Vehicle Selector & Verified Badge */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.06] pb-4">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-pulse" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
-            Akıllı Fiyatlandırma & Kârlılık Terminali
-          </span>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-pulse" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
+              Akıllı Fiyatlandırma & Kârlılık Terminali
+            </span>
+          </div>
+          {verifiedAudit && (
+            <TorkVerifiedCard auditResult={verifiedAudit} compact={true} />
+          )}
         </div>
 
         {/* Vehicle Selection Segmented Pills */}

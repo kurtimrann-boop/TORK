@@ -8,6 +8,9 @@ import {
   calculateOperatingPricing,
   evaluateBudgetAlignment,
 } from "../utils/pricingService";
+import { verifyPricingCalculation } from "../utils/torkVerifiedService";
+import TorkVerifiedCard from "./TorkVerifiedCard";
+import TorkIntelligenceCard from "./TorkIntelligenceCard";
 
 export default function PricingEngineCard({
   distanceKm,
@@ -51,6 +54,36 @@ export default function PricingEngineCard({
       returnBufferPercent: returnBuffer,
     });
   }, [
+    distanceKm,
+    durationMinutes,
+    selectedVehicle,
+    fuelPricePerLiter,
+    parsedCustomConsumption,
+    loadProfile,
+    targetMargin,
+    isRoundTrip,
+    returnBuffer,
+  ]);
+
+  // Compute verified audit model
+  const verifiedAudit = useMemo(() => {
+    if (!pricing) return null;
+    return verifyPricingCalculation({
+      inputParams: {
+        distanceKm,
+        durationMinutes,
+        vehicleType: selectedVehicle,
+        fuelPricePerLiter,
+        customConsumption: parsedCustomConsumption,
+        loadProfile,
+        targetMarginPercent: targetMargin,
+        isRoundTrip,
+        returnBufferPercent: returnBuffer,
+      },
+      calculatedPricing: pricing,
+    });
+  }, [
+    pricing,
     distanceKm,
     durationMinutes,
     selectedVehicle,
@@ -555,6 +588,37 @@ export default function PricingEngineCard({
             </div>
           </div>
         )}
+      </div>
+
+      {/* TORK VERIFIED — Bağımsız Matematiksel Maliyet Denetimi */}
+      <div className="mt-5 pt-5 border-t border-white/8">
+        <TorkVerifiedCard auditResult={verifiedAudit} />
+      </div>
+
+      {/* TORK INTELLIGENCE — Gemini Operasyonel Yorumlama & Risk Analizi */}
+      <div className="mt-4">
+        <TorkIntelligenceCard
+          audience="shipper"
+          mode="audit"
+          inputParams={{
+            distanceKm,
+            durationMinutes,
+            vehicleType: selectedVehicle,
+            fuelPricePerLiter,
+            customConsumption: parsedCustomConsumption,
+            loadProfile,
+            targetMarginPercent: targetMargin,
+            isRoundTrip,
+            returnBufferPercent: returnBuffer,
+          }}
+          calculatedPricing={pricing}
+          context={{
+            route: pricing.route,
+            vehicle: pricing.vehicle,
+            load: pricing.load,
+            pricing: pricing,
+          }}
+        />
       </div>
     </section>
   );

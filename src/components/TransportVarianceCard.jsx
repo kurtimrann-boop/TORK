@@ -1,6 +1,7 @@
 "use client";
 
 import { formatCurrencyTR } from "../utils/turkish";
+import TorkVerifiedCard from "./TorkVerifiedCard";
 
 export default function TransportVarianceCard({
   estimatedCost = 30813,
@@ -11,6 +12,7 @@ export default function TransportVarianceCard({
   actualMargin = null,
   dataCompleteness = "EMPTY",
   bidAmount = 40000,
+  auditResult = null,
 }) {
   const hasActuals = actualCost !== null && Number.isFinite(actualCost);
 
@@ -40,22 +42,27 @@ export default function TransportVarianceCard({
           </h3>
         </div>
 
-        {/* Data Completeness Badge */}
-        <span
-          className={`rounded-full border px-3.5 py-1 text-[11px] font-bold tracking-wider ${
-            dataCompleteness === "COMPLETE"
-              ? "border-[#00E5A0]/40 bg-[#00E5A0]/10 text-[#00E5A0]"
+        {/* Right Badges */}
+        <div className="flex flex-wrap items-center gap-2">
+          {auditResult && (
+            <TorkVerifiedCard auditResult={auditResult} compact={true} />
+          )}
+          <span
+            className={`rounded-full border px-3.5 py-1 text-[11px] font-bold tracking-wider ${
+              dataCompleteness === "COMPLETE"
+                ? "border-[#00E5A0]/40 bg-[#00E5A0]/10 text-[#00E5A0]"
+                : dataCompleteness === "PARTIAL"
+                ? "border-[#F5B94C]/40 bg-[#F5B94C]/10 text-[#F5B94C]"
+                : "border-white/10 bg-white/[0.04] text-[#8C98A8]"
+            }`}
+          >
+            {dataCompleteness === "COMPLETE"
+              ? "✓ VERİ: TAM DOĞRULANDI"
               : dataCompleteness === "PARTIAL"
-              ? "border-[#F5B94C]/40 bg-[#F5B94C]/10 text-[#F5B94C]"
-              : "border-white/10 bg-white/[0.04] text-[#8C98A8]"
-          }`}
-        >
-          {dataCompleteness === "COMPLETE"
-            ? "✓ VERİ: TAM DOĞRULANDI"
-            : dataCompleteness === "PARTIAL"
-            ? "⚡ VERİ: KISMİ GİRİLDİ"
-            : "○ VERİ: BEKLENİYOR"}
-        </span>
+              ? "⚡ VERİ: KISMİ GİRİLDİ"
+              : "○ VERİ: BEKLENİYOR"}
+          </span>
+        </div>
       </div>
 
       {/* 3 Metric Cards Grid */}
