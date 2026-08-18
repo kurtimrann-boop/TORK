@@ -5,11 +5,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * TorkMap — Apple Maps-Inspired B2B Logistics Map Experience
  *
- * - Dark muted cartography (CartoDB Dark Matter)
+ * - Dark cartography (CartoDB Dark Matter)
  * - Dual-layer glow route polyline (Emerald #00E5A0)
- * - Custom pulsing origin (Emerald) & destination (Gold #FFCC00) pins
- * - Sleek glassmorphic zoom & re-center controls with SVG iconography
- * - Robust ResizeObserver + map.invalidateSize() to prevent 0-height collapses
+ * - Custom pulsing origin (Emerald #00E5A0) & destination (Amber #F5B94C) pins
+ * - Sleek circular glass controls with SVG iconography
+ * - Live Route Pill: CANLI ROTA | 730 km · 8 sa 45 dk
+ * - Robust ResizeObserver + map.invalidateSize()
  * - SSR Safe dynamic Leaflet lifecycle
  */
 export default function TorkMap({
@@ -19,6 +20,8 @@ export default function TorkMap({
   destinationLabel = "Varış",
   routePoints = [],
   className = "",
+  distanceKm = null,
+  durationText = null,
 }) {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -62,12 +65,12 @@ export default function TorkMap({
     const map = L.map(mapContainerRef.current, {
       center: [39.0, 35.2], // Center of Turkey
       zoom: 6,
-      zoomControl: false, // Custom Apple-style glass controls used instead
+      zoomControl: false, // Custom Apple-style circular glass controls
       attributionControl: false,
       scrollWheelZoom: false,
     });
 
-    // CartoDB Dark Matter Cartography — Muted, low-clutter, data-first base map
+    // CartoDB Dark Matter Cartography
     L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
       subdomains: "abcd",
       maxZoom: 19,
@@ -76,7 +79,7 @@ export default function TorkMap({
     mapRef.current = map;
     setIsReady(true);
 
-    // ResizeObserver ensures Leaflet tiles always adapt to container dimensions
+    // ResizeObserver ensures Leaflet tiles adapt to container dimensions
     if (typeof ResizeObserver !== "undefined" && mapContainerRef.current) {
       const ro = new ResizeObserver(() => {
         if (mapRef.current) {
@@ -87,7 +90,7 @@ export default function TorkMap({
       resizeObserverRef.current = ro;
     }
 
-    // Trigger initial invalidateSize after layout paint
+    // Trigger initial invalidateSize
     const t = setTimeout(() => {
       if (mapRef.current) {
         mapRef.current.invalidateSize();
@@ -99,200 +102,190 @@ export default function TorkMap({
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();
       }
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-      markersRef.current = [];
-      polylineGlowRef.current = null;
-      polylineCoreRef.current = null;
+      map.remove();
+      mapRef.current = null;
     };
   }, [hasLeaflet]);
 
-  // Fit bounds helper for re-center action
-  const handleFitBounds = useCallback(() => {
-    if (!mapRef.current || !window.L) return;
-    const bounds = [];
-    if (origin?.lat != null && origin?.lng != null) bounds.push([origin.lat, origin.lng]);
-    if (destination?.lat != null && destination?.lng != null) bounds.push([destination.lat, destination.lng]);
-
-    if (routePoints && routePoints.length >= 2) {
-      routePoints.forEach((p) => {
-        if (p?.lat != null && p?.lng != null) bounds.push([p.lat, p.lng]);
-      });
-    }
-
-    if (bounds.length > 0) {
-      mapRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 14, animate: true, duration: 0.8 });
-    } else {
-      mapRef.current.setView([39.0, 35.2], 6, { animate: true });
-    }
-  }, [origin, destination, routePoints]);
-
-  // Update Markers & Polylines when coordinates or route changes
+  // Update Markers & Polyline
   useEffect(() => {
     if (!isReady || !mapRef.current || !window.L) return;
 
     const L = window.L;
     const map = mapRef.current;
 
-    // Clear previous layers
-    markersRef.current.forEach((marker) => {
-      if (map.hasLayer(marker)) map.removeLayer(marker);
-    });
+    // Clear previous markers
+    markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    if (polylineGlowRef.current && map.hasLayer(polylineGlowRef.current)) {
-      map.removeLayer(polylineGlowRef.current);
+    // Clear previous polylines
+    if (polylineGlowRef.current) {
+      polylineGlowRef.current.remove();
       polylineGlowRef.current = null;
     }
-    if (polylineCoreRef.current && map.hasLayer(polylineCoreRef.current)) {
-      map.removeLayer(polylineCoreRef.current);
+    if (polylineCoreRef.current) {
+      polylineCoreRef.current.remove();
       polylineCoreRef.current = null;
-    }
-
-    const hasOrigin = origin?.lat != null && origin?.lng != null;
-    const hasDestination = destination?.lat != null && destination?.lng != null;
-
-    if (!hasOrigin && !hasDestination) {
-      map.setView([39.0, 35.2], 6, { animate: false });
-      return;
     }
 
     const bounds = [];
 
-    // Origin Marker (TORK Emerald)
-    if (hasOrigin) {
+    // 1. Origin Marker (Emerald #00E5A0)
+    if (origin && typeof origin.lat === "number" && typeof origin.lng === "number") {
       const originIcon = L.divIcon({
-        className: "tork-map-marker-wrap",
+        className: "custom-map-pin",
         html: `
           <div class="relative flex items-center justify-center">
-            <div class="absolute -inset-2 rounded-full bg-[#00E5A0]/25 animate-ping"></div>
-            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.85)] flex items-center justify-center">
-              <div class="h-1.5 w-1.5 rounded-full bg-[#090D14]"></div>
-            </div>
+            <span class="absolute h-6 w-6 rounded-full bg-[#00E5A0]/25 animate-ping"></span>
+            <span class="relative flex h-4 w-4 items-center justify-center rounded-full bg-[#00E5A0] ring-4 ring-[#060B11] shadow-[0_0_12px_#00E5A0]">
+              <span class="h-1.5 w-1.5 rounded-full bg-[#060B11]"></span>
+            </span>
           </div>
         `,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
       });
 
-      const marker = L.marker([origin.lat, origin.lng], { icon: originIcon })
-        .addTo(map)
-        .bindPopup(
-          `<div class="p-1 text-center font-sans"><strong class="text-xs text-white">${originLabel}</strong><br/><span class="text-[10px] text-[#00E5A0] font-bold uppercase tracking-wider">Yükleme Noktası</span></div>`,
-          { closeButton: false }
-        );
-
-      markersRef.current.push(marker);
+      const m1 = L.marker([origin.lat, origin.lng], { icon: originIcon }).addTo(map);
+      if (originLabel) {
+        m1.bindTooltip(originLabel, {
+          permanent: false,
+          direction: "top",
+          className: "tork-map-tooltip",
+        });
+      }
+      markersRef.current.push(m1);
       bounds.push([origin.lat, origin.lng]);
     }
 
-    // Destination Marker (TORK Gold)
-    if (hasDestination) {
+    // 2. Destination Marker (Amber #F5B94C)
+    if (destination && typeof destination.lat === "number" && typeof destination.lng === "number") {
       const destIcon = L.divIcon({
-        className: "tork-map-marker-wrap",
+        className: "custom-map-pin",
         html: `
           <div class="relative flex items-center justify-center">
-            <div class="absolute -inset-2 rounded-full bg-[#FFCC00]/25 animate-ping"></div>
-            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#FFCC00] shadow-[0_0_12px_rgba(255,204,0,0.85)] flex items-center justify-center">
-              <div class="h-1.5 w-1.5 rounded-full bg-[#090D14]"></div>
-            </div>
+            <span class="absolute h-6 w-6 rounded-full bg-[#F5B94C]/25 animate-ping"></span>
+            <span class="relative flex h-4 w-4 items-center justify-center rounded-full bg-[#F5B94C] ring-4 ring-[#060B11] shadow-[0_0_12px_#F5B94C]">
+              <span class="h-1.5 w-1.5 rounded-full bg-[#060B11]"></span>
+            </span>
           </div>
         `,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
       });
 
-      const marker = L.marker([destination.lat, destination.lng], { icon: destIcon })
-        .addTo(map)
-        .bindPopup(
-          `<div class="p-1 text-center font-sans"><strong class="text-xs text-white">${destinationLabel}</strong><br/><span class="text-[10px] text-[#FFCC00] font-bold uppercase tracking-wider">Teslimat Noktası</span></div>`,
-          { closeButton: false }
-        );
-
-      markersRef.current.push(marker);
+      const m2 = L.marker([destination.lat, destination.lng], { icon: destIcon }).addTo(map);
+      if (destinationLabel) {
+        m2.bindTooltip(destinationLabel, {
+          permanent: false,
+          direction: "top",
+          className: "tork-map-tooltip",
+        });
+      }
+      markersRef.current.push(m2);
       bounds.push([destination.lat, destination.lng]);
     }
 
-    // Route Polyline (Dual-Layer: Subtle Ambient Glow + High-Precision Emerald Vector)
-    if (routePoints && routePoints.length >= 2) {
-      const validPoints = routePoints.filter((p) => p?.lat != null && p?.lng != null);
-
-      if (validPoints.length >= 2) {
-        const latLngs = validPoints.map((p) => [p.lat, p.lng]);
-
-        // Outer soft glow layer (subtle, non-distracting)
-        const glowLine = L.polyline(latLngs, {
-          color: "#00E5A0",
-          weight: 8,
-          opacity: 0.18,
-          lineCap: "round",
-          lineJoin: "round",
-        }).addTo(map);
-        polylineGlowRef.current = glowLine;
-
-        // Inner crisp core route layer
-        const coreLine = L.polyline(latLngs, {
-          color: "#00E5A0",
-          weight: 4,
-          opacity: 0.95,
-          lineCap: "round",
-          lineJoin: "round",
-        }).addTo(map);
-        polylineCoreRef.current = coreLine;
-
-        // Extend bounds to encompass entire route geometry
-        validPoints.forEach((p) => bounds.push([p.lat, p.lng]));
-      }
+    // 3. Polyline Route Rendering
+    let points = [];
+    if (routePoints && routePoints.length > 1) {
+      points = routePoints.map((p) => [p.lat, p.lng]);
+    } else if (bounds.length === 2) {
+      // Fallback straight line if detailed coordinates unavailable
+      points = [bounds[0], bounds[1]];
     }
 
-    // Auto-fit to active bounds with comfortable padding and smooth animation
+    if (points.length >= 2) {
+      // Outer Glow Line
+      polylineGlowRef.current = L.polyline(points, {
+        color: "#00E5A0",
+        weight: 6,
+        opacity: 0.25,
+        lineCap: "round",
+        lineJoin: "round",
+      }).addTo(map);
+
+      // Inner Core Line
+      polylineCoreRef.current = L.polyline(points, {
+        color: "#00E5A0",
+        weight: 2.5,
+        opacity: 0.95,
+        lineCap: "round",
+        lineJoin: "round",
+      }).addTo(map);
+
+      points.forEach((pt) => bounds.push(pt));
+    }
+
+    // Auto fit bounds with gentle padding
     if (bounds.length > 0) {
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14, animate: true, duration: 0.8 });
+      map.fitBounds(bounds, {
+        padding: [40, 40],
+        maxZoom: 13,
+        animate: true,
+      });
     }
-
-    // Immediate resize check
-    setTimeout(() => {
-      if (mapRef.current) mapRef.current.invalidateSize();
-    }, 100);
   }, [isReady, origin, destination, originLabel, destinationLabel, routePoints]);
 
+  const handleFitBounds = useCallback(() => {
+    if (!mapRef.current || markersRef.current.length === 0) return;
+    const group = window.L.featureGroup(markersRef.current);
+    mapRef.current.fitBounds(group.getBounds(), {
+      padding: [40, 40],
+      maxZoom: 13,
+      animate: true,
+    });
+  }, []);
+
+  const hasRoute = Boolean(origin?.lat && destination?.lat);
+  const routeTelemetryText = distanceKm
+    ? `${distanceKm} km · ${durationText || "Hesaplanıyor"}`
+    : durationText
+    ? durationText
+    : "Canlı Mesafe & Süre Aktif";
+
   return (
-    <div
-      className={`relative h-[360px] sm:h-[420px] lg:h-[460px] w-full overflow-hidden rounded-3xl border border-white/8 bg-[#090D14] shadow-[0_16px_40px_rgba(0,0,0,0.4)] ${className}`}
-      aria-label="TORK Rota Haritası"
-    >
-      {/* Map DOM Canvas */}
-      <div ref={mapContainerRef} className="absolute inset-0 h-full w-full" />
+    <div className={`relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#060B11] ${className}`}>
+      {/* Map Canvas */}
+      <div ref={mapContainerRef} className="h-full w-full min-h-[300px]" />
 
       {/* Loading Placeholder */}
       {!hasLeaflet && (
-        <div className="absolute inset-0 z-[500] flex items-center justify-center bg-[#090D14]/80 backdrop-blur-sm">
-          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-4 py-2 text-xs font-bold text-slate-300">
+        <div className="absolute inset-0 z-[500] flex items-center justify-center bg-[#060B11]/85 backdrop-blur-sm">
+          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-[#0B111A] px-4 py-2 text-xs font-bold text-[#8C98A8]">
             <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-pulse" />
             Harita yükleniyor...
           </div>
         </div>
       )}
 
-      {/* Top Telemetry Header Pill */}
+      {/* Top Left Live Route Telemetry Pill */}
       {(origin?.lat != null || destination?.lat != null) && (
-        <div className="pointer-events-none absolute left-3 top-3 z-[400] max-w-[calc(100%-80px)] truncate flex items-center gap-2 rounded-full border border-white/10 bg-black/75 px-3.5 py-1.5 backdrop-blur-md">
-          <span className="h-2 w-2 shrink-0 rounded-full bg-[#00E5A0] animate-pulse" />
-          <span className="truncate text-[10px] font-black uppercase tracking-[0.14em] text-white">
-            {originLabel} {destination?.lat != null ? `→ ${destinationLabel}` : ""}
+        <div className="pointer-events-none absolute left-3 top-3 sm:left-4 sm:top-4 z-[400] flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-[#0B111A]/90 px-3.5 py-2 backdrop-blur-md shadow-lg max-w-[calc(100%-80px)]">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00E5A0] opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00E5A0]" />
           </span>
+          <div className="min-w-0 truncate">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
+              <span>CANLI ROTA</span>
+              {hasRoute && <span className="text-white/40">·</span>}
+              {hasRoute && <span className="text-[#F5F7FA] font-mono normal-case tracking-normal">{routeTelemetryText}</span>}
+            </div>
+            <div className="text-xs font-bold text-[#F5F7FA] truncate mt-0.5">
+              {originLabel} {destination?.lat != null ? `→ ${destinationLabel}` : ""}
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Apple-Inspired Glassmorphic Map Action Controls (Bottom-Right) */}
-      <div className="absolute bottom-3 right-3 z-[400] flex flex-col gap-1.5">
+      {/* Circular Glass Map Action Controls: Mobile Top-Right, Desktop Bottom-Right */}
+      <div className="absolute top-3 right-3 sm:top-auto sm:bottom-4 sm:right-4 z-[400] flex flex-col gap-2">
         <button
           type="button"
           onClick={() => mapRef.current?.zoomIn()}
           aria-label="Yakınlaştır"
-          className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/65 text-sm font-black text-white backdrop-blur-md transition hover:bg-black/85 hover:border-white/20 active:scale-95"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.12] bg-[#0B111A]/85 text-sm font-black text-[#F5F7FA] backdrop-blur-md transition hover:bg-[#101923] hover:border-white/25 active:scale-95 shadow-md"
         >
           +
         </button>
@@ -300,7 +293,7 @@ export default function TorkMap({
           type="button"
           onClick={() => mapRef.current?.zoomOut()}
           aria-label="Uzaklaştır"
-          className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/65 text-sm font-black text-white backdrop-blur-md transition hover:bg-black/85 hover:border-white/20 active:scale-95"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.12] bg-[#0B111A]/85 text-sm font-black text-[#F5F7FA] backdrop-blur-md transition hover:bg-[#101923] hover:border-white/25 active:scale-95 shadow-md"
         >
           −
         </button>
@@ -309,7 +302,7 @@ export default function TorkMap({
           onClick={handleFitBounds}
           aria-label="Rotaya Odaklan"
           title="Rotaya Odaklan"
-          className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/65 text-white backdrop-blur-md transition hover:bg-black/85 hover:border-white/20 active:scale-95"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.12] bg-[#0B111A]/85 text-[#F5F7FA] backdrop-blur-md transition hover:bg-[#101923] hover:border-white/25 active:scale-95 shadow-md"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <circle cx="12" cy="12" r="7" />

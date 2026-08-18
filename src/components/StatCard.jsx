@@ -5,37 +5,40 @@ export default function StatCard({
   trend,
   accent = "neutral",
 }) {
-  const accentClass = {
+  const accentText = {
     emerald: "text-[#00E5A0]",
-    cyan: "text-[#06B6D4]",
-    amber: "text-[#FBBF24]",
+    cyan: "text-[#00E5A0]",
+    amber: "text-[#F5B94C]",
     neutral: "text-[#F5F7FA]",
   }[accent] || "text-[#F5F7FA]";
 
-  const accentBg = {
-    emerald: "from-[#00E5A0]/10 to-[#00E5A0]/5",
-    cyan: "from-[#06B6D4]/10 to-[#06B6D4]/5",
-    amber: "from-[#FBBF24]/10 to-[#FBBF24]/5",
-    neutral: "from-white/5 to-white/[0.02]",
-  }[accent] || "from-white/5 to-white/[0.02]";
+  const indicatorDot = {
+    emerald: "bg-[#00E5A0]",
+    cyan: "bg-[#00E5A0]",
+    amber: "bg-[#F5B94C]",
+    neutral: "bg-white/40",
+  }[accent] || "bg-white/40";
 
   return (
-    <div
-      className={`relative overflow-hidden rounded-2xl border border-white/8 bg-gradient-to-br ${accentBg} p-5 backdrop-blur-sm transition-all duration-200 hover:border-white/12 hover:shadow-lg`}
-    >
-      <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
-        {label}
+    <div className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#101923] p-5 transition-all duration-200 hover:border-white/[0.14] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]">
+          {label}
+        </span>
+        <span className={`h-1.5 w-1.5 rounded-full ${indicatorDot}`} />
       </div>
 
-      <div className={`text-4xl font-black tracking-[-0.04em] ${accentClass}`}>
+      <div className={`text-2xl sm:text-3xl font-black tracking-[-0.04em] ${accentText}`}>
         {value}
       </div>
 
-      <div className="mt-2 flex items-center justify-between">
-        <div className="text-xs text-[#667085]">{detail}</div>
-        {trend ? (
-          <span className="text-[10px] font-bold text-emerald-400">{trend}</span>
-        ) : null}
+      <div className="mt-2 flex items-center justify-between text-xs text-[#8C98A8]">
+        <span className="truncate">{detail}</span>
+        {trend && (
+          <span className="text-[10px] font-bold text-[#00E5A0] bg-[#00E5A0]/10 px-1.5 py-0.5 rounded-md">
+            {trend}
+          </span>
+        )}
       </div>
     </div>
   );

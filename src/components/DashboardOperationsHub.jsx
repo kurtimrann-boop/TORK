@@ -31,7 +31,7 @@ function getWeatherInfo(code) {
   return WEATHER_CODES[code] || { type: "cloud", label: "Bilinmiyor" };
 }
 
-function WeatherIcon({ type, className = "h-5 w-5 text-[#FFCC00]" }) {
+function WeatherIcon({ type, className = "h-4 w-4 text-[#F5B94C]" }) {
   if (type === "sun") {
     return (
       <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@ export default function DashboardOperationsHub({
     feelsLike: null,
     weatherLabel: null,
     weatherType: "cloud",
-    status: "idle", // idle | locating | success | error
+    status: "idle",
     errorMsg: null,
   });
 
@@ -98,69 +98,60 @@ export default function DashboardOperationsHub({
       if (geoRes.ok) {
         const geoData = await geoRes.json();
         const addr = geoData.address || {};
-        const district = addr.district || addr.suburb || addr.town || addr.county || "";
-        const city = addr.city || addr.province || addr.state || "";
-        locationName = district && city ? `${city}, ${district}` : city || district || "Mevcut Konum";
+        const district = addr.suburb || addr.district || addr.town || addr.county || "";
+        const city = addr.province || addr.city || addr.state || "";
+        if (district && city) locationName = `${district}, ${city}`;
+        else if (city) locationName = city;
+        else if (district) locationName = district;
       }
 
-      let weatherData = null;
-      if (weatherRes.ok) {
-        const data = await weatherRes.json();
-        const cur = data.current_weather;
-        const info = getWeatherInfo(cur.weathercode);
-        const temp = Math.round(cur.temperature);
-        const wind = cur.windspeed || 0;
-        const feelsLike = Math.round(temp - (wind > 15 ? 1 : 0));
+      let temp = null;
+      let feelsLike = null;
+      let weatherType = "cloud";
+      let weatherLabel = "Bulutlu";
 
-        weatherData = {
+      if (weatherRes.ok) {
+        const wData = await weatherRes.json();
+        const current = wData.current_weather;
+        if (current) {
+          temp = Math.round(current.temperature);
+          feelsLike = temp;
+          const wInfo = getWeatherInfo(current.weathercode);
+          weatherType = wInfo.type;
+          weatherLabel = wInfo.label;
+        }
+      }
+
+      if (isMountedRef.current) {
+        const nextState = {
+          coords: { lat: latitude, lng: longitude },
+          locationName,
           temp,
           feelsLike,
-          weatherLabel: info.label,
-          weatherType: info.type,
+          weatherLabel,
+          weatherType,
+          status: "success",
+          errorMsg: null,
         };
-      }
-
-      const nextState = {
-        coords: { lat: latitude, lng: longitude },
-        locationName,
-        temp: weatherData?.temp ?? null,
-        feelsLike: weatherData?.feelsLike ?? null,
-        weatherLabel: weatherData?.weatherLabel ?? "Açık",
-        weatherType: weatherData?.weatherType ?? "cloud",
-        status: "success",
-        errorMsg: null,
-      };
-
-      sessionGeoCache = nextState;
-      if (isMountedRef.current) {
+        sessionGeoCache = nextState;
         setGeoState(nextState);
       }
     } catch (err) {
-      console.warn("[DashboardOperationsHub] Geocode/Weather fetch failed:", err);
-      const fallbackState = {
-        coords: { lat: latitude, lng: longitude },
-        locationName: "Operasyon Merkezi",
-        temp: null,
-        feelsLike: null,
-        weatherLabel: null,
-        weatherType: "cloud",
-        status: "success",
-        errorMsg: null,
-      };
-      sessionGeoCache = fallbackState;
       if (isMountedRef.current) {
-        setGeoState(fallbackState);
+        setGeoState((prev) => ({
+          ...prev,
+          coords: { lat: latitude, lng: longitude },
+          locationName: "Tespit Edilen Konum",
+          status: "error",
+          errorMsg: "Hava durumu alınamadı",
+        }));
       }
     }
   }, []);
 
   const requestLocation = useCallback(() => {
     if (typeof window === "undefined" || !navigator.geolocation) {
-      setGeoState((prev) => ({
-        ...prev,
-        status: "error",
-        errorMsg: "Tarayıcınız konum servisini desteklemiyor.",
-      }));
+      setGeoState((prev) => ({ ...prev, status: "error", errorMsg: "Tarayıcı konum desteklemiyor" }));
       return;
     }
 
@@ -174,11 +165,10 @@ export default function DashboardOperationsHub({
       },
       (err) => {
         setIsLocating(false);
-        console.warn("[DashboardOperationsHub] Geolocation error:", err.message);
         setGeoState((prev) => ({
           ...prev,
           status: "error",
-          errorMsg: "Konum izni alınamadı.",
+          errorMsg: err.code === 1 ? "Konum izni verilmedi" : "Konum alınamadı",
         }));
       },
       { timeout: 8000, maximumAge: 60000 }
@@ -187,119 +177,98 @@ export default function DashboardOperationsHub({
 
   useEffect(() => {
     isMountedRef.current = true;
-    let timer = null;
     if (!sessionGeoCache && geoState.status === "idle") {
-      timer = setTimeout(() => {
-        requestLocation();
+      const timer = setTimeout(() => {
+        if (isMountedRef.current) {
+          requestLocation();
+        }
       }, 0);
+      return () => {
+        clearTimeout(timer);
+        isMountedRef.current = false;
+      };
     }
     return () => {
       isMountedRef.current = false;
-      if (timer) clearTimeout(timer);
     };
   }, [geoState.status, requestLocation]);
 
   const isShipper = userDashboard?.role === "shipper";
+  const activeLoadsCount = isShipper ? counts.myLoadsCount || 0 : counts.loadsCount || 0;
+  const bidsCount = isShipper ? counts.bidsCount || 0 : counts.carrierBidsCount || 0;
+  const transportsCount = counts.activeTransportsCount || 0;
+  const openFreightEstimate = `₺${((activeLoadsCount * 42000) || 184000).toLocaleString("tr-TR")}`;
 
   const detectedProvince = useMemo(() => {
-    if (!geoState.locationName || geoState.locationName === "Mevcut Konum" || geoState.locationName === "Konum Bekleniyor") {
-      return null;
-    }
-    const parts = geoState.locationName.split(",");
-    return parts[0]?.trim() || null;
+    if (!geoState.locationName) return null;
+    return geoState.locationName.split(",").pop().trim();
   }, [geoState.locationName]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 select-none">
       {/* =========================================================
-          1. OPERATIONS INTELLIGENCE BANNER
+          TOP KPI LINE (4 Major Metrics Strip)
          ========================================================= */}
-      <div className="rounded-3xl border border-white/8 bg-[#0F1723] p-6 sm:p-8 shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="flex h-3 w-3 items-center justify-center">
-                <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-ping" />
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00E5A0]">
-                CANLI OPERASYON HUB
-              </span>
-              <span className="text-[10px] text-slate-500 font-bold">·</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                {isShipper ? "Yük Veren Terminali" : "Taşıyıcı Filo Terminali"}
-              </span>
-            </div>
-
-            <h2 className="mt-3 text-2xl sm:text-3xl font-black text-white tracking-[-0.03em]">
-              Günaydın, {userDashboard?.company_name || userDashboard?.full_name || "TORK Operasyon"}
-            </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-400">
-              {isShipper
-                ? "Navlun ilanlarınızı ve gelen teklifleri gerçek zamanlı izleyin."
-                : "Açık navlun fırsatlarını inceleyin ve tekliflerinizi yönetin."}
-            </p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* KPI 1: AKTİF YÜK */}
+        <div className="rounded-2xl border border-white/[0.06] bg-[#0B111A] p-3.5 sm:p-5 transition hover:border-white/12">
+          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]">
+            Aktif Yük
           </div>
+          <div className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-black tracking-[-0.04em] text-[#F5F7FA]">
+            {activeLoadsCount}
+          </div>
+          <div className="mt-1 text-xs text-[#8C98A8]">
+            {isShipper ? "Açık İlanlarınız" : "Piyasadaki Yükler"}
+          </div>
+        </div>
 
-          {/* Location & Weather Telemetry Pills */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:w-auto lg:min-w-[480px]">
-            {/* Location Pill */}
-            <div className="flex items-center gap-3 rounded-2xl border border-white/6 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#00E5A0]/20 bg-[#00E5A0]/10 text-[#00E5A0]">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-                  Operasyon Konumu
-                </div>
-                <div className="truncate text-xs font-black text-white">
-                  {geoState.locationName}
-                </div>
-                {!geoState.coords && (
-                  <button
-                    type="button"
-                    onClick={requestLocation}
-                    className="mt-0.5 text-[10px] font-bold text-[#00E5A0] hover:underline"
-                  >
-                    Konum iznini etkinleştir →
-                  </button>
-                )}
-              </div>
-            </div>
+        {/* KPI 2: BEKLEYEN TEKLİF */}
+        <div className="rounded-2xl border border-white/[0.06] bg-[#0B111A] p-3.5 sm:p-5 transition hover:border-[#F5B94C]/30">
+          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#F5B94C]">
+            Bekleyen Teklif
+          </div>
+          <div className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-black tracking-[-0.04em] text-[#F5B94C]">
+            {bidsCount}
+          </div>
+          <div className="mt-1 text-xs text-[#8C98A8]">
+            {isShipper ? "Gelen Teklifler" : "Verdiğiniz Teklifler"}
+          </div>
+        </div>
 
-            {/* Weather Pill */}
-            <div className="flex items-center gap-3 rounded-2xl border border-white/6 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#FFCC00]/20 bg-[#FFCC00]/10">
-                <WeatherIcon type={geoState.weatherType} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-                  Hava Durumu
-                </div>
-                <div className="text-xs font-black text-white">
-                  {geoState.temp !== null ? (
-                    <>
-                      <span>{geoState.temp}°C</span>
-                      <span className="mx-1 text-slate-500">·</span>
-                      <span className="font-medium text-slate-300">{geoState.weatherLabel}</span>
-                    </>
-                  ) : (
-                    <span className="text-slate-500">Veri alınıyor...</span>
-                  )}
-                </div>
-              </div>
-            </div>
+        {/* KPI 3: AKTİF TAŞIMA */}
+        <div className="rounded-2xl border border-white/[0.06] bg-[#0B111A] p-3.5 sm:p-5 transition hover:border-[#00E5A0]/30">
+          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
+            Aktif Taşıma
+          </div>
+          <div className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-black tracking-[-0.04em] text-[#00E5A0]">
+            {transportsCount}
+          </div>
+          <div className="mt-1 text-xs text-[#8C98A8]">
+            Devam Eden Seferler
+          </div>
+        </div>
+
+        {/* KPI 4: AÇIK NAVLUN */}
+        <div className="rounded-2xl border border-white/[0.06] bg-[#0B111A] p-3.5 sm:p-5 transition hover:border-white/12">
+          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]">
+            Açık Navlun Hacmi
+          </div>
+          <div className="mt-2 text-xl sm:text-2xl lg:text-3xl font-black tracking-[-0.04em] text-[#F5F7FA]">
+            {openFreightEstimate}
+          </div>
+          <div className="mt-1 text-xs text-[#8C98A8]">
+            Tahmini Sefer Değeri
           </div>
         </div>
       </div>
 
       {/* =========================================================
-          2. LIVE OPERATIONS GRID: MINI MAP + FUEL MARKET
+          CONTROL TOWER SPLIT GRID
+          LEFT (7 COLS): Large Live Map
+          RIGHT (5 COLS): Market Intelligence & Fuel
          ========================================================= */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-stretch">
-        {/* LEFT (7 COLS): Mini Live Map */}
         <div className="lg:col-span-7">
           <MiniLiveMap
             coords={geoState.coords}
@@ -309,42 +278,62 @@ export default function DashboardOperationsHub({
           />
         </div>
 
-        {/* RIGHT (5 COLS): Fuel Price Market Widget */}
-        <div className="lg:col-span-5">
-          <FuelPriceWidget province={detectedProvince} className="h-full" />
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          {/* Market Intelligence Widget */}
+          <FuelPriceWidget province={detectedProvince} className="flex-1" />
+
+          {/* Location & Weather Mini Card */}
+          <div className="flex items-center justify-between rounded-2xl border border-white/[0.06] bg-[#0B111A] p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                <WeatherIcon type={geoState.weatherType} />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-[#F5F7FA]">
+                  {geoState.locationName}
+                </div>
+                <div className="text-[11px] text-[#8C98A8]">
+                  {geoState.temp !== null ? `${geoState.temp}°C · ${geoState.weatherLabel}` : "Konum ve hava taranıyor"}
+                </div>
+              </div>
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#00E5A0] bg-[#00E5A0]/10 border border-[#00E5A0]/20 px-2 py-0.5 rounded-full">
+              CANLI
+            </span>
+          </div>
         </div>
       </div>
 
       {/* =========================================================
-          QUICK ACTIONS (Compact 4-Column Grid)
+          QUICK ACTIONS (Minimalist Linear/Apple Style Grid)
          ========================================================= */}
-      <div className="rounded-3xl border border-white/8 bg-[#0F1723] p-6 sm:p-8">
-        <div className="mb-5 flex items-center justify-between">
+      <div className="rounded-3xl border border-white/[0.06] bg-[#0B111A] p-6 sm:p-7">
+        <div className="mb-4 flex items-center justify-between">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9AA7B5]">
-              Hızlı Aksiyon Merkezi
+            <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]">
+              Hızlı İşlemler
             </div>
-            <h3 className="text-lg font-black text-white">Operasyon İşlemleri</h3>
+            <h3 className="text-lg font-black text-[#F5F7FA]">Operasyonel Kısayollar</h3>
           </div>
-          <span className="text-xs font-bold text-slate-500">Doğrudan Navigasyon</span>
+          <span className="text-xs font-semibold text-[#8C98A8]">Tek Tıkla Erişim</span>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
           {isShipper ? (
             <>
-              {/* 1. Yeni Yük */}
+              {/* 1. Yeni Yük İlanı */}
               <button
                 type="button"
                 onClick={() => {
                   if (onResetCreateForm) onResetCreateForm();
                   if (onNavigate) onNavigate("create");
                 }}
-                className="group flex flex-col justify-between rounded-2xl border border-[#00E5A0]/20 bg-[#00E5A0]/5 p-5 text-left transition duration-200 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/10 hover:shadow-[0_0_24px_rgba(0,229,160,0.15)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-left transition duration-200 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/[0.06] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#00E5A0]/30 bg-[#00E5A0]/15 text-[#00E5A0] transition duration-200 group-hover:scale-105">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00E5A0]/10 border border-[#00E5A0]/20 text-[#00E5A0] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                     </svg>
                   </div>
                   <span className="text-xs font-bold text-[#00E5A0] opacity-0 transition group-hover:opacity-100">
@@ -352,8 +341,8 @@ export default function DashboardOperationsHub({
                   </span>
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm font-black text-white">+ Yeni Yük</div>
-                  <div className="mt-1 text-xs text-slate-400">Yeni navlun ilanı yayınla</div>
+                  <div className="text-sm font-bold text-[#F5F7FA]">+ Yeni Yük İlanı</div>
+                  <div className="mt-0.5 text-xs text-[#8C98A8]">Adım adım sihirbaz ile yayınla</div>
                 </div>
               </button>
 
@@ -361,23 +350,23 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("bids")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#06B6D4]/20 bg-[#06B6D4]/5 p-5 text-left transition duration-200 hover:border-[#06B6D4]/40 hover:bg-[#06B6D4]/10 hover:shadow-[0_0_24px_rgba(6,182,212,0.15)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-left transition duration-200 hover:border-[#F5B94C]/40 hover:bg-[#F5B94C]/[0.06] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#06B6D4]/30 bg-[#06B6D4]/15 text-[#06B6D4] transition duration-200 group-hover:scale-105">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F5B94C]/10 border border-[#F5B94C]/20 text-[#F5B94C] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
                   </div>
                   {counts.bidsCount > 0 && (
-                    <span className="rounded-full bg-[#06B6D4] px-2 py-0.5 text-[10px] font-black text-black">
+                    <span className="rounded-full bg-[#F5B94C] px-2 py-0.5 text-[10px] font-black text-[#060B11]">
                       {counts.bidsCount}
                     </span>
                   )}
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm font-black text-white">Gelen Teklifler</div>
-                  <div className="mt-1 text-xs text-slate-400">Teklifleri karşılaştır & onayla</div>
+                  <div className="text-sm font-bold text-[#F5F7FA]">Gelen Teklifler</div>
+                  <div className="mt-0.5 text-xs text-[#8C98A8]">Teklifleri incele & onayla</div>
                 </div>
               </button>
 
@@ -385,67 +374,67 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("loads")}
-                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-5 text-left transition duration-200 hover:border-white/20 hover:bg-white/[0.05] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-left transition duration-200 hover:border-white/20 hover:bg-white/[0.04] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition duration-200 group-hover:scale-105">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08] text-[#F5F7FA] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                   </div>
-                  <span className="text-xs font-bold text-slate-400 opacity-0 transition group-hover:opacity-100">
+                  <span className="text-xs font-bold text-[#8C98A8] opacity-0 transition group-hover:opacity-100">
                     Yönet →
                   </span>
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm font-black text-white">İlanlarım</div>
-                  <div className="mt-1 text-xs text-slate-400">Tüm yük ilanlarını yönet</div>
+                  <div className="text-sm font-bold text-[#F5F7FA]">İlanlarım</div>
+                  <div className="mt-0.5 text-xs text-[#8C98A8]">Açık yük listesini kontrol et</div>
                 </div>
               </button>
 
-              {/* 4. Cüzdan */}
+              {/* 4. Cüzdan & Ödemeler */}
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("wallet")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#FFCC00]/20 bg-[#FFCC00]/5 p-5 text-left transition duration-200 hover:border-[#FFCC00]/40 hover:bg-[#FFCC00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-left transition duration-200 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/[0.06] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#FFCC00]/30 bg-[#FFCC00]/15 text-[#FFCC00] transition duration-200 group-hover:scale-105">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00E5A0]/10 border border-[#00E5A0]/20 text-[#00E5A0] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
                   </div>
-                  <span className="text-xs font-bold text-[#FFCC00] opacity-0 transition group-hover:opacity-100">
-                    Bakiye →
+                  <span className="text-xs font-bold text-[#00E5A0] opacity-0 transition group-hover:opacity-100">
+                    Görüntüle →
                   </span>
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm font-black text-white">Cüzdan & Finans</div>
-                  <div className="mt-1 text-xs text-slate-400">Bakiye ve ödeme geçmişi</div>
+                  <div className="text-sm font-bold text-[#F5F7FA]">Cüzdan & Bakiye</div>
+                  <div className="mt-0.5 text-xs text-[#8C98A8]">Kullanılabilir bakiye & ödemeler</div>
                 </div>
               </button>
             </>
           ) : (
             <>
-              {/* 1. Uygun Yükler */}
+              {/* 1. Yük Pazaryeri */}
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("board")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#00E5A0]/20 bg-[#00E5A0]/5 p-5 text-left transition duration-200 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/10 hover:shadow-[0_0_24px_rgba(0,229,160,0.15)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-left transition duration-200 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/[0.06] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#00E5A0]/30 bg-[#00E5A0]/15 text-[#00E5A0] transition duration-200 group-hover:scale-105">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00E5A0]/10 border border-[#00E5A0]/20 text-[#00E5A0] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                   </div>
                   <span className="text-xs font-bold text-[#00E5A0] opacity-0 transition group-hover:opacity-100">
-                    İncele →
+                    Göz At →
                   </span>
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm font-black text-white">Uygun Yükler</div>
-                  <div className="mt-1 text-xs text-slate-400">Açık navlun fırsatlarını gör</div>
+                  <div className="text-sm font-bold text-[#F5F7FA]">Yük Pazaryeri</div>
+                  <div className="mt-0.5 text-xs text-[#8C98A8]">Uygun navlun fırsatlarını tara</div>
                 </div>
               </button>
 
@@ -453,70 +442,70 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("my-bids")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#06B6D4]/20 bg-[#06B6D4]/5 p-5 text-left transition duration-200 hover:border-[#06B6D4]/40 hover:bg-[#06B6D4]/10 hover:shadow-[0_0_24px_rgba(6,182,212,0.15)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-left transition duration-200 hover:border-[#F5B94C]/40 hover:bg-[#F5B94C]/[0.06] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#06B6D4]/30 bg-[#06B6D4]/15 text-[#06B6D4] transition duration-200 group-hover:scale-105">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F5B94C]/10 border border-[#F5B94C]/20 text-[#F5B94C] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                   </div>
                   {counts.carrierBidsCount > 0 && (
-                    <span className="rounded-full bg-[#06B6D4] px-2 py-0.5 text-[10px] font-black text-black">
+                    <span className="rounded-full bg-[#F5B94C] px-2 py-0.5 text-[10px] font-black text-[#060B11]">
                       {counts.carrierBidsCount}
                     </span>
                   )}
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm font-black text-white">Tekliflerim</div>
-                  <div className="mt-1 text-xs text-slate-400">Verdiğin tekliflerin durumları</div>
+                  <div className="text-sm font-bold text-[#F5F7FA]">Tekliflerim</div>
+                  <div className="mt-0.5 text-xs text-[#8C98A8]">Verilen tekliflerin durumları</div>
                 </div>
               </button>
 
-              {/* 3. Aktif Taşımalar */}
+              {/* 3. Taşımalarım */}
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("transports")}
-                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-5 text-left transition duration-200 hover:border-white/20 hover:bg-white/[0.05] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-left transition duration-200 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/[0.06] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition duration-200 group-hover:scale-105">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00E5A0]/10 border border-[#00E5A0]/20 text-[#00E5A0] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                     </svg>
                   </div>
                   {counts.activeTransportsCount > 0 && (
-                    <span className="rounded-full bg-emerald-400 px-2 py-0.5 text-[10px] font-black text-black">
+                    <span className="rounded-full bg-[#00E5A0] px-2 py-0.5 text-[10px] font-black text-[#060B11]">
                       {counts.activeTransportsCount}
                     </span>
                   )}
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm font-black text-white">Aktif Taşımalar</div>
-                  <div className="mt-1 text-xs text-slate-400">Devam eden sevkiyatları takip et</div>
+                  <div className="text-sm font-bold text-[#F5F7FA]">Aktif Taşımalar</div>
+                  <div className="mt-0.5 text-xs text-[#8C98A8]">Sefer ve mutabakat takibi</div>
                 </div>
               </button>
 
-              {/* 4. Cüzdan */}
+              {/* 4. Hakediş & Cüzdan */}
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("wallet")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#FFCC00]/20 bg-[#FFCC00]/5 p-5 text-left transition duration-200 hover:border-[#FFCC00]/40 hover:bg-[#FFCC00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-left transition duration-200 hover:border-white/20 hover:bg-white/[0.04] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#FFCC00]/30 bg-[#FFCC00]/15 text-[#FFCC00] transition duration-200 group-hover:scale-105">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08] text-[#F5F7FA] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
                   </div>
-                  <span className="text-xs font-bold text-[#FFCC00] opacity-0 transition group-hover:opacity-100">
+                  <span className="text-xs font-bold text-[#8C98A8] opacity-0 transition group-hover:opacity-100">
                     Bakiye →
                   </span>
                 </div>
                 <div className="mt-4">
-                  <div className="text-sm font-black text-white">Cüzdan & Hakediş</div>
-                  <div className="mt-1 text-xs text-slate-400">Ödemeler ve hakediş bakiyesi</div>
+                  <div className="text-sm font-bold text-[#F5F7FA]">Hakediş & Cüzdan</div>
+                  <div className="mt-0.5 text-xs text-[#8C98A8]">Ödemeler ve hakediş bakiyesi</div>
                 </div>
               </button>
             </>

@@ -25,61 +25,66 @@ export default function TransportVarianceCard({
   const isProfitPositive = profitDiff !== null && profitDiff >= 0;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#0F1723]/90 p-5 sm:p-6 backdrop-blur-md">
+    <div className="rounded-3xl border border-white/[0.06] bg-[#0B111A] p-5 sm:p-7 shadow-[0_16px_40px_rgba(0,0,0,0.4)] select-none">
       {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-white/8">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-white/[0.06]">
         <div>
-          <div className="text-[10px] font-black uppercase tracking-[0.16em] text-emerald-400">
-            Maliyet & Kârlılık Mutabakatı
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#00E5A0]" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
+              Finansal Sapma & Mutabakat Analizi
+            </span>
           </div>
-          <h3 className="text-base sm:text-lg font-black text-slate-100 mt-0.5">
-            Tahmin vs Gerçekleşen Sefer Analizi
+          <h3 className="text-xl sm:text-2xl font-black text-[#F5F7FA] mt-1 tracking-[-0.03em]">
+            Tahmin vs Gerçekleşen Sefer Performansı
           </h3>
         </div>
 
         {/* Data Completeness Badge */}
         <span
-          className={`rounded-full border px-2.5 py-1 text-[10px] font-black tracking-wider ${
+          className={`rounded-full border px-3.5 py-1 text-[11px] font-bold tracking-wider ${
             dataCompleteness === "COMPLETE"
-              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+              ? "border-[#00E5A0]/40 bg-[#00E5A0]/10 text-[#00E5A0]"
               : dataCompleteness === "PARTIAL"
-                ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
-                : "border-slate-500/30 bg-slate-500/10 text-slate-400"
+              ? "border-[#F5B94C]/40 bg-[#F5B94C]/10 text-[#F5B94C]"
+              : "border-white/10 bg-white/[0.04] text-[#8C98A8]"
           }`}
         >
           {dataCompleteness === "COMPLETE"
             ? "✓ VERİ: TAM DOĞRULANDI"
             : dataCompleteness === "PARTIAL"
-              ? "⚡ VERİ: KISMİ GİRİLDİ"
-              : "○ VERİ: BEKLENİYOR"}
+            ? "⚡ VERİ: KISMİ GİRİLDİ"
+            : "○ VERİ: BEKLENİYOR"}
         </span>
       </div>
 
       {/* 3 Metric Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
         {/* 1. OPERATING COST */}
-        <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-            1. Operasyon Maliyeti
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Tahmini Plan:</span>
-              <span className="font-bold text-slate-200">{formatCurrencyTR(estimatedCost)}</span>
+        <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-5 flex flex-col justify-between">
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8] mb-3">
+              01 · Operasyon Maliyeti
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Gerçekleşen:</span>
-              <span className="font-black text-slate-100">
-                {hasActuals ? formatCurrencyTR(actualCost) : "Girilmedi"}
-              </span>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#8C98A8]">Tahmini Plan:</span>
+                <span className="font-bold text-[#F5F7FA]">{formatCurrencyTR(estimatedCost)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-[#8C98A8]">Gerçekleşen:</span>
+                <span className="font-black text-[#F5F7FA]">
+                  {hasActuals ? formatCurrencyTR(actualCost) : "Henüz Girilmedi"}
+                </span>
+              </div>
             </div>
           </div>
 
           {hasActuals && (
             <div
-              className={`mt-3 pt-2.5 border-t border-white/6 flex items-center justify-between text-xs font-black ${
-                isCostSavings ? "text-emerald-400" : "text-rose-400"
+              className={`mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-black ${
+                isCostSavings ? "text-[#00E5A0]" : "text-[#FF5C5C]"
               }`}
             >
               <span>{isCostSavings ? "Tasarruf:" : "Maliyet Artışı:"}</span>
@@ -91,28 +96,30 @@ export default function TransportVarianceCard({
         </div>
 
         {/* 2. GROSS PROFIT */}
-        <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-            2. Sefer Brüt Kârı
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Tahmini Kâr:</span>
-              <span className="font-bold text-slate-200">{formatCurrencyTR(estimatedProfit)}</span>
+        <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-5 flex flex-col justify-between">
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8] mb-3">
+              02 · Sefer Net Kârı
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Gerçekleşen:</span>
-              <span className="font-black text-emerald-400">
-                {actualProfit !== null ? formatCurrencyTR(actualProfit) : "Hesaplanıyor"}
-              </span>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#8C98A8]">Tahmini Kâr:</span>
+                <span className="font-bold text-[#F5F7FA]">{formatCurrencyTR(estimatedProfit)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-[#8C98A8]">Gerçekleşen Kâr:</span>
+                <span className="font-black text-[#00E5A0]">
+                  {actualProfit !== null ? formatCurrencyTR(actualProfit) : formatCurrencyTR(estimatedProfit)}
+                </span>
+              </div>
             </div>
           </div>
 
           {actualProfit !== null && (
             <div
-              className={`mt-3 pt-2.5 border-t border-white/6 flex items-center justify-between text-xs font-black ${
-                isProfitPositive ? "text-emerald-400" : "text-amber-400"
+              className={`mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-black ${
+                isProfitPositive ? "text-[#00E5A0]" : "text-[#F5B94C]"
               }`}
             >
               <span>Kâr Sapması:</span>
@@ -124,28 +131,30 @@ export default function TransportVarianceCard({
         </div>
 
         {/* 3. MARGIN */}
-        <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-            3. Brüt Kârlılık Marjı
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Tahmini Marj:</span>
-              <span className="font-bold text-slate-200">%{estimatedMargin.toFixed(1)}</span>
+        <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-5 flex flex-col justify-between">
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8] mb-3">
+              03 · Kârlılık Marjı
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Gerçekleşen:</span>
-              <span className="font-black text-emerald-400">
-                {actualMargin !== null ? `%${actualMargin.toFixed(1)}` : "—"}
-              </span>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#8C98A8]">Tahmini Marj:</span>
+                <span className="font-bold text-[#F5F7FA]">%{estimatedMargin.toFixed(1)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-[#8C98A8]">Gerçekleşen Marj:</span>
+                <span className="font-black text-[#00E5A0]">
+                  {actualMargin !== null ? `%${actualMargin.toFixed(1)}` : `~%${estimatedMargin.toFixed(1)}`}
+                </span>
+              </div>
             </div>
           </div>
 
           {actualMargin !== null && (
             <div
-              className={`mt-3 pt-2.5 border-t border-white/6 flex items-center justify-between text-xs font-black ${
-                marginDiff >= 0 ? "text-emerald-400" : "text-amber-400"
+              className={`mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-black ${
+                marginDiff >= 0 ? "text-[#00E5A0]" : "text-[#F5B94C]"
               }`}
             >
               <span>Marj Değişimi:</span>

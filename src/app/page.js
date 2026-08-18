@@ -18,7 +18,7 @@ import ProvinceSelect from "../components/ProvinceSelect";
 import DistrictSelect from "../components/DistrictSelect";
 import GlobeAnimation from "../components/GlobeAnimation";
 import ShipmentTimeline from "../components/ShipmentTimeline";
-import { getMarkerLocation, buildLocationObject, getRouteDistance } from "../utils/location";
+import { getMarkerLocation, buildLocationObject, getRouteDistance, setRouteDistance } from "../utils/location";
 import { getProvinceByName } from "../data/turkeyProvinces";
 import { formatCurrencyTR, formatRelativeTimeTR } from "../utils/turkish";
 import WeatherIndicator from "../components/WeatherIndicator";
@@ -160,21 +160,23 @@ function EmptyState({
   action,
 }) {
   return (
-    <div className="tork-panel rounded-3xl p-10 text-center">
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#ffcc00]/10 bg-[#ffcc00]/5 text-xl font-black text-[#ffcc00]">
-        T
+    <div className="rounded-2xl border border-white/[0.06] bg-[#0B111A] p-6 sm:p-8 text-center select-none max-w-lg mx-auto shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+      <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-2xl border border-[#00E5A0]/20 bg-[#00E5A0]/10 text-[#00E5A0]">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
       </div>
 
-      <h3 className="text-lg font-black text-white">
+      <h3 className="text-base sm:text-lg font-bold text-[#F5F7FA]">
         {title}
       </h3>
 
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+      <p className="mx-auto mt-1 max-w-sm text-xs sm:text-sm text-[#8C98A8]">
         {text}
       </p>
 
       {action ? (
-        <div className="mt-6">
+        <div className="mt-4">
           {action}
         </div>
       ) : null}
@@ -1082,25 +1084,6 @@ export default function TorkApp() {
       return;
     }
 
-    if (
-      profile.role !==
-      loginRole
-    ) {
-      setMessage(
-        `Bu hesap bir ${
-          profile.role ===
-          "shipper"
-            ? "Yük Veren"
-            : "Nakliyeci"
-        } hesabıdır. Lütfen doğru sekmeden giriş yapın.`,
-      );
-
-      await supabase.auth.signOut();
-
-      setLoading(false);
-      return;
-    }
-
     if (rememberMe) {
       localStorage.setItem(
         "tork_remember_email",
@@ -1699,106 +1682,91 @@ export default function TorkApp() {
 
   if (!userDashboard) {
     return (
-      <main className="tork-shell relative flex min-h-screen items-center justify-center overflow-x-hidden px-4 py-8 sm:px-6 lg:px-12">
-        {/* Background Grid & Noise */}
-        <div className="tork-grid" />
-        <div className="tork-noise" />
+      <main className="min-h-screen bg-[#060B11] text-[#F5F7FA] relative flex items-center justify-center overflow-x-hidden px-4 py-8 sm:px-6 lg:px-12 select-none">
+        {/* Subtle Ambient Glows */}
+        <div className="pointer-events-none absolute -left-32 top-1/4 h-[450px] w-[450px] rounded-full bg-[#00E5A0]/[0.02] blur-[140px]" />
+        <div className="pointer-events-none absolute -right-32 bottom-1/4 h-[450px] w-[450px] rounded-full bg-[#00E5A0]/[0.015] blur-[140px]" />
 
-        {/* Ambient Glows */}
-        <div className="pointer-events-none absolute -left-28 top-1/4 h-96 w-96 rounded-full bg-[#ffcc00]/[0.035] blur-[120px]" />
-        <div className="pointer-events-none absolute -right-28 bottom-1/4 h-96 w-96 rounded-full bg-[#f59e0b]/[0.035] blur-[120px]" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[#00E5A0]/[0.015] blur-[140px]" />
-
-        {/* Central Symmetric Container */}
+        {/* Central Balanced Container */}
         <div className="relative z-10 mx-auto w-full max-w-6xl">
-          {/* Main Grid: perfectly balanced 2 columns on lg screens */}
-          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14">
-            
+          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
+
             {/* =========================================================
-                LEFT COLUMN: Globe + Brand + Hero + Subhead + Weather
+                LEFT SIDE (~55% / 7 cols): Brand World + Globe
                ========================================================= */}
-            <div className="flex flex-col items-center text-center">
-              {/* 1. GLOBE */}
-              <div className="relative w-full max-w-[380px] h-[220px] sm:h-[240px] flex items-center justify-center">
-                <GlobeAnimation className="h-full w-full" />
+            <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-4">
+              {/* Eyebrow */}
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#00E5A0] animate-pulse" />
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.16em] text-[#00E5A0]">
+                  TORK / LOGISTICS INTELLIGENCE
+                </span>
               </div>
 
-              {/* 2. TORK LOGO + WORDMARK */}
-              <div className="mt-4 flex items-center justify-center gap-3.5">
-                <TorkLogo />
-                <div className="text-left">
-                  <div className="flex items-baseline gap-0.5 text-2xl font-black tracking-[-0.04em] text-white">
-                    <span>Tork</span>
-                    <span className="text-[#ffcc00]">.</span>
-                  </div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
-                    Navlun Operasyon Platformu
-                  </div>
-                </div>
+              {/* Headline */}
+              <h1 className="text-3xl sm:text-4xl lg:text-[48px] xl:text-[52px] font-black tracking-[-0.035em] text-[#F5F7FA] leading-[1.0]">
+                Yükünüzü.<br />
+                Rotanızı.<br />
+                <span className="text-[#00E5A0]">Operasyonunuzu.</span>
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-sm sm:text-base font-normal text-[#8C98A8] max-w-md leading-relaxed">
+                Türkiye&apos;nin akıllı navlun ve operasyon platformu.
+              </p>
+
+              {/* Globe Animation (Balanced height) */}
+              <div className="w-full flex items-center justify-center lg:justify-start my-1 sm:my-2">
+                <GlobeAnimation className="h-[220px] sm:h-[280px] lg:h-[300px] xl:h-[320px] w-full" />
               </div>
 
-              {/* 3. HERO HEADLINE */}
-              <div className="mt-5 flex flex-col items-center">
-                <div className="tork-eyebrow mb-2.5 tracking-[0.2em] text-slate-400">
-                  B2B Akıllı Navlun Pazaryeri
-                </div>
-
-                <h1 className="text-4xl font-black leading-[1.08] tracking-[-0.045em] text-white sm:text-5xl lg:text-6xl">
-                  Yükü yayınla.
-                  <br />
-                  <span className="tork-brand">
-                    Teklifi topla.
-                    <br />
-                    Rota&apos;yı izle.
-                  </span>
-                </h1>
-
-                {/* 4. SUBHEAD */}
-                <p className="mt-4 max-w-md text-sm font-medium leading-relaxed text-slate-400 sm:text-base">
-                  Türkiye&apos;nin dijital taşımacılık ağı.
-                </p>
-              </div>
-
-              {/* 5. WEATHER */}
-              <div className="mt-6 flex justify-center">
-                <WeatherIndicator />
+              {/* Capability Line */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 text-[10px] sm:text-[11px] font-semibold tracking-[0.14em] uppercase text-[#8C98A8]">
+                <span>973 LOKASYON</span>
+                <span className="text-[#00E5A0]">·</span>
+                <span>CANLI ROTA</span>
+                <span className="text-[#00E5A0]">·</span>
+                <span>AKILLI FİYAT</span>
+                <span className="text-[#00E5A0]">·</span>
+                <span>GÜVENLİ MUTABAKAT</span>
               </div>
             </div>
 
             {/* =========================================================
-                RIGHT COLUMN: Auth Card
+                RIGHT SIDE (~45% / 5 cols): Auth Panel
                ========================================================= */}
-            <div className="flex w-full items-center justify-center">
-              <div className="w-full max-w-[440px]">
-                <div className="tork-panel tork-fade-up rounded-[28px] border border-white/10 bg-[#0c1017]/90 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-8">
+            <div className="lg:col-span-5 flex w-full items-center justify-center">
+              <div className="w-full max-w-[450px]">
+                {/* Auth Card */}
+                <div className="rounded-[24px] border border-white/[0.06] bg-[#0B111A]/84 p-7 sm:p-8 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                   
                   {/* Card Header */}
-                  <div className="mb-6 text-center sm:text-left">
-                    <div className="tork-eyebrow mb-1.5 text-slate-400">
-                      {authMode === "login" ? "Hoş geldiniz" : "Tork'a katılın"}
+                  <div className="mb-4 text-left">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]">
+                      {authMode === "login" ? "TORK'a hoş geldin" : "Yeni Hesap"}
                     </div>
-                    <h2 className="text-2xl font-black tracking-[-0.03em] text-white">
+                    <h2 className="mt-1 text-2xl sm:text-[25px] font-bold tracking-[-0.03em] text-[#F5F7FA]">
                       {authMode === "login"
-                        ? "Operasyon merkezine giriş yap."
-                        : "Tork hesabını oluştur."}
+                        ? "Operasyon merkezine giriş yap"
+                        : "TORK Hesabı Oluştur"}
                     </h2>
                   </div>
 
-                  {/* Mode Tabs: Giriş Yap | Kayıt Ol */}
-                  <div className="grid grid-cols-2 rounded-2xl border border-white/8 bg-black/30 p-1">
+                  {/* Mode Tabs: GİRİŞ YAP | KAYIT OL */}
+                  <div className="grid grid-cols-2 rounded-2xl border border-white/[0.05] bg-[#060B11]/50 p-1 mb-4">
                     <button
                       type="button"
                       onClick={() => {
                         setAuthMode("login");
                         setMessage("");
                       }}
-                      className={`rounded-xl py-2.5 text-xs font-black transition ${
+                      className={`rounded-xl py-2 text-[11px] font-bold tracking-wider transition-all duration-200 ${
                         authMode === "login"
-                          ? "border border-white/10 bg-white/[0.08] text-white shadow-sm"
-                          : "text-slate-500 hover:text-slate-300"
+                          ? "border border-[#00E5A0]/25 bg-[#00E5A0]/10 text-[#00E5A0] shadow-sm"
+                          : "text-[#8C98A8] hover:text-[#F5F7FA]"
                       }`}
                     >
-                      Giriş Yap
+                      GİRİŞ YAP
                     </button>
 
                     <button
@@ -1807,137 +1775,164 @@ export default function TorkApp() {
                         setAuthMode("register");
                         setMessage("");
                       }}
-                      className={`rounded-xl py-2.5 text-xs font-black transition ${
+                      className={`rounded-xl py-2 text-[11px] font-bold tracking-wider transition-all duration-200 ${
                         authMode === "register"
-                          ? "border border-white/10 bg-white/[0.08] text-white shadow-sm"
-                          : "text-slate-500 hover:text-slate-300"
+                          ? "border border-[#00E5A0]/25 bg-[#00E5A0]/10 text-[#00E5A0] shadow-sm"
+                          : "text-[#8C98A8] hover:text-[#F5F7FA]"
                       }`}
                     >
-                      Kayıt Ol
+                      KAYIT OL
                     </button>
                   </div>
-
-                  {/* Role Selector Tabs (when in Login mode) */}
-                  {authMode === "login" ? (
-                    <div className="mt-3.5 grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setLoginRole("shipper")}
-                        className={`flex items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-bold transition ${
-                          loginRole === "shipper"
-                            ? "border-[#ffcc00]/35 bg-[#ffcc00]/10 text-[#ffcc00] shadow-[0_0_12px_rgba(255,204,0,0.12)]"
-                            : "border-white/6 bg-white/[0.02] text-slate-500 hover:border-white/12 hover:text-slate-300"
-                        }`}
-                      >
-                        <IconBox className="h-4 w-4" />
-                        <span>Yük Veren</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setLoginRole("carrier")}
-                        className={`flex items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-bold transition ${
-                          loginRole === "carrier"
-                            ? "border-[#ffcc00]/35 bg-[#ffcc00]/10 text-[#ffcc00] shadow-[0_0_12px_rgba(255,204,0,0.12)]"
-                            : "border-white/6 bg-white/[0.02] text-slate-500 hover:border-white/12 hover:text-slate-300"
-                        }`}
-                      >
-                        <IconTruck className="h-4 w-4" />
-                        <span>Nakliyeci</span>
-                      </button>
-                    </div>
-                  ) : null}
 
                   {/* Form */}
                   <form
                     onSubmit={authMode === "login" ? handleLogin : handleSignUp}
-                    className="mt-5 space-y-4"
+                    className="space-y-3.5"
                   >
-                    {authMode === "register" ? (
+                    {/* Role Selector ONLY in Registration Mode */}
+                    {authMode === "register" && (
                       <>
-                        <Field
-                          label="Şirket adı"
-                          value={companyName}
-                          onChange={setCompanyName}
-                          placeholder="Şirketinizin adı"
-                        />
-
-                        <Field
-                          label="Telefon"
-                          value={phone}
-                          onChange={setPhone}
-                          placeholder="0532 000 00 00"
-                        />
-
-                        <div>
-                          <label className="tork-eyebrow mb-2 block text-slate-400">
-                            Hesap tipi
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#8C98A8] block">
+                            Hesap Tipi
                           </label>
-                          <select
-                            className="tork-input px-4 py-3.5 text-sm"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                          >
-                            <option value="shipper">Yük Veren</option>
-                            <option value="carrier">Nakliyeci</option>
-                          </select>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setRole("shipper")}
+                              className={`rounded-xl border py-2.5 px-3 text-xs font-bold text-center transition ${
+                                role === "shipper"
+                                  ? "border-[#00E5A0]/40 bg-[#00E5A0]/10 text-[#00E5A0]"
+                                  : "border-white/[0.06] bg-[#060B11]/60 text-[#8C98A8] hover:text-[#F5F7FA]"
+                              }`}
+                            >
+                              Yük Veren
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setRole("carrier")}
+                              className={`rounded-xl border py-2.5 px-3 text-xs font-bold text-center transition ${
+                                role === "carrier"
+                                  ? "border-[#00E5A0]/40 bg-[#00E5A0]/10 text-[#00E5A0]"
+                                  : "border-white/[0.06] bg-[#060B11]/60 text-[#8C98A8] hover:text-[#F5F7FA]"
+                              }`}
+                            >
+                              Nakliyeci
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#8C98A8] block">
+                            Şirket Unvanı
+                          </label>
+                          <input
+                            type="text"
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            placeholder="Şirket unvanınız"
+                            className="tork-input w-full h-[52px] px-4 rounded-[14px] text-sm bg-[#060B11]/75 border border-white/[0.07]"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#8C98A8] block">
+                            Telefon Numarası
+                          </label>
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder="0532 000 00 00"
+                            className="tork-input w-full h-[52px] px-4 rounded-[14px] text-sm bg-[#060B11]/75 border border-white/[0.07]"
+                          />
                         </div>
                       </>
-                    ) : null}
+                    )}
 
-                    <Field
-                      label="E-posta"
-                      type="email"
-                      value={email}
-                      onChange={setEmail}
-                      autoComplete="username"
-                      placeholder="ornek@tork.com"
-                    />
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#8C98A8] block">
+                        E-posta Adresiniz
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="username"
+                        placeholder="ornek@tork.com"
+                        className="tork-input w-full h-[52px] px-4 rounded-[14px] text-sm bg-[#060B11]/75 border border-white/[0.07]"
+                      />
+                    </div>
 
-                    <Field
-                      label="Şifre"
-                      type="password"
-                      value={password}
-                      onChange={setPassword}
-                      autoComplete={authMode === "login" ? "current-password" : "new-password"}
-                      placeholder="••••••••"
-                    />
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#8C98A8] block">
+                        Şifreniz
+                      </label>
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete={authMode === "login" ? "current-password" : "new-password"}
+                        placeholder="••••••••"
+                        className="tork-input w-full h-[52px] px-4 rounded-[14px] text-sm bg-[#060B11]/75 border border-white/[0.07]"
+                      />
+                    </div>
 
-                    {authMode === "login" ? (
+                    {authMode === "login" && (
                       <div className="flex items-center justify-between pt-0.5">
-                        <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-400 hover:text-slate-300">
+                        <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-[#8C98A8] hover:text-[#F5F7FA] select-none">
                           <input
                             type="checkbox"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            className="h-4 w-4 rounded border-white/20 accent-[#ffcc00]"
+                            className="h-4 w-4 rounded border-white/20 accent-[#00E5A0]"
                           />
                           <span>Beni hatırla</span>
                         </label>
+                        <span className="text-xs text-[#8C98A8] hover:text-[#F5F7FA] cursor-pointer">
+                          Şifremi unuttum
+                        </span>
                       </div>
-                    ) : null}
+                    )}
 
                     <button
                       type="submit"
                       disabled={loading}
-                      className="tork-button-primary mt-3 w-full rounded-xl py-3.5 text-sm font-black shadow-[0_4px_24px_rgba(255,204,0,0.2)] transition active:scale-[0.99] disabled:opacity-50"
+                      className="mt-2 w-full h-[52px] rounded-[14px] bg-[#00E5A0] text-[#060B11] text-xs sm:text-sm font-black shadow-[0_0_20px_rgba(0,229,160,0.25)] hover:bg-[#00d896] active:scale-[0.99] transition disabled:opacity-50"
                     >
                       {loading
                         ? "İşleniyor..."
                         : authMode === "login"
-                          ? loginRole === "shipper"
-                            ? "Yük Veren Girişi →"
-                            : "Nakliyeci Girişi →"
-                          : "Hesap Oluştur →"}
+                        ? "Operasyon Merkezine Gir →"
+                        : "TORK Hesabı Oluştur →"}
                     </button>
                   </form>
 
                   {/* Feedback Message */}
-                  {message ? (
-                    <div className="mt-4 rounded-xl border border-[#ffcc00]/20 bg-[#ffcc00]/5 px-4 py-3 text-xs font-bold text-[#ffd633] backdrop-blur-sm">
+                  {message && (
+                    <div className="mt-3.5 rounded-2xl border border-[#F5B94C]/30 bg-[#F5B94C]/10 px-4 py-2.5 text-xs font-bold text-[#F5B94C]">
                       {message}
                     </div>
-                  ) : null}
+                  )}
+
+                  {/* Trust Footer */}
+                  <div className="mt-5 pt-3.5 border-t border-white/[0.04] text-center">
+                    <div className="text-[10px] text-[#8C98A8]/60 flex items-center justify-center gap-1.5">
+                      <svg className="h-3 w-3 text-[#00E5A0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                      <span>TORK Güvenli Erişim</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live System Status Indicator */}
+                <div className="mt-3.5 flex justify-center">
+                  <div className="flex items-center gap-1.5 rounded-full border border-[#00E5A0]/15 bg-[#00E5A0]/[0.05] px-3 py-1 text-[9px] font-bold tracking-[0.14em] uppercase text-[#00E5A0]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00E5A0] animate-pulse" />
+                    <span>SİSTEMLER ÇALIŞIYOR · NETWORK ONLINE</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2476,11 +2471,11 @@ export default function TorkApp() {
                       <div className="mb-8">
                         <StepIndicator
                           steps={[
-                            { id: "route", label: "Rota" },
-                            { id: "cargo", label: "Yük" },
-                            { id: "vehicle", label: "Araç" },
-                            { id: "price", label: "Fiyat" },
-                            { id: "review", label: "İnceleme" },
+                            { id: "route", label: "01 Rota" },
+                            { id: "cargo", label: "02 Yük" },
+                            { id: "vehicle", label: "03 Araç" },
+                            { id: "price", label: "04 Fiyat" },
+                            { id: "review", label: "05 Yayınla" },
                           ]}
                           currentStep={createLoadStep}
                         />
@@ -2504,67 +2499,84 @@ export default function TorkApp() {
                         {createLoadStep === 0 && (
                           <div className="space-y-6">
                             <div>
-                              <h3 className="mb-1 text-lg font-black text-[#F5F7FA]">
-                                Rota bilgilerini belirleyin
+                              <h3 className="mb-1 text-xl sm:text-2xl font-black tracking-[-0.03em] text-[#F5F7FA]">
+                                Rota Bilgilerini Belirleyin
                               </h3>
-                              <p className="text-sm text-[#9AA7B5]">
-                                Yükleme ve teslimat noktalarını seçtiğinizde canlı rota ve mesafe otomatik hesaplanır.
+                              <p className="text-xs sm:text-sm text-[#8C98A8]">
+                                Yükleme ve teslimat noktalarını seçtiğinizde canlı rota, mesafe ve süre otomatik hesaplanır.
                               </p>
                             </div>
 
                             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
-                              {/* LEFT (5 COLS): Location Selectors */}
-                              <div className="space-y-5 lg:col-span-5">
-                                <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5 space-y-4">
-                                  <div className="flex items-center gap-2 text-xs font-bold text-[#00E5A0]">
-                                    <span className="h-2 w-2 rounded-full bg-[#00E5A0]" />
-                                    YÜKLEME NOKTASI (ORIGIN)
+                              {/* LEFT (5 COLS): Location Selectors with Connected Route Line */}
+                              <div className="space-y-4 lg:col-span-5">
+                                <div className="rounded-3xl border border-white/[0.06] bg-[#101923] p-5 sm:p-6 space-y-6">
+                                  {/* Origin Block */}
+                                  <div className="flex gap-3.5">
+                                    <div className="flex flex-col items-center">
+                                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#00E5A0]/15 border border-[#00E5A0]/40 text-[#00E5A0] shadow-[0_0_10px_rgba(0,229,160,0.2)]">
+                                        <div className="h-2 w-2 rounded-full bg-[#00E5A0]" />
+                                      </div>
+                                      <div className="w-0.5 flex-1 bg-gradient-to-b from-[#00E5A0]/40 via-white/10 to-[#F5B94C]/40 my-2" />
+                                    </div>
+                                    <div className="flex-1 space-y-3">
+                                      <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
+                                        01 · Yükleme Noktası (Çıkış)
+                                      </div>
+                                      <ProvinceSelect
+                                        label="Yükleme ili"
+                                        value={originProvince}
+                                        onChange={(val) => {
+                                          setOriginProvince(val);
+                                          setOriginDistrict(null);
+                                        }}
+                                        placeholder="İl seçiniz..."
+                                      />
+
+                                      <DistrictSelect
+                                        label="Yükleme ilçesi"
+                                        value={originDistrict}
+                                        onChange={setOriginDistrict}
+                                        provinceCode={originProvince?.code}
+                                        placeholder="İlçe seçiniz..."
+                                      />
+                                    </div>
                                   </div>
-                                  <ProvinceSelect
-                                    label="Yükleme ili"
-                                    value={originProvince}
-                                    onChange={(val) => {
-                                      setOriginProvince(val);
-                                      setOriginDistrict(null);
-                                    }}
-                                    placeholder="İl seçiniz..."
-                                  />
 
-                                  <DistrictSelect
-                                    label="Yükleme ilçesi"
-                                    value={originDistrict}
-                                    onChange={setOriginDistrict}
-                                    provinceCode={originProvince?.code}
-                                    placeholder="İlçe seçiniz..."
-                                  />
-                                </div>
+                                  {/* Destination Block */}
+                                  <div className="flex gap-3.5">
+                                    <div className="flex flex-col items-center">
+                                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F5B94C]/15 border border-[#F5B94C]/40 text-[#F5B94C] shadow-[0_0_10px_rgba(245,185,76,0.2)]">
+                                        <div className="h-2 w-2 rounded-full bg-[#F5B94C]" />
+                                      </div>
+                                    </div>
+                                    <div className="flex-1 space-y-3">
+                                      <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#F5B94C]">
+                                        02 · Teslimat Noktası (Varış)
+                                      </div>
+                                      <ProvinceSelect
+                                        label="Teslimat ili"
+                                        value={destinationProvince}
+                                        onChange={(val) => {
+                                          setDestinationProvince(val);
+                                          setDestinationDistrict(null);
+                                        }}
+                                        placeholder="İl seçiniz..."
+                                      />
 
-                                <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5 space-y-4">
-                                  <div className="flex items-center gap-2 text-xs font-bold text-[#FFCC00]">
-                                    <span className="h-2 w-2 rounded-full bg-[#FFCC00]" />
-                                    TESLİMAT NOKTASI (DESTINATION)
+                                      <DistrictSelect
+                                        label="Teslimat ilçesi"
+                                        value={destinationDistrict}
+                                        onChange={setDestinationDistrict}
+                                        provinceCode={destinationProvince?.code}
+                                        placeholder="İlçe seçiniz..."
+                                      />
+                                    </div>
                                   </div>
-                                  <ProvinceSelect
-                                    label="Teslimat ili"
-                                    value={destinationProvince}
-                                    onChange={(val) => {
-                                      setDestinationProvince(val);
-                                      setDestinationDistrict(null);
-                                    }}
-                                    placeholder="İl seçiniz..."
-                                  />
-
-                                  <DistrictSelect
-                                    label="Teslimat ilçesi"
-                                    value={destinationDistrict}
-                                    onChange={setDestinationDistrict}
-                                    provinceCode={destinationProvince?.code}
-                                    placeholder="İlçe seçiniz..."
-                                  />
                                 </div>
                               </div>
 
-                              {/* RIGHT (7 COLS): Live Apple-Style Route Map & Summary */}
+                              {/* RIGHT (7 COLS): Live Route Map & Summary */}
                               <div className="lg:col-span-7">
                                 <RouteVisualization
                                   origin={buildLocationObject({
@@ -2596,116 +2608,127 @@ export default function TorkApp() {
                     {createLoadStep === 1 && (
                       <div className="space-y-6">
                         <div>
-                          <h3 className="mb-1 text-lg font-black text-[#F5F7FA]">
-                            Yük bilgilerini girin
+                          <h3 className="mb-1 text-xl sm:text-2xl font-black tracking-[-0.03em] text-[#F5F7FA]">
+                            Yük ve Yükleme Detayları
                           </h3>
-                          <p className="text-sm text-[#9AA7B5]">
-                            Yükünüzün tonajını ve
-                            cinsi belirleyin.
+                          <p className="text-xs sm:text-sm text-[#8C98A8]">
+                            Taşınacak yükün cinsini, tonajını ve ambalaj tipini belirleyin.
                           </p>
                         </div>
 
-                        <div className="grid gap-5 md:grid-cols-2">
+                        {/* Cargo Type Selection Cards */}
+                        <div>
+                          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8] mb-3">
+                            Yük Cinsi
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {[
+                              { id: "Paletli Ürün", label: "Paletli Ürün", desc: "Euro / Standart Palet" },
+                              { id: "Kuru Yük (Standart)", label: "Kuru Yük", desc: "Genel Koli / Çuval" },
+                              { id: "Dökme Yük", label: "Dökme Yük", desc: "Tahıl / Maden / Kum" },
+                              { id: "Frigo / Soğuk Zincir", label: "Frigo / Soğuk Zincir", desc: "İklimlendirmeli Gıda & İlaç" },
+                              { id: "Tehlikeli Madde (ADR)", label: "Tehlikeli Madde (ADR)", desc: "SRC5 Belgeli Kimyasal" },
+                              { id: "Gabari Dışı / Özel Yük", label: "Gabari Dışı / Özel", desc: "Ağır Makine & Geniş Yük" },
+                            ].map((item) => {
+                              const isSelected = cargoType === item.id || (item.id === "Paletli Ürün" && cargoType.includes("Palet"));
+                              return (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onClick={() => setCargoType(item.id)}
+                                  className={`rounded-2xl border p-4 text-left transition-all duration-200 ${
+                                    isSelected
+                                      ? "border-[#00E5A0] bg-[#00E5A0]/[0.08] shadow-[0_0_20px_rgba(0,229,160,0.12)]"
+                                      : "border-white/[0.06] bg-[#101923] hover:border-white/20"
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <span className={`text-xs sm:text-sm font-bold ${isSelected ? "text-[#00E5A0]" : "text-[#F5F7FA]"}`}>
+                                      {item.label}
+                                    </span>
+                                    <div className={`h-3.5 w-3.5 rounded-full border flex items-center justify-center ${isSelected ? "border-[#00E5A0] bg-[#00E5A0]" : "border-white/20"}`}>
+                                      {isSelected && <div className="h-1 w-1 rounded-full bg-[#060B11]" />}
+                                    </div>
+                                  </div>
+                                  <div className="mt-1 text-[11px] text-[#8C98A8]">
+                                    {item.desc}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Dynamic Contextual Inputs for Specialized Load Types */}
+                        {cargoType.includes("Frigo") && (
+                          <div className="rounded-2xl border border-sky-500/30 bg-sky-500/[0.04] p-4 space-y-2">
+                            <label className="text-xs font-bold uppercase tracking-wider text-sky-400 block">
+                              Soğuk Zincir Sıcaklık Rejimi (T.C. Tarım & Orman Bakanlığı)
+                            </label>
+                            <select
+                              className="tork-input px-4 py-3 text-xs"
+                              value={temperatureClass}
+                              onChange={(e) => setTemperatureClass(e.target.value)}
+                            >
+                              <option value="CHILLED">Soğuk (+2°C / +8°C) - Taze Gıda / İlaç</option>
+                              <option value="FROZEN">Donuk (-18°C / -25°C) - Dondurulmuş Ürün</option>
+                              <option value="COOL">Serin (+8°C / +15°C) - Çikolata / Medikal</option>
+                              <option value="GENERAL">Kontrollü (+15°C / +25°C) - Genel İklimlendirme</option>
+                            </select>
+                          </div>
+                        )}
+
+                        {cargoType.includes("ADR") && (
+                          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/[0.04] p-4 space-y-2">
+                            <label className="text-xs font-bold uppercase tracking-wider text-amber-400 block">
+                              ADR Tehlikeli Madde Sınıfı (UHDGM SRC5 / T9)
+                            </label>
+                            <select
+                              className="tork-input px-4 py-3 text-xs"
+                              value={adrClass}
+                              onChange={(e) => setAdrClass(e.target.value)}
+                            >
+                              <option value="CLASS_3">Sınıf 3: Alevlenebilir Sıvılar (Yakıt/Boyalar)</option>
+                              <option value="CLASS_2">Sınıf 2: Gazlar (Basınçlı/Sıvılaştırılmış)</option>
+                              <option value="CLASS_4">Sınıf 4: Alevlenebilir Katılar</option>
+                              <option value="CLASS_5">Sınıf 5: Oksitleyici Maddeler</option>
+                              <option value="CLASS_6">Sınıf 6: Zehirli / Bulaşıcı Maddeler</option>
+                              <option value="CLASS_8">Sınıf 8: Aşındırıcı (Korozif) Kimyasallar</option>
+                              <option value="CLASS_9">Sınıf 9: Muhtelif Tehlikeli Maddeler</option>
+                            </select>
+                          </div>
+                        )}
+
+                        {cargoType.includes("Gabari") && (
+                          <div className="rounded-2xl border border-purple-500/30 bg-purple-500/[0.04] p-4 space-y-2">
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-[#F5F7FA]">
+                              <input
+                                type="checkbox"
+                                checked={specialPermitRequired}
+                                onChange={(e) => setSpecialPermitRequired(e.target.checked)}
+                                className="h-4 w-4 rounded border-white/20 bg-white/5 accent-[#00E5A0]"
+                              />
+                              <span>KGM 2026 Özel Yük Taşıma İzin Belgesi Harcı Gerektirir (₺18.813,80)</span>
+                            </label>
+                          </div>
+                        )}
+
+                        {/* Tonnage & Package Count */}
+                        <div className="grid gap-4 sm:grid-cols-2">
                           <Field
-                            label="Tonaj"
+                            label="Tonaj (Ton)"
                             type="number"
                             value={tonnage}
                             onChange={setTonnage}
                             placeholder="24"
                           />
 
-                          <div>
-                            <label className="tork-eyebrow mb-2 block">
-                              Yük cinsi
-                            </label>
-
-                            <select
-                              className="tork-input px-4 py-3.5 text-sm"
-                              value={cargoType}
-                              onChange={(e) =>
-                                setCargoType(
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option>Paletli Ürün</option>
-                              <option>Kuru Yük (Standart)</option>
-                              <option>Dökme Yük</option>
-                              <option>Frigo / Soğuk Zincir</option>
-                              <option>Tehlikeli Madde (ADR)</option>
-                              <option>Gabari Dışı / Özel Yük</option>
-                              <option>Konteyner</option>
-                              <option>Çuval / Paket</option>
-                              <option>Makine / Ekipman</option>
-                            </select>
-                          </div>
-
-                          {/* Dynamic Contextual Inputs for Specialized Load Types */}
-                          {cargoType.includes("Frigo") && (
-                            <div className="md:col-span-2 rounded-2xl border border-blue-500/20 bg-blue-500/[0.03] p-4 space-y-2">
-                              <label className="text-xs font-black uppercase tracking-wider text-blue-400 block">
-                                Soğuk Zincir Sıcaklık Rejimi (T.C. Tarım & Orman Bakanlığı)
-                              </label>
-                              <select
-                                className="tork-input px-4 py-3 text-xs"
-                                value={temperatureClass}
-                                onChange={(e) => setTemperatureClass(e.target.value)}
-                              >
-                                <option value="CHILLED">Soğuk (+2°C / +8°C) - Taze Gıda / İlaç</option>
-                                <option value="FROZEN">Donuk (-18°C / -25°C) - Dondurulmuş Ürün</option>
-                                <option value="COOL">Serin (+8°C / +15°C) - Çikolata / Medikal</option>
-                                <option value="GENERAL">Kontrollü (+15°C / +25°C) - Genel İklimlendirme</option>
-                              </select>
-                            </div>
-                          )}
-
-                          {cargoType.includes("ADR") && (
-                            <div className="md:col-span-2 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-4 space-y-2">
-                              <label className="text-xs font-black uppercase tracking-wider text-amber-400 block">
-                                ADR Tehlikeli Madde Sınıfı (UHDGM SRC5 / T9)
-                              </label>
-                              <select
-                                className="tork-input px-4 py-3 text-xs"
-                                value={adrClass}
-                                onChange={(e) => setAdrClass(e.target.value)}
-                              >
-                                <option value="CLASS_3">Sınıf 3: Alevlenebilir Sıvılar (Yakıt/Boyalar)</option>
-                                <option value="CLASS_2">Sınıf 2: Gazlar (Basınçlı/Sıvılaştırılmış)</option>
-                                <option value="CLASS_4">Sınıf 4: Alevlenebilir Katılar</option>
-                                <option value="CLASS_5">Sınıf 5: Oksitleyici Maddeler</option>
-                                <option value="CLASS_6">Sınıf 6: Zehirli / Bulaşıcı Maddeler</option>
-                                <option value="CLASS_8">Sınıf 8: Aşındırıcı (Korozif) Kimyasallar</option>
-                                <option value="CLASS_9">Sınıf 9: Muhtelif Tehlikeli Maddeler</option>
-                              </select>
-                            </div>
-                          )}
-
-                          {cargoType.includes("Gabari") && (
-                            <div className="md:col-span-2 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] p-4 space-y-2">
-                              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-200">
-                                <input
-                                  type="checkbox"
-                                  checked={specialPermitRequired}
-                                  onChange={(e) => setSpecialPermitRequired(e.target.checked)}
-                                  className="h-4 w-4 rounded border-white/20 bg-white/5 text-[#00E5A0]"
-                                />
-                                <span>KGM 2026 Özel Yük Taşıma İzin Belgesi Harcı Gerektirir (₺18.813,80)</span>
-                              </label>
-                            </div>
-                          )}
-
-                          <div className="md:col-span-2">
-                            <Field
-                              label="Koli / Palet"
-                              value={
-                                packageCount
-                              }
-                              onChange={
-                                setPackageCount
-                              }
-                              placeholder="33 Euro Palet"
-                            />
-                          </div>
+                          <Field
+                            label="Koli / Palet Adedi"
+                            value={packageCount}
+                            onChange={setPackageCount}
+                            placeholder="33 Euro Palet"
+                          />
                         </div>
                       </div>
                     )}
@@ -2714,126 +2737,128 @@ export default function TorkApp() {
                     {createLoadStep === 2 && (
                       <div className="space-y-6">
                         <div>
-                          <h3 className="mb-1 text-lg font-black text-[#F5F7FA]">
-                            Araç talebini girin
+                          <h3 className="mb-1 text-xl sm:text-2xl font-black tracking-[-0.03em] text-[#F5F7FA]">
+                            Araç Talebini Belirleyin
                           </h3>
-                          <p className="text-sm text-[#9AA7B5]">
-                            Taşıma için gerekli
-                            araç tipini seçin.
+                          <p className="text-xs sm:text-sm text-[#8C98A8]">
+                            Taşıma operasyonu için gerekli kasa ve araç tipini seçin.
                           </p>
                         </div>
 
                         <div>
-                          <label className="tork-eyebrow mb-3 block">
-                            Araç tipi
-                          </label>
+                          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8] mb-3">
+                            Araç Tipi
+                          </div>
 
-                          <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="grid gap-3.5 sm:grid-cols-2">
                             {[
                               {
-                                value:
-                                  "TIR (Tenteli)",
-                                label:
-                                  "TIR (Tenteli)",
+                                value: "TIR (Tenteli)",
+                                label: "TIR (Tenteli / Standart)",
+                                desc: "24-26 Ton · 13.60m Dorse",
                               },
                               {
                                 value: "Kamyon",
-                                label: "Kamyon",
+                                label: "Kamyon (Onteker)",
+                                desc: "15-18 Ton · Kapalı/Açık Kasa",
                               },
                               {
                                 value: "Frigo",
-                                label: "Frigo",
+                                label: "Frigo (Soğutuculu)",
+                                desc: "İklimlendirmeli Termo Kasa",
                               },
                               {
-                                value:
-                                  "Kırkayak",
-                                label:
-                                  "Kırkayak",
+                                value: "Kırkayak",
+                                label: "Kırkayak",
+                                desc: "20-22 Ton · Ağır Yük Kasası",
                               },
-                            ].map(
-                              (option) => (
-                                <button
-                                  key={
-                                    option.value
-                                  }
-                                  type="button"
-                                  onClick={() =>
-                                    setVehicle(
-                                      option.value
-                                    )
-                                  }
-                                  className={`rounded-xl border-2 px-4 py-3 text-sm font-bold transition ${
-                                    vehicle ===
-                                    option.value
-                                      ? "border-[#00E5A0] bg-[#00E5A0]/10 text-[#00E5A0]"
-                                      : "border-white/10 bg-white/[0.02] text-[#9AA7B5] hover:border-white/20"
-                                  }`}
-                                >
-                                  {option.label}
-                                </button>
-                              ),
-                            )}
+                            ].map((option) => (
+                              <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => setVehicle(option.value)}
+                                className={`rounded-2xl border p-4 text-left transition-all duration-200 ${
+                                  vehicle === option.value
+                                    ? "border-[#00E5A0] bg-[#00E5A0]/[0.08] shadow-[0_0_20px_rgba(0,229,160,0.12)]"
+                                    : "border-white/[0.06] bg-[#101923] hover:border-white/20"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div
+                                    className={`text-sm font-bold ${
+                                      vehicle === option.value
+                                        ? "text-[#00E5A0]"
+                                        : "text-[#F5F7FA]"
+                                    }`}
+                                  >
+                                    {option.label}
+                                  </div>
+                                  <div
+                                    className={`h-4 w-4 rounded-full border flex items-center justify-center ${
+                                      vehicle === option.value
+                                        ? "border-[#00E5A0] bg-[#00E5A0]"
+                                        : "border-white/20"
+                                    }`}
+                                  >
+                                    {vehicle === option.value && (
+                                      <div className="h-1.5 w-1.5 rounded-full bg-[#060B11]" />
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="mt-1 text-xs text-[#8C98A8]">
+                                  {option.desc}
+                                </div>
+                              </button>
+                            ))}
                           </div>
                         </div>
                       </div>
                     )}
 
-                    {/* STEP 4: PRICE */}
+                    {/* STEP 4: PRICE & NOTES */}
                     {createLoadStep === 3 && (
                       <div className="space-y-6">
                         <div>
-                          <h3 className="mb-1 text-lg font-black text-[#F5F7FA]">
-                            İlave bilgiler
+                          <h3 className="mb-1 text-xl sm:text-2xl font-black tracking-[-0.03em] text-[#F5F7FA]">
+                            Operasyonel Notlar ve Açıklamalar
                           </h3>
-                          <p className="text-sm text-[#9AA7B5]">
-                            Yükünüz hakkında
-                            ek notlar ekleyin.
+                          <p className="text-xs sm:text-sm text-[#8C98A8]">
+                            Yükleme, tahliye ve teslimat süreçlerine dair ek operasyonel detayları belirtin.
                           </p>
                         </div>
 
-                        <div className="space-y-5">
-                          <div>
-                            <label className="tork-eyebrow mb-2 block">
-                              Açıklama
-                            </label>
+                        <div className="rounded-3xl border border-white/[0.06] bg-[#101923] p-5 sm:p-6 space-y-4">
+                          <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8] block">
+                            Özel Talimatlar & Açıklama
+                          </label>
 
-                            <textarea
-                              rows={5}
-                              value={
-                                loadDescription
-                              }
-                              onChange={(e) =>
-                                setLoadDescription(
-                                  e.target.value
-                                )
-                              }
-                              className="tork-input resize-none px-4 py-3.5 text-sm"
-                              placeholder="Operasyon notları, özel gereksinimler vb."
-                            />
-                          </div>
+                          <textarea
+                            rows={5}
+                            value={loadDescription}
+                            onChange={(e) => setLoadDescription(e.target.value)}
+                            className="tork-input resize-none px-4 py-3.5 text-sm"
+                            placeholder="Örn: Fabrika sahasında kantar mevcuttur, forklift ile yandan yükleme yapılacaktır..."
+                          />
                         </div>
                       </div>
                     )}
 
-                    {/* STEP 5: REVIEW */}
+                    {/* STEP 5: REVIEW & PUBLISH */}
                     {createLoadStep === 4 && (
                       <div className="space-y-6">
                         <div>
-                          <h3 className="mb-1 text-lg font-black text-[#F5F7FA]">
-                            İlanınızı gözden
-                            geçirin
+                          <h3 className="mb-1 text-xl sm:text-2xl font-black tracking-[-0.03em] text-[#F5F7FA]">
+                            İlan Özeti ve Şeffaf Fiyatlandırma
                           </h3>
-                          <p className="text-sm text-[#9AA7B5]">
-                            Tüm bilgilerin
-                            doğru olduğunu
-                            kontrol edin.
+                          <p className="text-xs sm:text-sm text-[#8C98A8]">
+                            TORK Hürmüz Fiyat Motoru tahminini inceleyin ve ilanınızı taşıyıcı ağına yayınlayın.
                           </p>
                         </div>
 
                         <div className="grid gap-4">
-                          <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
-                            <div className="tork-eyebrow mb-3">
-                              Rota
+                          <div className="rounded-3xl border border-white/[0.06] bg-[#101923] p-5">
+                            <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8] mb-3">
+                              Rota Özeti
                             </div>
                             <RouteVisualization
                               origin={buildLocationObject({
@@ -2848,66 +2873,50 @@ export default function TorkApp() {
                               })}
                               originLabel={
                                 originProvince?.name +
-                                  (originDistrict
-                                    ? " / " + originDistrict
-                                    : "")
+                                (originDistrict ? " / " + originDistrict : "")
                               }
                               destinationLabel={
                                 destinationProvince?.name +
-                                  (destinationDistrict
-                                    ? " / " + destinationDistrict
-                                    : "")
+                                (destinationDistrict ? " / " + destinationDistrict : "")
                               }
                             />
                           </div>
 
-                          <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
-                              <div className="text-xs text-[#667085]">
-                                Tonaj
-                              </div>
-                              <div className="mt-2 text-2xl font-black text-[#F5F7FA]">
-                                {tonnage}{" "}
-                                <span className="text-sm font-bold text-[#9AA7B5]">
-                                  ton
-                                </span>
+                          <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+                            <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-4">
+                              <div className="text-xs text-[#8C98A8]">Tonaj</div>
+                              <div className="mt-1.5 text-xl font-black text-[#F5F7FA]">
+                                {tonnage || "0"}{" "}
+                                <span className="text-xs font-semibold text-[#8C98A8]">ton</span>
                               </div>
                             </div>
 
-                            <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
-                              <div className="text-xs text-[#667085]">
-                                Araç tipi
-                              </div>
-                              <div className="mt-2 text-lg font-black text-[#F5F7FA]">
+                            <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-4">
+                              <div className="text-xs text-[#8C98A8]">Araç Tipi</div>
+                              <div className="mt-1.5 text-sm font-bold text-[#F5F7FA] truncate">
                                 {vehicle}
                               </div>
                             </div>
 
-                            <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
-                              <div className="text-xs text-[#667085]">
-                                Yük cinsi
-                              </div>
-                              <div className="mt-2 text-sm font-black text-[#F5F7FA]">
+                            <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-4">
+                              <div className="text-xs text-[#8C98A8]">Yük Cinsi</div>
+                              <div className="mt-1.5 text-sm font-bold text-[#F5F7FA] truncate">
                                 {cargoType}
                               </div>
                             </div>
 
-                            <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
-                              <div className="text-xs text-[#667085]">
-                                Koli / Palet
-                              </div>
-                              <div className="mt-2 text-sm font-black text-[#F5F7FA]">
-                                {packageCount}
+                            <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-4">
+                              <div className="text-xs text-[#8C98A8]">Paket / Koli</div>
+                              <div className="mt-1.5 text-sm font-bold text-[#F5F7FA] truncate">
+                                {packageCount || "Belirtilmedi"}
                               </div>
                             </div>
                           </div>
 
                           {loadDescription && (
-                            <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
-                              <div className="text-xs text-[#667085]">
-                                Açıklama
-                              </div>
-                              <div className="mt-2 text-sm leading-6 text-[#F5F7FA]">
+                            <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-4">
+                              <div className="text-xs text-[#8C98A8]">Özel Notlar</div>
+                              <div className="mt-1 text-xs leading-5 text-[#F5F7FA]">
                                 {loadDescription}
                               </div>
                             </div>
@@ -2932,65 +2941,63 @@ export default function TorkApp() {
                               vehicle?.toLowerCase().includes("kırkayak")
                                 ? "KIRKAYAK"
                                 : vehicle?.toLowerCase().includes("kamyonet")
-                                  ? "KAMYONET"
-                                  : vehicle?.toLowerCase().includes("kamyon")
-                                    ? "KAMYON"
-                                    : "TIR"
+                                ? "KAMYONET"
+                                : vehicle?.toLowerCase().includes("kamyon")
+                                ? "KAMYON"
+                                : "TIR"
                             }
                           />
                         </div>
                       </div>
                     )}
 
-                     {/* ACTION BUTTONS */}
-                     <div className="flex justify-between border-t border-white/6 pt-6">
-                       <div className="flex gap-2">
-                         {editingLoad && (
-                           <button
-                             type="button"
-                              onClick={() => {
-                                resetCreateForm();
-                                setActiveTab("loads");
-                              }}
-                             className="rounded-xl px-6 py-3 text-xs font-bold text-[#9AA7B5] transition hover:text-white"
-                           >
-                             İptal
-                           </button>
-                         )}
-                         <button
-                           type="button"
-                           onClick={() => {
-                             if (createLoadStep > 0) {
-                               setCreateLoadStep(
-                                 createLoadStep - 1
-                               );
-                             }
-                           }}
-                           disabled={createLoadStep === 0}
-                           className={`rounded-xl px-6 py-3 text-xs font-bold transition ${
-                             createLoadStep === 0
-                               ? "cursor-not-allowed text-[#667085]"
-                               : "border border-white/10 bg-white/[0.03] text-[#9AA7B5] hover:border-white/20 hover:bg-white/[0.05]"
-                           }`}
-                         >
-                           ← Geri
-                         </button>
-                       </div>
+                    {/* ACTION BUTTONS */}
+                    <div className="flex justify-between border-t border-white/[0.06] pt-6">
+                      <div className="flex gap-2.5">
+                        {editingLoad && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              resetCreateForm();
+                              setActiveTab("loads");
+                            }}
+                            className="rounded-xl border border-white/[0.06] bg-[#101923] px-5 py-2.5 text-xs font-semibold text-[#8C98A8] transition hover:border-white/20 hover:text-[#F5F7FA]"
+                          >
+                            İptal
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (createLoadStep > 0) {
+                              setCreateLoadStep(createLoadStep - 1);
+                            }
+                          }}
+                          disabled={createLoadStep === 0}
+                          className={`rounded-xl px-5 py-2.5 text-xs font-semibold transition ${
+                            createLoadStep === 0
+                              ? "cursor-not-allowed border border-white/[0.02] bg-white/[0.01] text-[#8C98A8]/40"
+                              : "border border-white/[0.06] bg-[#101923] text-[#8C98A8] hover:border-white/20 hover:text-[#F5F7FA]"
+                          }`}
+                        >
+                          ← Geri
+                        </button>
+                      </div>
 
-                       <button
-                         type="submit"
-                         disabled={loading || loadActionLoading}
-                         className="tork-button-primary rounded-xl px-8 py-3 text-xs font-black"
-                       >
-                         {loading || loadActionLoading
-                           ? "İşleniyor..."
-                           : editingLoad
-                             ? "Değişiklikleri Kaydet →"
-                             : createLoadStep === 4
-                               ? "İlanı yayınla →"
-                               : "Devam et →"}
-                       </button>
-                     </div>
+                      <button
+                        type="submit"
+                        disabled={loading || loadActionLoading}
+                        className="rounded-xl bg-[#00E5A0] px-8 py-3 text-xs font-black text-[#060B11] shadow-[0_0_24px_rgba(0,229,160,0.25)] transition hover:bg-[#00c78a] active:scale-[0.99] disabled:opacity-50"
+                      >
+                        {loading || loadActionLoading
+                          ? "İşleniyor..."
+                          : editingLoad
+                          ? "Değişiklikleri Kaydet →"
+                          : createLoadStep === 4
+                          ? "İlanı Yayınla →"
+                          : "Devam Et →"}
+                      </button>
+                    </div>
                   </form>
 
                 </div>
@@ -3222,22 +3229,25 @@ export default function TorkApp() {
            {userDashboard.role === "shipper" &&
              activeTab === "bids" && (
              <div className="tork-fade-up">
-               <div className="mb-8">
-                 <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
-                   Teklif Yönetimi
-                 </div>
-                 <h1 className="text-3xl font-black tracking-[-0.04em] text-[#F5F7FA]">
-                   Gelen Teklifler
-                 </h1>
-                 <p className="mt-2 text-sm text-[#9AA7B5]">
-                   Taşıyıcılardan gelen teklifleri inceleyin ve yönetin
-                 </p>
-               </div>
+               <SectionHeading
+                 eyebrow="Teklif Yönetimi"
+                 title="Gelen Teklifler"
+                 description="Taşıyıcılardan gelen teklifleri inceleyin ve yönetin"
+               />
 
                {incomingBids.length === 0 ? (
                  <EmptyState
                    title="Henüz teklif yok"
-                   text="Taşıyıcılar yüklerinize teklif verdiğinde burada görünecek."
+                   text="İlanınız yayınlandığında taşıyıcı teklifleri burada görünecek."
+                   action={
+                     <button
+                       type="button"
+                       onClick={() => setActiveTab("create-load")}
+                       className="inline-flex items-center gap-2 rounded-xl bg-[#00E5A0] px-4 py-2.5 text-xs font-black text-[#060B11] shadow-[0_0_16px_rgba(0,229,160,0.25)] hover:bg-[#00d896] active:scale-[0.98] transition"
+                     >
+                       + YENİ YÜK OLUŞTUR
+                     </button>
+                   }
                  />
                ) : (
                  <div className="space-y-4">
@@ -3437,7 +3447,7 @@ export default function TorkApp() {
                 <div className="tork-panel w-full max-w-4xl max-h-[80vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
                   <div className="mb-6 flex items-center justify-between">
                     <div>
-                      <div className="tork-eyebrow mb-2">Teklif Karşılaştırma</div>
+                      <div className="tork-eyebrow mb-1">TEKLİFLERİ KARŞILAŞTIR</div>
                       <h3 className="text-xl font-black text-white">
                         {selectedBids.length} teklif seçildi
                       </h3>
@@ -5423,11 +5433,11 @@ export default function TorkApp() {
         )}
 
         {/* =========================================================
-            MOBILE BOTTOM NAVIGATION BAR (iOS-Inspired Glassmorphic)
+            MOBILE BOTTOM NAVIGATION DOCK (Floating Glass Dock)
            ========================================================= */}
         <nav
           aria-label="Mobil alt menü"
-          className="fixed bottom-0 inset-x-0 z-50 flex h-16 items-center justify-around border-t border-white/10 bg-[#0B111A]/92 px-2 backdrop-blur-2xl lg:hidden shadow-[0_-8px_32px_rgba(0,0,0,0.6)] pb-safe"
+          className="fixed bottom-3 inset-x-3 sm:bottom-4 sm:inset-x-4 z-50 flex h-16 items-center justify-around rounded-3xl border border-white/[0.08] bg-[#0B111A]/85 px-2 backdrop-blur-2xl lg:hidden shadow-[0_12px_40px_rgba(0,0,0,0.7)]"
         >
           {userDashboard.role === "shipper" ? (
             <>
@@ -5438,8 +5448,8 @@ export default function TorkApp() {
                   setActiveTab("overview");
                   setMessage("");
                 }}
-                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "overview" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
+                  activeTab === "overview" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5455,8 +5465,8 @@ export default function TorkApp() {
                   setActiveTab("loads");
                   setMessage("");
                 }}
-                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "loads" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
+                  activeTab === "loads" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5465,7 +5475,7 @@ export default function TorkApp() {
                 <span className="mt-1 text-[10px] font-bold">İlanlarım</span>
               </button>
 
-              {/* 3. Create (Action Highlight) */}
+              {/* 3. Create (Signature Center Action Highlight) */}
               <button
                 type="button"
                 onClick={() => {
@@ -5473,14 +5483,14 @@ export default function TorkApp() {
                   setActiveTab("create");
                   setMessage("");
                 }}
-                className="flex flex-1 flex-col items-center justify-center py-1 text-[#00E5A0] min-h-[44px]"
+                className="flex flex-1 flex-col items-center justify-center py-1 text-[#00E5A0] min-h-[44px] -mt-3"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00E5A0]/15 border border-[#00E5A0]/30 shadow-[0_0_12px_rgba(0,229,160,0.3)]">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#00E5A0] text-[#060B11] shadow-[0_0_20px_rgba(0,229,160,0.5)] transition duration-200 active:scale-95">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                   </svg>
                 </div>
-                <span className="mt-0.5 text-[10px] font-black text-[#00E5A0]">İlan Ver</span>
+                <span className="mt-1 text-[10px] font-black text-[#00E5A0]">+ İlan Ver</span>
               </button>
 
               {/* 4. Bids */}
@@ -5490,15 +5500,15 @@ export default function TorkApp() {
                   setActiveTab("bids");
                   setMessage("");
                 }}
-                className={`relative flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "bids" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                className={`relative flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
+                  activeTab === "bids" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
                 {incomingBids.filter((b) => b.status === "pending").length > 0 && (
-                  <span className="absolute top-1 right-[22%] flex h-4 w-4 items-center justify-center rounded-full bg-[#00E5A0] text-[9px] font-black text-black">
+                  <span className="absolute top-1 right-[20%] flex h-4 w-4 items-center justify-center rounded-full bg-[#F5B94C] text-[9px] font-black text-[#060B11]">
                     {incomingBids.filter((b) => b.status === "pending").length}
                   </span>
                 )}
@@ -5512,8 +5522,8 @@ export default function TorkApp() {
                   setActiveTab("wallet");
                   setMessage("");
                 }}
-                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "wallet" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
+                  activeTab === "wallet" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5531,8 +5541,8 @@ export default function TorkApp() {
                   setActiveTab("overview");
                   setMessage("");
                 }}
-                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "overview" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
+                  activeTab === "overview" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5548,8 +5558,8 @@ export default function TorkApp() {
                   setActiveTab("board");
                   setMessage("");
                 }}
-                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "board" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
+                  activeTab === "board" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5558,28 +5568,26 @@ export default function TorkApp() {
                 <span className="mt-1 text-[10px] font-bold">Yükler</span>
               </button>
 
-              {/* 3. My Bids */}
+              {/* 3. My Bids (Carrier Center Action Highlight) */}
               <button
                 type="button"
                 onClick={() => {
                   setActiveTab("my-bids");
                   setMessage("");
                 }}
-                className={`relative flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "my-bids" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
-                }`}
+                className="relative flex flex-1 flex-col items-center justify-center py-1 text-[#00E5A0] min-h-[44px] -mt-3"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00E5A0]/15 border border-[#00E5A0]/30 shadow-[0_0_12px_rgba(0,229,160,0.3)] text-[#00E5A0]">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#00E5A0] text-[#060B11] shadow-[0_0_20px_rgba(0,229,160,0.5)] transition duration-200 active:scale-95">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 </div>
                 {carrierBids.filter((b) => b.status === "pending").length > 0 && (
-                  <span className="absolute top-1 right-[22%] flex h-4 w-4 items-center justify-center rounded-full bg-[#00E5A0] text-[9px] font-black text-black">
+                  <span className="absolute top-0 right-[20%] flex h-4 w-4 items-center justify-center rounded-full bg-[#F5B94C] text-[9px] font-black text-[#060B11]">
                     {carrierBids.filter((b) => b.status === "pending").length}
                   </span>
                 )}
-                <span className="mt-0.5 text-[10px] font-black text-[#00E5A0]">Tekliflerim</span>
+                <span className="mt-1 text-[10px] font-black text-[#00E5A0]">Tekliflerim</span>
               </button>
 
               {/* 4. Transports */}
@@ -5589,8 +5597,8 @@ export default function TorkApp() {
                   setActiveTab("transports");
                   setMessage("");
                 }}
-                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "transports" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
+                  activeTab === "transports" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5606,8 +5614,8 @@ export default function TorkApp() {
                   setActiveTab("wallet");
                   setMessage("");
                 }}
-                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
-                  activeTab === "wallet" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
+                  activeTab === "wallet" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

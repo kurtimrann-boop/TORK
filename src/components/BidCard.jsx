@@ -24,153 +24,189 @@ export default function BidCard({
   const isAccepted = bid.status === "accepted";
   const isRejected = bid.status === "rejected";
 
+  const carrierName = bid.profiles?.company_name || "Taşıyıcı";
+  const vehicleInfo = bid.loads?.vehicle_type || "TIR";
+  const cargoInfo = bid.loads?.tonnage ? `${bid.loads.tonnage} Ton` : "Komple Yük";
+  const deliveryInfo = bid.loads?.duration_minutes
+    ? `${Math.round(bid.loads.duration_minutes / 60)} sa teslim`
+    : "24 sa içinde";
+
   return (
     <div
-      className={`rounded-2xl border bg-[#0F1723] p-5 sm:p-6 transition-all duration-200 hover:shadow-lg ${
+      className={`group relative rounded-2xl border transition-all duration-200 select-none p-4 sm:px-5 sm:py-3.5 ${
         isSelected
-          ? "border-[#00E5A0]/30 bg-[#00E5A0]/5"
-          : "border-white/8 hover:border-white/14"
+          ? "border-[#00E5A0]/40 bg-[#00E5A0]/[0.05]"
+          : "border-white/[0.06] bg-[#0B111A] hover:border-[#00E5A0]/30 hover:bg-[#101923] hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
       }`}
     >
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex-1">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            {onSelect && !isCarrierView && (
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => onSelect(bid.id)}
-                className="h-4 w-4 accent-[#00E5A0] rounded"
-              />
-            )}
-            <span className="text-[10px] font-black uppercase tracking-[0.14em] text-[#9AA7B5]">
-              {isCarrierView ? "Verdiğiniz Teklif" : "Taşıyıcı Teklifi"}
-            </span>
-
-            {isBestBid && !isCarrierView && (
-              <span className="rounded-full border border-[#00E5A0]/20 bg-[#00E5A0]/10 px-2 py-0.5 text-[9px] font-black tracking-wider text-[#00E5A0]">
-                EN DÜŞÜK TOPLAM
-              </span>
-            )}
-            {isBestPricePerKm && !isCarrierView && pricePerKm !== null && (
-              <span className="rounded-full border border-[#06B6D4]/20 bg-[#06B6D4]/10 px-2 py-0.5 text-[9px] font-black tracking-wider text-[#06B6D4]">
-                EN DÜŞÜK FİYAT/KM
-              </span>
-            )}
-
-            {isCarrierView && isAccepted && (
-              <span className="rounded-full border border-[#00E5A0]/30 bg-[#00E5A0]/15 px-2.5 py-0.5 text-[9px] font-black tracking-wider text-[#00E5A0]">
-                SEVKİYAT ATANDI
-              </span>
-            )}
+      {/* =========================================================================
+          DESKTOP PROCUREMENT DATA ROW (lg:grid)
+          Columns: ROTA | YÜK | TAŞIYICI | ARAÇ | TESLİM | FİYAT & ₺/KM | DURUM | AKSİYON
+         ========================================================================= */}
+      <div className="hidden lg:grid grid-cols-12 items-center gap-3 text-xs">
+        {/* 1. Route & Select (3 cols) */}
+        <div className="col-span-3 flex items-center gap-2 min-w-0">
+          {onSelect && !isCarrierView && (
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onSelect(bid.id)}
+              className="h-3.5 w-3.5 accent-[#00E5A0] rounded shrink-0 mr-1"
+            />
+          )}
+          <span className="h-1.5 w-1.5 rounded-full bg-[#00E5A0] shrink-0" />
+          <div className="min-w-0 truncate">
+            <span className="font-bold text-[#F5F7FA]">{bid.loads?.origin || "—"}</span>
+            <span className="text-[#00E5A0] mx-1">→</span>
+            <span className="font-bold text-[#F5F7FA]">{bid.loads?.destination || "—"}</span>
           </div>
+        </div>
 
-          <div className="mb-2 flex items-baseline justify-between lg:mb-0">
-            <div className="text-2xl sm:text-3xl font-black tracking-[-0.04em] text-[#00E5A0]">
+        {/* 2. Yük Bilgisi (1 col) */}
+        <div className="col-span-1 text-[#8C98A8] truncate font-medium">
+          {cargoInfo}
+        </div>
+
+        {/* 3. Taşıyıcı (2 cols) */}
+        <div className="col-span-2 min-w-0">
+          <div className="font-bold text-[#F5F7FA] truncate">
+            {isCarrierView ? "Sizin Teklifiniz" : carrierName}
+          </div>
+          <div className="text-[10px] text-[#8C98A8] truncate">
+            {formatRelativeTimeTR(bid.created_at)}
+          </div>
+        </div>
+
+        {/* 4. Araç & Teslim (1 col) */}
+        <div className="col-span-1 text-[#8C98A8] truncate">
+          <div className="font-medium text-[#F5F7FA]">{vehicleInfo}</div>
+          <div className="text-[10px] text-[#8C98A8]">{deliveryInfo}</div>
+        </div>
+
+        {/* 5. Fiyat & ₺/km & Best Bid Pill (2 cols) */}
+        <div className="col-span-2 flex flex-col items-start justify-center">
+          <div className="flex items-center gap-1.5">
+            <span className="text-base xl:text-lg font-black text-[#F5F7FA] tracking-tight">
               {formatCurrencyTR(bid.amount)}
-            </div>
-            <div className="text-[11px] font-bold text-[#9AA7B5]">
-              {formatRelativeTimeTR(bid.created_at)}
-            </div>
-          </div>
-
-          {pricePerKm !== null && pricePerKm !== undefined && (
-            <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[#06B6D4]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#06B6D4]" />
-              <span>Birim Navlun: {formatPricePerKm(pricePerKm)}</span>
-            </div>
-          )}
-
-          <div className="mt-3 flex items-center gap-2">
-            <span className="text-sm font-black text-[#F5F7FA]">
-              {bid.loads?.origin || "—"}
             </span>
-            <svg
-              className="h-3.5 w-3.5 text-[#9AA7B5] shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-            <span className="text-sm font-black text-[#F5F7FA]">
-              {bid.loads?.destination || "—"}
-            </span>
+            {isBestBid && !isCarrierView && (
+              <span className="inline-flex items-center rounded-md border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#00E5A0]">
+                EN DÜŞÜK
+              </span>
+            )}
           </div>
-
-          {bid.loads?.tonnage && (
-            <div className="mt-1 text-xs text-[#9AA7B5]">
-              {bid.loads.tonnage} Ton {bid.loads.vehicle_type ? `· ${bid.loads.vehicle_type}` : ""}
-            </div>
-          )}
-
-          {!isCarrierView && (
-            <div className="mt-2 text-xs font-medium text-[#9AA7B5]">
-              {bid.profiles?.company_name || "Doğrulanmış Taşıyıcı"}
+          {pricePerKm && (
+            <div className="text-[11px] font-mono text-[#8C98A8]">
+              {formatPricePerKm(pricePerKm)}
             </div>
           )}
         </div>
 
-        <div className="flex flex-col gap-3 lg:items-end">
+        {/* 6. Durum (1 col) */}
+        <div className="col-span-1 flex items-center">
           <StatusBadge status={bid.status} />
+        </div>
 
-          {/* Shipper Actions (Accept / Reject) */}
+        {/* 7. Aksiyonlar (2 cols) */}
+        <div className="col-span-2 flex items-center justify-end gap-2">
           {isPending && !isCarrierView && (
-            <div className="flex gap-2">
+            <>
               <button
                 type="button"
                 onClick={onAccept}
-                className="rounded-xl border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-4 py-2 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] transition duration-150 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15 active:scale-95"
+                className="rounded-xl bg-[#00E5A0] px-3.5 py-2 text-xs font-black text-[#060B11] shadow-[0_0_14px_rgba(0,229,160,0.25)] hover:bg-[#00d896] active:scale-[0.98] transition"
               >
-                Kabul Et
+                Teklifi Kabul Et
               </button>
-
               <button
                 type="button"
                 onClick={onReject}
-                className="rounded-xl border border-red-500/15 bg-red-500/5 px-4 py-2 text-xs font-black text-red-400 transition duration-150 hover:border-red-500/25 hover:bg-red-500/8 active:scale-95"
+                className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-2.5 py-2 text-xs font-bold text-[#8C98A8] hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 transition"
               >
                 Reddet
               </button>
-            </div>
+            </>
           )}
 
-          {/* Carrier Actions & Status Notes */}
-          {isCarrierView && (
-            <div className="flex flex-col items-start lg:items-end gap-2">
-              {isPending && (
-                <span className="text-[11px] font-bold text-amber-400">
-                  Karar bekleniyor
-                </span>
-              )}
-              {isAccepted && (
-                <span className="text-[11px] font-black text-[#00E5A0]">
-                  Teklifiniz kabul edildi
-                </span>
-              )}
-              {isRejected && (
-                <span className="text-[11px] font-bold text-slate-400">
-                  Teklif reddedildi
-                </span>
-              )}
-
-              {onViewLoad && bid.load_id && (
-                <button
-                  type="button"
-                  onClick={() => onViewLoad(bid.load_id)}
-                  className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-bold text-slate-300 transition duration-150 hover:border-white/20 hover:bg-white/10 hover:text-white active:scale-95"
-                >
-                  İlanı İncele →
-                </button>
-              )}
-            </div>
+          {isCarrierView && onViewLoad && bid.load_id && (
+            <button
+              type="button"
+              onClick={() => onViewLoad(bid.load_id)}
+              className="rounded-xl bg-white/[0.04] border border-white/[0.08] px-3 py-2 text-xs font-bold text-[#8C98A8] hover:text-[#F5F7FA] hover:border-white/20 transition"
+            >
+              İlanı Gör
+            </button>
           )}
         </div>
+      </div>
+
+      {/* =========================================================================
+          MOBILE STACKED PROCUREMENT CARD (< lg)
+          Fiyat en üstte, CTA en altta
+         ========================================================================= */}
+      <div className="lg:hidden flex flex-col gap-3">
+        {/* Top: Fiyat, Best Badge & Status */}
+        <div className="flex items-center justify-between border-b border-white/[0.05] pb-2.5">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-black text-[#F5F7FA] tracking-tight">
+                {formatCurrencyTR(bid.amount)}
+              </span>
+              {isBestBid && !isCarrierView && (
+                <span className="inline-flex items-center rounded-md border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#00E5A0]">
+                  EN DÜŞÜK
+                </span>
+              )}
+            </div>
+            {pricePerKm && (
+              <div className="text-xs font-mono text-[#8C98A8] mt-0.5">
+                {formatPricePerKm(pricePerKm)}
+              </div>
+            )}
+          </div>
+          <StatusBadge status={bid.status} />
+        </div>
+
+        {/* Middle: Rota & Taşıyıcı Detayları */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sm font-bold text-[#F5F7FA]">
+            <span>{bid.loads?.origin || "—"}</span>
+            <span className="text-[#00E5A0]">→</span>
+            <span>{bid.loads?.destination || "—"}</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#8C98A8]">
+            <span className="font-semibold text-[#F5F7FA]">
+              {isCarrierView ? "Sizin Teklifiniz" : carrierName}
+            </span>
+            <span>·</span>
+            <span>{vehicleInfo}</span>
+            <span>·</span>
+            <span>{cargoInfo}</span>
+            <span>·</span>
+            <span>{formatRelativeTimeTR(bid.created_at)}</span>
+          </div>
+        </div>
+
+        {/* Bottom: Action CTAs (44px+ touch target) */}
+        {isPending && !isCarrierView && (
+          <div className="pt-2 border-t border-white/[0.05] flex gap-2">
+            <button
+              type="button"
+              onClick={onAccept}
+              className="flex-1 h-11 rounded-xl bg-[#00E5A0] text-xs font-black text-[#060B11] shadow-[0_0_14px_rgba(0,229,160,0.2)] hover:bg-[#00d896] active:scale-[0.98] transition flex items-center justify-center"
+            >
+              Teklifi Kabul Et
+            </button>
+            <button
+              type="button"
+              onClick={onReject}
+              className="h-11 px-4 rounded-xl border border-white/[0.08] bg-white/[0.03] text-xs font-bold text-[#8C98A8] hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition flex items-center justify-center"
+            >
+              Reddet
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

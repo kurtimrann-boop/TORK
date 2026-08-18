@@ -2,76 +2,96 @@ import { getRoleTR } from "../utils/turkish";
 
 export default function Sidebar({ tabs, activeTab, userDashboard, onTabChange, onLogout }) {
   return (
-    <aside className="hidden w-[270px] shrink-0 border-r border-white/8 bg-[#0B111A]/95 px-6 py-6 lg:flex lg:flex-col">
-      <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#00E5A0]/25 bg-[#00E5A0]/8 text-base font-black text-[#00E5A0] shadow-[0_0_0_1px_rgba(0,229,160,0.08)]">
-          T
+    <aside className="hidden w-[240px] shrink-0 border-r border-white/[0.06] bg-[#0B111A] px-4 py-5 lg:flex lg:flex-col justify-between select-none">
+      {/* Brand & Workspace */}
+      <div>
+        <div className="flex items-center gap-3 px-2 py-1">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#00E5A0] to-[#00B37E] text-sm font-black text-[#060B11] shadow-[0_0_20px_rgba(0,229,160,0.3)]">
+            T
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-base font-black tracking-[-0.04em] text-[#F5F7FA]">
+                TORK
+              </span>
+              <span className="rounded-md bg-[#00E5A0]/15 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-[#00E5A0]">
+                B2B
+              </span>
+            </div>
+            <div className="text-[11px] font-medium text-[#8C98A8]">
+              Control Tower
+            </div>
+          </div>
         </div>
 
-        <div>
-          <div className="text-[15px] font-black tracking-[-0.04em] text-[#F5F7FA]">
-            Tork<span className="text-[#00E5A0]">.</span>
-          </div>
-          <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#667085]">
-            Navlun Operasyonları
-          </div>
+        <div className="my-5 h-px bg-white/[0.06]" />
+
+        {/* Section Header */}
+        <div className="px-2 mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]/70">
+          Operasyon
         </div>
-      </div>
 
-      <div className="my-7 h-px bg-white/6" />
+        {/* Navigation Tabs */}
+        <nav className="space-y-1">
+          {tabs.map((tab) => {
+            const active = activeTab === tab.id;
 
-      <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#667085]">
-        Çalışma Alanı
-      </div>
-
-      <nav className="space-y-1.5">
-        {tabs.map((tab) => {
-          const active = activeTab === tab.id;
-
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => onTabChange(tab.id)}
-              className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm font-semibold transition-all duration-200 ${
-                active
-                  ? "border border-[#00E5A0]/20 bg-[#00E5A0]/8 text-[#F5F7FA] shadow-[0_0_0_1px_rgba(0,229,160,0.08)]"
-                  : "text-[#9AA7B5] hover:bg-white/[0.03] hover:text-[#F5F7FA]"
-              }`}
-            >
-              <span
-                className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs ${
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => onTabChange(tab.id)}
+                className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-all duration-200 ${
                   active
-                    ? "bg-[#00E5A0] text-[#07110D] font-black"
-                    : "bg-white/[0.035] text-[#667085]"
+                    ? "border-l-2 border-[#00E5A0] bg-[#00E5A0]/[0.08] text-[#F5F7FA] font-semibold pl-2.5"
+                    : "text-[#8C98A8] hover:bg-white/[0.04] hover:text-[#F5F7FA]"
                 }`}
               >
-                {tab.icon}
-              </span>
-              {tab.label}
-            </button>
-          );
-        })}
-      </nav>
+                <span
+                  className={`flex h-6 w-6 items-center justify-center text-sm transition-colors ${
+                    active ? "text-[#00E5A0]" : "text-[#8C98A8] group-hover:text-[#F5F7FA]"
+                  }`}
+                >
+                  {tab.icon}
+                </span>
+                <span className="truncate">{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </div>
 
-      <div className="mt-auto space-y-3">
-        <div className="rounded-2xl border border-white/8 bg-[#111827] p-4">
-          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#667085]">
-            Hesap
+      {/* User & Account Footer */}
+      <div className="pt-4 border-t border-white/[0.06] space-y-3">
+        <div className="flex items-center gap-3 rounded-xl bg-[#101923] p-2.5 border border-white/[0.04]">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-white/10 to-white/5 border border-white/10 text-xs font-bold text-[#F5F7FA]">
+            {(userDashboard?.company_name || userDashboard?.full_name || "T")
+              .slice(0, 2)
+              .toUpperCase()}
           </div>
-          <div className="mt-2 truncate text-sm font-bold text-[#F5F7FA]">
-            {userDashboard?.company_name || "Tork kullanıcısı"}
-          </div>
-          <div className="mt-1 text-xs text-[#667085]">
-            {getRoleTR(userDashboard?.role)}
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-xs font-semibold text-[#F5F7FA]">
+              {userDashboard?.company_name || "Tork Kullanıcısı"}
+            </div>
+            <div className="text-[11px] text-[#8C98A8]">
+              {getRoleTR(userDashboard?.role)}
+            </div>
           </div>
         </div>
 
         <button
           type="button"
           onClick={onLogout}
-          className="w-full rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-xs font-black text-red-400 transition duration-200 hover:border-red-400/30 hover:bg-red-500/8"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-xs font-semibold text-[#8C98A8] transition duration-200 hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 active:scale-[0.99]"
         >
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
           Çıkış Yap
         </button>
       </div>

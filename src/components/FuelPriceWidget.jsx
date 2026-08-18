@@ -213,18 +213,18 @@ export default function FuelPriceWidget({ province = null, className = "" }) {
             </div>
           </div>
         ) : status === "error" && !fuelData ? (
-          // Error State with Retry
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-center">
-            <div className="text-xs font-bold text-red-400">{errorMsg}</div>
+          // Compact Single-Line Error State
+          <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-[#101923] px-3.5 py-2.5 text-xs text-[#8C98A8]">
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F5B94C]" />
+              <span>Akaryakıt verisine ulaşılamıyor.</span>
+            </div>
             <button
               type="button"
               onClick={() => loadPrices(true)}
-              className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-black text-red-300 transition hover:bg-red-500/20"
+              className="text-[11px] font-bold text-[#00E5A0] hover:underline"
             >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span>Tekrar Dene</span>
+              Yenile
             </button>
           </div>
         ) : (
