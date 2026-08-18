@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FuelPriceWidget from "./FuelPriceWidget";
 import MiniLiveMap from "./MiniLiveMap";
+import TorkIntelligenceCard from "./TorkIntelligenceCard";
 
 // In-memory session cache for location & weather across tab switches
 let sessionGeoCache = null;
@@ -72,6 +73,10 @@ export default function DashboardOperationsHub({
   onNavigate,
   onResetCreateForm,
   counts = {},
+  loads = [],
+  myLoads = [],
+  bids = [],
+  activeTransports = [],
 }) {
   const [geoState, setGeoState] = useState(() => sessionGeoCache || {
     coords: null,
@@ -264,23 +269,19 @@ export default function DashboardOperationsHub({
       </div>
 
       {/* =========================================================
-          CONTROL TOWER SPLIT GRID
-          LEFT (7 COLS): Large Live Map
-          RIGHT (5 COLS): Market Intelligence & Fuel
+          CONTROL TOWER SPLIT GRID (V1)
+          LEFT (7 COLS): Live Interactive Fleet & Rerouting Map
+          RIGHT (5 COLS): TORK Intelligence Operations Center
          ========================================================= */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-stretch">
-        <div className="lg:col-span-7">
+        {/* LEFT COLUMN: Map & Live Telemetry */}
+        <div className="lg:col-span-7 flex flex-col gap-4">
           <MiniLiveMap
             coords={geoState.coords}
             locationName={geoState.locationName}
             onRequestLocation={requestLocation}
             isLocating={isLocating}
           />
-        </div>
-
-        <div className="lg:col-span-5 flex flex-col gap-4">
-          {/* Market Intelligence Widget */}
-          <FuelPriceWidget province={detectedProvince} className="flex-1" />
 
           {/* Location & Weather Mini Card */}
           <div className="flex items-center justify-between rounded-2xl border border-white/[0.06] bg-[#0B111A] p-4">
@@ -298,9 +299,23 @@ export default function DashboardOperationsHub({
               </div>
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#00E5A0] bg-[#00E5A0]/10 border border-[#00E5A0]/20 px-2 py-0.5 rounded-full">
-              CANLI
+              CANLI TELEMETRİ
             </span>
           </div>
+        </div>
+
+        {/* RIGHT COLUMN: TORK Intelligence Operations Card & Fuel Widget */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          <TorkIntelligenceCard
+            loads={loads}
+            myLoads={myLoads}
+            bids={bids}
+            activeTransports={activeTransports}
+            userDashboard={userDashboard}
+            onNavigate={onNavigate}
+          />
+
+          <FuelPriceWidget province={detectedProvince} />
         </div>
       </div>
 

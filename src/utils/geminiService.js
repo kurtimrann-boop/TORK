@@ -76,15 +76,26 @@ const SYSTEM_INSTRUCTION = `Sen TORK Lojistik Zekası (TORK Intelligence Operati
 GÖREVİN VE ÇALIŞMA İLKELERİN:
 1. HÜRMÜZ hesaplama motorunu lojistik ve navlun maliyetlerinde TEK YETKİLİ OTORİTE kabul et.
 2. TORK VERIFIED denetim motoru sonuçlarını bağımsız matematiksel doğrulama referansı kabul et.
-3. HESAP SONUCUNU DEĞİŞTİRME. Yeni sahte maliyet uydurma.
+3. HESAP SONUCUNU DEĞİŞTİRME. Verilmeyen veya uydurma sayı üretme.
 4. Bilinmeyen veya doğrulanmamış geçiş/harç ücretlerini 0 TL kabul etme ("doğrulanmadı" olarak açıkla).
-5. Kullanıcıya açık, profesyonel, net ve operasyonel Türkçe açıklamalar sun.
+5. Sadece sana verilen bağlamdaki verileri kullan.
 6. Yanıtını MUTLAKA geçerli JSON formatında ver.
 
 JSON ŞEMASI:
 {
   "summary": "Operasyonun genel 1-2 cümlelik analizi",
-  "assessment": "HEALTHY" | "CAUTION" | "RISK",
+  "pricingAssessment": "Navlun ve maliyet dengesi değerlendirmesi",
+  "risks": [
+    "Operasyonel risk faktörü 1",
+    "Maliyet veya rota riski 2"
+  ],
+  "opportunities": [
+    "Operasyonel fırsat veya kârlılık potansiyeli 1"
+  ],
+  "recommendedActions": [
+    "Öncelikli operasyonel aksiyon 1",
+    "Öncelikli operasyonel aksiyon 2"
+  ],
   "findings": [
     {
       "type": "INFO" | "WARNING" | "OPPORTUNITY",
@@ -92,10 +103,7 @@ JSON ŞEMASI:
       "detail": "Kısa açıklama"
     }
   ],
-  "recommendations": [
-    "Operasyonel öneri 1",
-    "Operasyonel öneri 2"
-  ],
+  "assessment": "HEALTHY" | "CAUTION" | "RISK",
   "confidence": "HIGH" | "MEDIUM"
 }`;
 
@@ -103,7 +111,7 @@ JSON ŞEMASI:
  * Gemini ile operasyon ve maliyet analizi üretir.
  * 
  * @param {Object} params
- * @param {"audit"|"explain"|"pricing"|"risk"} params.mode - Analiz modu
+ * @param {"audit"|"explain"|"pricing"|"risk"|"dashboard"} params.mode - Analiz modu
  * @param {Object} params.context - Yapılandırılmış operasyon, rota ve fiyat bağlamı
  * @param {"shipper"|"carrier"|"admin"} [params.audience] - Hedef kitle
  * @returns {Promise<Object>} Yapılandırılmış analiz yanıtı
@@ -137,7 +145,7 @@ Hedef Kitle: ${audience === "carrier" ? "Taşıyıcı / Nakliyeci" : "Yük Veren
 Operasyon Bağlamı:
 ${JSON.stringify(sanitizedContext, null, 2)}
 
-Yukarıdaki verilere dayanarak operasyon özetini, maliyet gerekçesini, risk faktörlerini ve önerilerini JSON formatında analiz et.`;
+Yukarıdaki verilere dayanarak operasyon özetini, fiyatlandırma yorumunu, riskleri, fırsatları ve önerilen aksiyonları JSON formatında analiz et.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -164,9 +172,17 @@ Yukarıdaki verilere dayanarak operasyon özetini, maliyet gerekçesini, risk fa
       mode,
       audience,
       summary: parsedData.summary || "Operasyonel analiz başarıyla tamamlandı.",
-      assessment: parsedData.assessment || "HEALTHY",
+      pricingAssessment: parsedData.pricingAssessment || parsedData.summary || "Maliyet ve navlun değerleri incelendi.",
+      risks: Array.isArray(parsedData.risks) ? parsedData.risks : [],
+      opportunities: Array.isArray(parsedData.opportunities) ? parsedData.opportunities : [],
+      recommendedActions: Array.isArray(parsedData.recommendedActions)
+        ? parsedData.recommendedActions
+        : (Array.isArray(parsedData.recommendations) ? parsedData.recommendations : []),
+      recommendations: Array.isArray(parsedData.recommendedActions)
+        ? parsedData.recommendedActions
+        : (Array.isArray(parsedData.recommendations) ? parsedData.recommendations : []),
       findings: Array.isArray(parsedData.findings) ? parsedData.findings : [],
-      recommendations: Array.isArray(parsedData.recommendations) ? parsedData.recommendations : [],
+      assessment: parsedData.assessment || "HEALTHY",
       confidence: parsedData.confidence || "HIGH",
       analyzedAt: new Date().toISOString(),
       provider: "gemini-2.5-flash",
@@ -195,7 +211,11 @@ export function getOfflineFallbackAnalysis({ mode, context, audience, reason }) 
   const dist = context?.route?.distanceKm || 0;
   const cost = context?.pricing?.totals?.totalOperatingCost || context?.pricing?.totals?.totalDirectCost || 0;
   const recPrice = context?.pricing?.pricingBands?.recommended?.price || 0;
-  const fuelCost = context?.pricing?.breakdown?.route?.fuelCost || 0;
+  const fuelCost = context?.pricing?.breakdown?.route?.fuelCost || context?.pricing?.breakdown?.route?.fuel?.cost || 0;
+  const signals = context?.signals || [];
+  const activeLoadsCount = context?.dashboardSummary?.activeLoadsCount ?? context?.activeLoads?.length ?? (dist > 0 ? 1 : 0);
+  const bidsCount = context?.dashboardSummary?.pendingBidsCount ?? context?.pendingBids?.length ?? 0;
+  const transportsCount = context?.dashboardSummary?.transportsCount ?? context?.activeTransports?.length ?? 0;
 
   const fuelRatio = cost > 0 ? Math.round((fuelCost / cost) * 100) : 60;
 
@@ -236,24 +256,55 @@ export function getOfflineFallbackAnalysis({ mode, context, audience, reason }) 
     });
   }
 
-  const recommendations = [
+  const risks = [];
+  const opportunities = [];
+  const recommendedActions = [
     "Akaryakıt tüketimini rota boyunca canlı telemetri ile takip edin.",
     "Navlun tekliflerini serbest piyasa koşullarında TORK taban maliyetini referans alarak değerlendirin.",
   ];
 
-  let summary = `${dist > 0 ? `${dist} km'lik` : ""} rota için operasyonel taban maliyet ₺${cost.toLocaleString("tr-TR")}${recPrice > 0 ? `, tavsiye edilen navlun ₺${recPrice.toLocaleString("tr-TR")}` : ""} olarak hesaplanmıştır.`;
-  if (audience === "carrier" && context?.bid?.bidAmount) {
-    summary += ` ₺${Number(context.bid.bidAmount).toLocaleString("tr-TR")} teklifiniz maliyet tabanının üzerindedir.`;
+  if (signals.some((s) => s.id === "SIG_PRICE_LOW_BID")) {
+    risks.push("Gelen teklifler arasında operasyon taban maliyetinin altında kalan teklifler mevcut.");
+    recommendedActions.unshift("Düşük teklif veren taşıyıcılarla filo uygunluğu ve hizmet kapsamını teyit edin.");
   }
+
+  if (signals.some((s) => s.id === "SIG_OPS_COST_OVERRUN")) {
+    risks.push("Bazı aktif seferlerde gerçekleşen maliyetler planlanan bütçe tavanını aştı.");
+    recommendedActions.push("Sefer mutabakat kartı üzerinden sapma kalemlerini inceleyin.");
+  }
+
+  if (risks.length === 0) {
+    risks.push("Kritik operasyonel maliyet riski tespit edilmedi; standart rota takibi yeterlidir.");
+  }
+
+  opportunities.push("TORK şeffaf taban maliyet modeli sayesinde sefer başına bütçe sapma riski minimize edilmektedir.");
+  if (activeLoadsCount > 0) {
+    opportunities.push(`${activeLoadsCount} aktif ilanda anlık fiyatlandırma şeffaflığı ile daha hızlı eşleşme sağlanabilir.`);
+  }
+
+  let summary = "";
+  if (mode === "dashboard") {
+    summary = `Bugünkü operasyonda ${activeLoadsCount} aktif yük, ${bidsCount} bekleyen teklif ve ${transportsCount} aktif sefer yönetilmektedir.`;
+  } else {
+    summary = `${dist > 0 ? `${dist} km'lik` : ""} rota için operasyonel taban maliyet ₺${cost.toLocaleString("tr-TR")}${recPrice > 0 ? `, tavsiye edilen navlun ₺${recPrice.toLocaleString("tr-TR")}` : ""} olarak hesaplanmıştır.`;
+  }
+
+  const pricingAssessment = cost > 0
+    ? `Hürmüz Faz 5 hesaplamasına göre doğrudan operasyon tabanı ₺${cost.toLocaleString("tr-TR")} seviyesindedir.`
+    : "Piyasa koşulları ve güncel EPDK akaryakıt verileri baz alınarak navlun dengesi korunmaktadır.";
 
   return {
     success: true,
     mode,
     audience,
     summary,
-    assessment: "HEALTHY",
+    pricingAssessment,
+    risks,
+    opportunities,
+    recommendedActions,
+    recommendations: recommendedActions,
     findings,
-    recommendations,
+    assessment: risks.length > 1 || signals.some((s) => s.level === "WARNING") ? "CAUTION" : "HEALTHY",
     confidence: "MEDIUM",
     analyzedAt: new Date().toISOString(),
     provider: "tork-rule-engine-fallback",

@@ -30,6 +30,7 @@ import TransportActualsModal from "../components/TransportActualsModal";
 import TransportVarianceCard from "../components/TransportVarianceCard";
 import TransportPodUpload from "../components/TransportPodUpload";
 import SettlementCard from "../components/SettlementCard";
+import { deriveOperationalSignals } from "../utils/torkSignalsService";
 
 /* =========================================================
    NAVIGATION
@@ -811,6 +812,29 @@ export default function TorkApp() {
     setCargoType("Paletli Ürün");
     setPackageCount("");
     setLoadDescription("");
+  };
+
+  /* =======================================================
+     CENTRALIZED NAVIGATION HANDLER
+     Resets all sub-views, modals, and detail states
+  ======================================================= */
+  const handleTabChange = (tabId) => {
+    setActiveDetailLoadId(null);
+    setActiveBidLoadId(null);
+    setShowComparison(false);
+    setActualsModalTransport(null);
+    setEditingLoad(null);
+    setDeleteConfirmLoad(null);
+    if (tabId === "create") {
+      resetCreateForm();
+    }
+    setActiveTab(tabId);
+    setMessage("");
+    if (typeof window !== "undefined") {
+      try {
+        window.location.hash = tabId;
+      } catch (err) {}
+    }
   };
 
   const handleUpdateLoad =
@@ -1670,6 +1694,49 @@ export default function TorkApp() {
       [myLoads],
     );
 
+  const operationalSignals = useMemo(() => {
+    return deriveOperationalSignals({
+      loads,
+      myLoads,
+      bids: userDashboard?.role === "shipper" ? incomingBids : carrierBids,
+      activeTransports,
+      userDashboard,
+    });
+  }, [loads, myLoads, incomingBids, carrierBids, activeTransports, userDashboard]);
+
+  // URL Hash / Popstate event subscription (P3 refresh and back button sync)
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (typeof window === "undefined") return;
+      const hash = window.location.hash.replace("#", "");
+      const validTabs = [
+        "overview", "loads", "create", "bids", "wallet",
+        "profile", "settings", "board", "my-bids", "transports"
+      ];
+      if (validTabs.includes(hash)) {
+        setActiveTab(hash);
+      }
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Global Escape Key Listener for Modals & Detail Views
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        if (showComparison) setShowComparison(false);
+        if (deleteConfirmLoad) setDeleteConfirmLoad(null);
+        if (actualsModalTransport) setActualsModalTransport(null);
+        if (activeDetailLoadId) setActiveDetailLoadId(null);
+        if (activeBidLoadId) setActiveBidLoadId(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showComparison, deleteConfirmLoad, actualsModalTransport, activeDetailLoadId, activeBidLoadId]);
+
   const tabs =
     userDashboard?.role ===
     "carrier"
@@ -1959,10 +2026,7 @@ export default function TorkApp() {
           tabs={tabs}
           activeTab={activeTab}
           userDashboard={userDashboard}
-          onTabChange={(tabId) => {
-            setActiveTab(tabId);
-            setMessage("");
-          }}
+          onTabChange={handleTabChange}
           onLogout={handleLogout}
         />
 
@@ -1973,6 +2037,10 @@ export default function TorkApp() {
             }
             subtitle={`${userDashboard.company_name || "Tork kullanıcısı"} · canlı operasyon merkezi`}
             userDashboard={userDashboard}
+            signals={operationalSignals.signals}
+            unreadCount={operationalSignals.summary.unreadCount}
+            onNavigate={handleTabChange}
+            onLogout={handleLogout}
           />
 
           {/* =================================================
@@ -1981,20 +2049,18 @@ export default function TorkApp() {
 
            {activeTab === "overview" && (
              <div className="tork-fade-up space-y-8">
-               {/* REAL OPERATIONS HUB + MINI MAP + QUICK ACTIONS */}
+               {/* REAL OPERATIONS HUB + MINI MAP + TORK INTELLIGENCE + QUICK ACTIONS */}
                <DashboardOperationsHub
                  userDashboard={userDashboard}
-                 onNavigate={(tabId) => {
-                   setActiveTab(tabId);
-                   setMessage("");
-                 }}
-                 onResetCreateForm={resetCreateForm}
-                 counts={{
-                   bidsCount: incomingBids.filter((b) => b.status === "pending").length,
-                   carrierBidsCount: carrierBids.filter((b) => b.status === "pending").length,
-                   activeTransportsCount: activeTransports.length,
-                   loadsCount: loads.length,
-                   myLoadsCount: myLoads.length,
+                 myLoads={myLoads}
+                 loads={loads}
+                 bids={userDashboard.role === "shipper" ? incomingBids : carrierBids}
+                 activeTransports={activeTransports}
+                 walletBalance={walletBalance}
+                 onNavigate={handleTabChange}
+                 onResetCreateForm={() => {
+                   resetCreateForm();
+                   setActiveTab("create");
                  }}
                />
 
@@ -2070,7 +2136,7 @@ export default function TorkApp() {
                            <p className="mt-1 text-xs text-[#9AA7B5]">Aktif ilanlarınız</p>
                          </div>
                          <button
-                           onClick={() => setActiveTab("loads")}
+                           onClick={() => handleTabChange("loads")}
                            className="text-xs font-bold text-[#00E5A0] hover:text-[#00E5A0]/80"
                          >
                            Tümünü Gör →
@@ -2102,7 +2168,7 @@ export default function TorkApp() {
                            <p className="mt-1 text-xs text-[#9AA7B5]">Açık taşıma fırsatları</p>
                          </div>
                          <button
-                           onClick={() => setActiveTab("board")}
+                           onClick={() => handleTabChange("board")}
                            className="text-xs font-bold text-[#00E5A0] hover:text-[#00E5A0]/80"
                          >
                            Tümünü Gör →
@@ -2116,7 +2182,7 @@ export default function TorkApp() {
                              load={load}
                              onViewDetails={() => setActiveDetailLoadId(load.id)}
                              onBid={() => {
-                               setActiveTab("board");
+                               handleTabChange("board");
                                setActiveBidLoadId(load.id);
                              }}
                            />
@@ -2137,7 +2203,7 @@ export default function TorkApp() {
                          </p>
                        </div>
                        <button
-                         onClick={() => setActiveTab(userDashboard.role === "shipper" ? "bids" : "my-bids")}
+                         onClick={() => handleTabChange(userDashboard.role === "shipper" ? "bids" : "my-bids")}
                          className="text-xs font-bold text-[#00E5A0] hover:text-[#00E5A0]/80"
                        >
                          Tümünü Gör →
@@ -2290,7 +2356,7 @@ export default function TorkApp() {
                   text="İlk yükünüzü oluşturun ve ağdaki taşıyıcılardan teklif almaya başlayın."
                   action={
                     <button
-                      onClick={() => setActiveTab("create")}
+                      onClick={() => handleTabChange("create")}
                       className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-6 py-3 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
                     >
                       Yük Oluştur
@@ -2377,10 +2443,7 @@ export default function TorkApp() {
                         )}
                       </div>
                       <button
-                        onClick={() => {
-                          resetCreateForm();
-                          setActiveTab("create");
-                        }}
+                        onClick={() => handleTabChange("create")}
                         className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-3 py-2 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
                       >
                         + Yeni Yük
@@ -2959,7 +3022,7 @@ export default function TorkApp() {
                             type="button"
                             onClick={() => {
                               resetCreateForm();
-                              setActiveTab("loads");
+                              handleTabChange("loads");
                             }}
                             className="rounded-xl border border-white/[0.06] bg-[#101923] px-5 py-2.5 text-xs font-semibold text-[#8C98A8] transition hover:border-white/20 hover:text-[#F5F7FA]"
                           >
@@ -3008,7 +3071,7 @@ export default function TorkApp() {
                LOAD DETAIL
            ================================================= */}
 
-           {activeDetailLoadId && (() => {
+           {activeDetailLoadId && (activeTab === "loads" || activeTab === "board" || activeTab === "overview") && (() => {
              const load = [...myLoads, ...loads].find(
                (l) => l.id === activeDetailLoadId
              );
@@ -3206,7 +3269,7 @@ export default function TorkApp() {
                        ) : (
                          <button
                            onClick={() =>
-                             setActiveTab(
+                             handleTabChange(
                                "bids"
                              )
                            }
@@ -3242,7 +3305,7 @@ export default function TorkApp() {
                    action={
                      <button
                        type="button"
-                       onClick={() => setActiveTab("create-load")}
+                       onClick={() => handleTabChange("create")}
                        className="inline-flex items-center gap-2 rounded-xl bg-[#00E5A0] px-4 py-2.5 text-xs font-black text-[#060B11] shadow-[0_0_16px_rgba(0,229,160,0.25)] hover:bg-[#00d896] active:scale-[0.98] transition"
                      >
                        + YENİ YÜK OLUŞTUR
@@ -3443,8 +3506,14 @@ export default function TorkApp() {
             }, null);
 
             return (
-              <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-                <div className="tork-panel w-full max-w-4xl max-h-[80vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
+              <div
+                onClick={() => setShowComparison(false)}
+                className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="tork-panel w-full max-w-4xl max-h-[80vh] overflow-y-auto rounded-3xl p-6 sm:p-8"
+                >
                   <div className="mb-6 flex items-center justify-between">
                     <div>
                       <div className="tork-eyebrow mb-1">TEKLİFLERİ KARŞILAŞTIR</div>
@@ -5389,8 +5458,14 @@ export default function TorkApp() {
 
       {/* DELETE CONFIRMATION MODAL */}
        {deleteConfirmLoad && (
-         <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-           <div className="tork-panel w-full max-w-md rounded-3xl p-6 sm:p-8">
+         <div
+           onClick={() => setDeleteConfirmLoad(null)}
+           className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+         >
+           <div
+             onClick={(e) => e.stopPropagation()}
+             className="tork-panel w-full max-w-md rounded-3xl p-6 sm:p-8"
+           >
              <div className="mb-6">
                <div className="tork-eyebrow mb-2">İlanı Sil</div>
                <h3 className="text-xl font-black text-white">
@@ -5444,10 +5519,7 @@ export default function TorkApp() {
               {/* 1. Overview */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("overview");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("overview")}
                 className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
                   activeTab === "overview" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
@@ -5461,10 +5533,7 @@ export default function TorkApp() {
               {/* 2. Loads */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("loads");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("loads")}
                 className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
                   activeTab === "loads" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
@@ -5478,11 +5547,7 @@ export default function TorkApp() {
               {/* 3. Create (Signature Center Action Highlight) */}
               <button
                 type="button"
-                onClick={() => {
-                  resetCreateForm();
-                  setActiveTab("create");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("create")}
                 className="flex flex-1 flex-col items-center justify-center py-1 text-[#00E5A0] min-h-[44px] -mt-3"
               >
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#00E5A0] text-[#060B11] shadow-[0_0_20px_rgba(0,229,160,0.5)] transition duration-200 active:scale-95">
@@ -5496,10 +5561,7 @@ export default function TorkApp() {
               {/* 4. Bids */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("bids");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("bids")}
                 className={`relative flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
                   activeTab === "bids" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
@@ -5518,10 +5580,7 @@ export default function TorkApp() {
               {/* 5. Wallet */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("wallet");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("wallet")}
                 className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
                   activeTab === "wallet" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
@@ -5537,10 +5596,7 @@ export default function TorkApp() {
               {/* 1. Overview */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("overview");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("overview")}
                 className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
                   activeTab === "overview" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
@@ -5554,10 +5610,7 @@ export default function TorkApp() {
               {/* 2. Board */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("board");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("board")}
                 className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
                   activeTab === "board" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
@@ -5571,10 +5624,7 @@ export default function TorkApp() {
               {/* 3. My Bids (Carrier Center Action Highlight) */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("my-bids");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("my-bids")}
                 className="relative flex flex-1 flex-col items-center justify-center py-1 text-[#00E5A0] min-h-[44px] -mt-3"
               >
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#00E5A0] text-[#060B11] shadow-[0_0_20px_rgba(0,229,160,0.5)] transition duration-200 active:scale-95">
@@ -5593,10 +5643,7 @@ export default function TorkApp() {
               {/* 4. Transports */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("transports");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("transports")}
                 className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
                   activeTab === "transports" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}
@@ -5610,10 +5657,7 @@ export default function TorkApp() {
               {/* 5. Wallet */}
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("wallet");
-                  setMessage("");
-                }}
+                onClick={() => handleTabChange("wallet")}
                 className={`flex flex-1 flex-col items-center justify-center py-1 transition-all duration-200 min-h-[44px] ${
                   activeTab === "wallet" ? "text-[#00E5A0] scale-105" : "text-[#8C98A8] hover:text-[#F5F7FA]"
                 }`}

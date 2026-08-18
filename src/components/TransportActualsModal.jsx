@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { formatCurrencyTR } from "../utils/turkish";
 
 export default function TransportActualsModal({
@@ -23,6 +23,15 @@ export default function TransportActualsModal({
   const [depreciationCost, setDepreciationCost] = useState(initialActuals.depreciation_cost ?? "");
   const [otherCost, setOtherCost] = useState(initialActuals.other_cost ?? "");
   const [notes, setNotes] = useState(initialActuals.notes ?? "");
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   // Auto-calculated Fuel Cost
   const calculatedFuelCost = useMemo(() => {
@@ -83,8 +92,14 @@ export default function TransportActualsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-white/10 bg-[#0B111A] p-6 sm:p-8 shadow-2xl my-8">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl rounded-3xl border border-white/10 bg-[#0B111A] p-6 sm:p-8 shadow-2xl my-8"
+      >
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/8 mb-6">
           <div>
