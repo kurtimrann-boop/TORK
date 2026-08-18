@@ -89,13 +89,13 @@ export const TURKEY_PROVINCES = [
 ];
 
 /**
- * Create searchable index for provinces
+ * Create searchable index for provinces with Turkish locale folding
  */
 export function createProvinceIndex() {
   const index = new Map();
   
   TURKEY_PROVINCES.forEach((province) => {
-    const searchKey = province.name.toLowerCase();
+    const searchKey = province.name.toLocaleLowerCase("tr-TR").trim();
     index.set(searchKey, province);
   });
   
@@ -103,18 +103,18 @@ export function createProvinceIndex() {
 }
 
 /**
- * Search provinces by name or code
+ * Search provinces by name or code with Turkish locale folding
  */
 export function searchProvinces(query) {
   if (!query || query.trim().length === 0) {
     return TURKEY_PROVINCES;
   }
 
-  const searchTerm = query.toLowerCase();
+  const searchTerm = query.toLocaleLowerCase("tr-TR").trim();
 
   return TURKEY_PROVINCES.filter(
     (province) =>
-      province.name.toLowerCase().includes(searchTerm) ||
+      province.name.toLocaleLowerCase("tr-TR").includes(searchTerm) ||
       province.code.includes(searchTerm)
   );
 }
@@ -130,8 +130,10 @@ export function getProvinceByCode(code) {
  * Get province by name
  */
 export function getProvinceByName(name) {
+  if (!name) return null;
+  const target = name.toLocaleLowerCase("tr-TR").trim();
   return TURKEY_PROVINCES.find(
-    (p) => p.name.toLowerCase() === name.toLowerCase()
+    (p) => p.name.toLocaleLowerCase("tr-TR").trim() === target
   );
 }
 

@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import {
-  TURKEY_PROVINCES,
-  searchProvinces,
-} from "../data/turkeyProvinces";
+import { searchProvinces } from "../data/turkeyProvinces";
 
 export default function ProvinceSelect({
   label,
@@ -22,7 +19,7 @@ export default function ProvinceSelect({
   const containerRef = useRef(null);
   const listboxId = useId();
 
-  // Filter provinces derived with useMemo
+  // Filter provinces derived with useMemo and Turkish localization
   const filtered = useMemo(() => {
     return searchProvinces(searchQuery);
   }, [searchQuery]);

@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import FuelPriceWidget from "./FuelPriceWidget";
 import MiniLiveMap from "./MiniLiveMap";
 
 // In-memory session cache for location & weather across tab switches
@@ -119,123 +120,128 @@ export default function DashboardOperationsHub({
         };
       }
 
-      const result = {
+      const nextState = {
         coords: { lat: latitude, lng: longitude },
         locationName,
         temp: weatherData?.temp ?? null,
         feelsLike: weatherData?.feelsLike ?? null,
-        weatherLabel: weatherData?.weatherLabel ?? "Normal",
+        weatherLabel: weatherData?.weatherLabel ?? "Açık",
         weatherType: weatherData?.weatherType ?? "cloud",
         status: "success",
         errorMsg: null,
       };
 
-      sessionGeoCache = result;
-
+      sessionGeoCache = nextState;
       if (isMountedRef.current) {
-        setGeoState(result);
-        setIsLocating(false);
+        setGeoState(nextState);
       }
     } catch (err) {
+      console.warn("[DashboardOperationsHub] Geocode/Weather fetch failed:", err);
+      const fallbackState = {
+        coords: { lat: latitude, lng: longitude },
+        locationName: "Operasyon Merkezi",
+        temp: null,
+        feelsLike: null,
+        weatherLabel: null,
+        weatherType: "cloud",
+        status: "success",
+        errorMsg: null,
+      };
+      sessionGeoCache = fallbackState;
       if (isMountedRef.current) {
-        setGeoState((prev) => ({
-          ...prev,
-          coords: { lat: latitude, lng: longitude },
-          status: "success",
-          errorMsg: null,
-        }));
-        setIsLocating(false);
+        setGeoState(fallbackState);
       }
     }
   }, []);
 
   const requestLocation = useCallback(() => {
-    if (!("geolocation" in navigator)) {
+    if (typeof window === "undefined" || !navigator.geolocation) {
       setGeoState((prev) => ({
         ...prev,
         status: "error",
-        errorMsg: "Cihazınızda konum desteği bulunmuyor.",
+        errorMsg: "Tarayıcınız konum servisini desteklemiyor.",
       }));
       return;
     }
 
     setIsLocating(true);
-    setGeoState((prev) => ({ ...prev, status: "locating" }));
+    setGeoState((prev) => ({ ...prev, status: "locating", errorMsg: null }));
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        fetchWeatherAndGeocode(latitude, longitude);
+      (pos) => {
+        setIsLocating(false);
+        fetchWeatherAndGeocode(pos.coords.latitude, pos.coords.longitude);
       },
-      (error) => {
-        if (isMountedRef.current) {
-          setIsLocating(false);
-          setGeoState((prev) => ({
-            ...prev,
-            status: "error",
-            errorMsg: error.code === 1 ? "Konum izni verilmedi." : "Konum alınamadı.",
-          }));
-        }
+      (err) => {
+        setIsLocating(false);
+        console.warn("[DashboardOperationsHub] Geolocation error:", err.message);
+        setGeoState((prev) => ({
+          ...prev,
+          status: "error",
+          errorMsg: "Konum izni alınamadı.",
+        }));
       },
-      { timeout: 8000, maximumAge: 120000, enableHighAccuracy: false }
+      { timeout: 8000, maximumAge: 60000 }
     );
   }, [fetchWeatherAndGeocode]);
 
   useEffect(() => {
     isMountedRef.current = true;
-    const timer = setTimeout(() => {
-      if (!sessionGeoCache && isMountedRef.current) {
+    let timer = null;
+    if (!sessionGeoCache && geoState.status === "idle") {
+      timer = setTimeout(() => {
         requestLocation();
-      }
-    }, 100);
-
+      }, 0);
+    }
     return () => {
       isMountedRef.current = false;
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
     };
-  }, [requestLocation]);
+  }, [geoState.status, requestLocation]);
 
-  const greeting = new Date().getHours() < 12 ? "Günaydın" : "İyi günler";
-  const firstName = (userDashboard?.company_name || "Operatör").split(" ")[0];
   const isShipper = userDashboard?.role === "shipper";
+
+  const detectedProvince = useMemo(() => {
+    if (!geoState.locationName || geoState.locationName === "Mevcut Konum" || geoState.locationName === "Konum Bekleniyor") {
+      return null;
+    }
+    const parts = geoState.locationName.split(",");
+    return parts[0]?.trim() || null;
+  }, [geoState.locationName]);
 
   return (
     <div className="space-y-6">
       {/* =========================================================
-          OPERATIONS HUB HEADER & MINI MAP
+          1. OPERATIONS INTELLIGENCE BANNER
          ========================================================= */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* LEFT / MAIN (7 COLS): Operational Summary */}
-        <div className="flex flex-col justify-between rounded-3xl border border-white/8 bg-gradient-to-br from-[#0e141f] via-[#0B111A] to-[#07090d] p-6 sm:p-8 lg:col-span-7 shadow-[0_16px_50px_rgba(0,0,0,0.35)]">
+      <div className="rounded-3xl border border-white/8 bg-[#0F1723] p-6 sm:p-8 shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00E5A0] opacity-75" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#00E5A0]" />
-                </span>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00E5A0]">
-                  CANLI OPERASYON HUB
-                </span>
+            <div className="flex items-center gap-3">
+              <div className="flex h-3 w-3 items-center justify-center">
+                <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-ping" />
               </div>
-
-              <div className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-bold text-slate-400">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00E5A0]">
+                CANLI OPERASYON HUB
+              </span>
+              <span className="text-[10px] text-slate-500 font-bold">·</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 {isShipper ? "Yük Veren Terminali" : "Taşıyıcı Filo Terminali"}
-              </div>
+              </span>
             </div>
 
-            <h2 className="mt-4 text-2xl sm:text-3xl font-black tracking-[-0.035em] text-white">
-              {greeting}, <span className="text-white">{firstName}</span>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-black text-white tracking-[-0.03em]">
+              Günaydın, {userDashboard?.company_name || userDashboard?.full_name || "TORK Operasyon"}
             </h2>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs sm:text-sm text-slate-400">
               {isShipper
                 ? "Navlun ilanlarınızı ve gelen teklifleri gerçek zamanlı izleyin."
-                : "Açık navlun pazarını ve aktif sevkiyatlarınızı anlık yönetin."}
+                : "Açık navlun fırsatlarını inceleyin ve tekliflerinizi yönetin."}
             </p>
           </div>
 
-          {/* Location & Weather Telemetry Card (Clean SVGs, No Emojis) */}
-          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {/* Location & Weather Telemetry Pills */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:w-auto lg:min-w-[480px]">
             {/* Location Pill */}
             <div className="flex items-center gap-3 rounded-2xl border border-white/6 bg-white/[0.02] p-3.5 backdrop-blur-md">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#00E5A0]/20 bg-[#00E5A0]/10 text-[#00E5A0]">
@@ -251,6 +257,15 @@ export default function DashboardOperationsHub({
                 <div className="truncate text-xs font-black text-white">
                   {geoState.locationName}
                 </div>
+                {!geoState.coords && (
+                  <button
+                    type="button"
+                    onClick={requestLocation}
+                    className="mt-0.5 text-[10px] font-bold text-[#00E5A0] hover:underline"
+                  >
+                    Konum iznini etkinleştir →
+                  </button>
+                )}
               </div>
             </div>
 
@@ -278,9 +293,14 @@ export default function DashboardOperationsHub({
             </div>
           </div>
         </div>
+      </div>
 
-        {/* RIGHT (5 COLS): Mini Live Map */}
-        <div className="lg:col-span-5">
+      {/* =========================================================
+          2. LIVE OPERATIONS GRID: MINI MAP + FUEL MARKET
+         ========================================================= */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-stretch">
+        {/* LEFT (7 COLS): Mini Live Map */}
+        <div className="lg:col-span-7">
           <MiniLiveMap
             coords={geoState.coords}
             locationName={geoState.locationName}
@@ -288,10 +308,15 @@ export default function DashboardOperationsHub({
             isLocating={isLocating}
           />
         </div>
+
+        {/* RIGHT (5 COLS): Fuel Price Market Widget */}
+        <div className="lg:col-span-5">
+          <FuelPriceWidget province={detectedProvince} className="h-full" />
+        </div>
       </div>
 
       {/* =========================================================
-          QUICK ACTIONS (2x2 Grid)
+          QUICK ACTIONS (Compact 4-Column Grid)
          ========================================================= */}
       <div className="rounded-3xl border border-white/8 bg-[#0F1723] p-6 sm:p-8">
         <div className="mb-5 flex items-center justify-between">
@@ -314,10 +339,10 @@ export default function DashboardOperationsHub({
                   if (onResetCreateForm) onResetCreateForm();
                   if (onNavigate) onNavigate("create");
                 }}
-                className="group flex flex-col justify-between rounded-2xl border border-[#00E5A0]/20 bg-[#00E5A0]/5 p-5 text-left transition hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/10 hover:shadow-[0_0_24px_rgba(0,229,160,0.15)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-[#00E5A0]/20 bg-[#00E5A0]/5 p-5 text-left transition duration-200 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/10 hover:shadow-[0_0_24px_rgba(0,229,160,0.15)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#00E5A0]/30 bg-[#00E5A0]/15 text-[#00E5A0] transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#00E5A0]/30 bg-[#00E5A0]/15 text-[#00E5A0] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
@@ -336,10 +361,10 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("bids")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#06B6D4]/20 bg-[#06B6D4]/5 p-5 text-left transition hover:border-[#06B6D4]/40 hover:bg-[#06B6D4]/10 hover:shadow-[0_0_24px_rgba(6,182,212,0.15)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-[#06B6D4]/20 bg-[#06B6D4]/5 p-5 text-left transition duration-200 hover:border-[#06B6D4]/40 hover:bg-[#06B6D4]/10 hover:shadow-[0_0_24px_rgba(6,182,212,0.15)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#06B6D4]/30 bg-[#06B6D4]/15 text-[#06B6D4] transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#06B6D4]/30 bg-[#06B6D4]/15 text-[#06B6D4] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
@@ -360,10 +385,10 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("loads")}
-                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-5 text-left transition hover:border-white/20 hover:bg-white/[0.05] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-5 text-left transition duration-200 hover:border-white/20 hover:bg-white/[0.05] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
@@ -382,10 +407,10 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("wallet")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#FFCC00]/20 bg-[#FFCC00]/5 p-5 text-left transition hover:border-[#FFCC00]/40 hover:bg-[#FFCC00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-[#FFCC00]/20 bg-[#FFCC00]/5 p-5 text-left transition duration-200 hover:border-[#FFCC00]/40 hover:bg-[#FFCC00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#FFCC00]/30 bg-[#FFCC00]/15 text-[#FFCC00] transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#FFCC00]/30 bg-[#FFCC00]/15 text-[#FFCC00] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
@@ -406,10 +431,10 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("board")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#00E5A0]/20 bg-[#00E5A0]/5 p-5 text-left transition hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/10 hover:shadow-[0_0_24px_rgba(0,229,160,0.15)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-[#00E5A0]/20 bg-[#00E5A0]/5 p-5 text-left transition duration-200 hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/10 hover:shadow-[0_0_24px_rgba(0,229,160,0.15)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#00E5A0]/30 bg-[#00E5A0]/15 text-[#00E5A0] transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#00E5A0]/30 bg-[#00E5A0]/15 text-[#00E5A0] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
@@ -424,14 +449,14 @@ export default function DashboardOperationsHub({
                 </div>
               </button>
 
-              {/* 2. Tekliflerim (ROUTES DIRECTLY TO CARRIER MY-BIDS) */}
+              {/* 2. Tekliflerim */}
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("my-bids")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#06B6D4]/20 bg-[#06B6D4]/5 p-5 text-left transition hover:border-[#06B6D4]/40 hover:bg-[#06B6D4]/10 hover:shadow-[0_0_24px_rgba(6,182,212,0.15)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-[#06B6D4]/20 bg-[#06B6D4]/5 p-5 text-left transition duration-200 hover:border-[#06B6D4]/40 hover:bg-[#06B6D4]/10 hover:shadow-[0_0_24px_rgba(6,182,212,0.15)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#06B6D4]/30 bg-[#06B6D4]/15 text-[#06B6D4] transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#06B6D4]/30 bg-[#06B6D4]/15 text-[#06B6D4] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
@@ -452,10 +477,10 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("transports")}
-                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-5 text-left transition hover:border-white/20 hover:bg-white/[0.05] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-5 text-left transition duration-200 hover:border-white/20 hover:bg-white/[0.05] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
@@ -477,10 +502,10 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("wallet")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#FFCC00]/20 bg-[#FFCC00]/5 p-5 text-left transition hover:border-[#FFCC00]/40 hover:bg-[#FFCC00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-[#FFCC00]/20 bg-[#FFCC00]/5 p-5 text-left transition duration-200 hover:border-[#FFCC00]/40 hover:bg-[#FFCC00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#FFCC00]/30 bg-[#FFCC00]/15 text-[#FFCC00] transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#FFCC00]/30 bg-[#FFCC00]/15 text-[#FFCC00] transition duration-200 group-hover:scale-105">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>

@@ -30,8 +30,8 @@ export default function DistrictSelect({
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return districts;
-    const q = searchQuery.toLowerCase();
-    return districts.filter((d) => d.toLowerCase().includes(q));
+    const q = searchQuery.toLocaleLowerCase("tr-TR").trim();
+    return districts.filter((d) => d.toLocaleLowerCase("tr-TR").includes(q));
   }, [searchQuery, districts]);
 
   useEffect(() => {

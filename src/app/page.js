@@ -23,6 +23,8 @@ import { getProvinceByName } from "../data/turkeyProvinces";
 import { formatCurrencyTR, formatRelativeTimeTR } from "../utils/turkish";
 import WeatherIndicator from "../components/WeatherIndicator";
 import DashboardOperationsHub from "../components/DashboardOperationsHub";
+import PricingEngineCard from "../components/PricingEngineCard";
+import CarrierSmartBiddingWidget from "../components/CarrierSmartBiddingWidget";
 
 /* =========================================================
    NAVIGATION
@@ -268,6 +270,7 @@ function Field({
   placeholder,
   type = "text",
   disabled = false,
+  autoComplete,
 }) {
   return (
     <div>
@@ -283,6 +286,7 @@ function Field({
         }
         placeholder={placeholder}
         disabled={disabled}
+        autoComplete={autoComplete}
         className="tork-input px-4 py-3.5 text-sm"
       />
     </div>
@@ -369,6 +373,15 @@ export default function TorkApp() {
 
   const [cargoType, setCargoType] =
     useState("Paletli Ürün");
+
+  const [temperatureClass, setTemperatureClass] =
+    useState("CHILLED");
+
+  const [adrClass, setAdrClass] =
+    useState("CLASS_3");
+
+  const [specialPermitRequired, setSpecialPermitRequired] =
+    useState(true);
 
   const [packageCount, setPackageCount] =
     useState("");
@@ -911,22 +924,21 @@ export default function TorkApp() {
       return;
     }
 
-    if (
-      userDashboard.role ===
-      "carrier"
-    ) {
-      fetchOpenLoads();
-      fetchActiveTransports();
-      fetchCarrierBids(userDashboard.id);
+    const role = userDashboard.role;
+    const userId = userDashboard.id;
+
+    if (role === "carrier") {
+      Promise.resolve().then(() => {
+        fetchOpenLoads();
+        fetchActiveTransports();
+        fetchCarrierBids(userId);
+      });
     } else {
-      fetchShipperData(
-        userDashboard.id,
-      );
+      Promise.resolve().then(() => {
+        fetchShipperData(userId);
+      });
     }
-  }, [
-    userDashboard,
-    activeTab,
-  ]);
+  }, [userDashboard, activeTab]);
 
   useEffect(() => {
     const savedEmail =
@@ -935,8 +947,10 @@ export default function TorkApp() {
       );
 
     if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
+      Promise.resolve().then(() => {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      });
     }
   }, []);
 
@@ -1432,7 +1446,9 @@ export default function TorkApp() {
     };
 
   useEffect(() => {
-    initializeProfile();
+    Promise.resolve().then(() => {
+      initializeProfile();
+    });
   }, [userDashboard]);
 
   const handleProfileSave =
@@ -1862,6 +1878,7 @@ export default function TorkApp() {
                       type="email"
                       value={email}
                       onChange={setEmail}
+                      autoComplete="username"
                       placeholder="ornek@tork.com"
                     />
 
@@ -1870,6 +1887,7 @@ export default function TorkApp() {
                       type="password"
                       value={password}
                       onChange={setPassword}
+                      autoComplete={authMode === "login" ? "current-password" : "new-password"}
                       placeholder="••••••••"
                     />
 
@@ -1941,7 +1959,7 @@ export default function TorkApp() {
           onLogout={handleLogout}
         />
 
-        <section className="min-w-0 flex-1 px-5 py-5 sm:px-7 lg:px-10">
+        <section className="min-w-0 flex-1 px-4 py-5 sm:px-7 lg:px-10 pb-24 lg:pb-8">
           <Topbar
             title={
               tabs.find((tab) => tab.id === activeTab)?.label || "Tork"
@@ -1973,8 +1991,8 @@ export default function TorkApp() {
                  }}
                />
 
-               {/* OPERASYON İSTATİSTİK ÖZETİ */}
-               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+               {/* OPERASYON İSTATİSTİK ÖZETİ (Mobile 2x2 Grid) */}
+               <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                  {userDashboard.role === "shipper" ? (
                    <>
                      <StatCard
@@ -2598,24 +2616,71 @@ export default function TorkApp() {
                                 )
                               }
                             >
-                              <option>
-                                Paletli Ürün
-                              </option>
-                              <option>
-                                Dökme Yük
-                              </option>
-                              <option>
-                                Konteyner
-                              </option>
-                              <option>
-                                Çuval / Paket
-                              </option>
-                              <option>
-                                Makine /
-                                Ekipman
-                              </option>
+                              <option>Paletli Ürün</option>
+                              <option>Kuru Yük (Standart)</option>
+                              <option>Dökme Yük</option>
+                              <option>Frigo / Soğuk Zincir</option>
+                              <option>Tehlikeli Madde (ADR)</option>
+                              <option>Gabari Dışı / Özel Yük</option>
+                              <option>Konteyner</option>
+                              <option>Çuval / Paket</option>
+                              <option>Makine / Ekipman</option>
                             </select>
                           </div>
+
+                          {/* Dynamic Contextual Inputs for Specialized Load Types */}
+                          {cargoType.includes("Frigo") && (
+                            <div className="md:col-span-2 rounded-2xl border border-blue-500/20 bg-blue-500/[0.03] p-4 space-y-2">
+                              <label className="text-xs font-black uppercase tracking-wider text-blue-400 block">
+                                Soğuk Zincir Sıcaklık Rejimi (T.C. Tarım & Orman Bakanlığı)
+                              </label>
+                              <select
+                                className="tork-input px-4 py-3 text-xs"
+                                value={temperatureClass}
+                                onChange={(e) => setTemperatureClass(e.target.value)}
+                              >
+                                <option value="CHILLED">Soğuk (+2°C / +8°C) - Taze Gıda / İlaç</option>
+                                <option value="FROZEN">Donuk (-18°C / -25°C) - Dondurulmuş Ürün</option>
+                                <option value="COOL">Serin (+8°C / +15°C) - Çikolata / Medikal</option>
+                                <option value="GENERAL">Kontrollü (+15°C / +25°C) - Genel İklimlendirme</option>
+                              </select>
+                            </div>
+                          )}
+
+                          {cargoType.includes("ADR") && (
+                            <div className="md:col-span-2 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-4 space-y-2">
+                              <label className="text-xs font-black uppercase tracking-wider text-amber-400 block">
+                                ADR Tehlikeli Madde Sınıfı (UHDGM SRC5 / T9)
+                              </label>
+                              <select
+                                className="tork-input px-4 py-3 text-xs"
+                                value={adrClass}
+                                onChange={(e) => setAdrClass(e.target.value)}
+                              >
+                                <option value="CLASS_3">Sınıf 3: Alevlenebilir Sıvılar (Yakıt/Boyalar)</option>
+                                <option value="CLASS_2">Sınıf 2: Gazlar (Basınçlı/Sıvılaştırılmış)</option>
+                                <option value="CLASS_4">Sınıf 4: Alevlenebilir Katılar</option>
+                                <option value="CLASS_5">Sınıf 5: Oksitleyici Maddeler</option>
+                                <option value="CLASS_6">Sınıf 6: Zehirli / Bulaşıcı Maddeler</option>
+                                <option value="CLASS_8">Sınıf 8: Aşındırıcı (Korozif) Kimyasallar</option>
+                                <option value="CLASS_9">Sınıf 9: Muhtelif Tehlikeli Maddeler</option>
+                              </select>
+                            </div>
+                          )}
+
+                          {cargoType.includes("Gabari") && (
+                            <div className="md:col-span-2 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] p-4 space-y-2">
+                              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-200">
+                                <input
+                                  type="checkbox"
+                                  checked={specialPermitRequired}
+                                  onChange={(e) => setSpecialPermitRequired(e.target.checked)}
+                                  className="h-4 w-4 rounded border-white/20 bg-white/5 text-[#00E5A0]"
+                                />
+                                <span>KGM 2026 Özel Yük Taşıma İzin Belgesi Harcı Gerektirir (₺18.813,80)</span>
+                              </label>
+                            </div>
+                          )}
 
                           <div className="md:col-span-2">
                             <Field
@@ -2835,6 +2900,32 @@ export default function TorkApp() {
                               </div>
                             </div>
                           )}
+
+                          {/* TORK HÜRMÜZ FAZ 4: ŞEFFAF FİYAT MOTORU + LOAD INTELLIGENCE */}
+                          <PricingEngineCard
+                            distanceKm={getRouteDistance(editingLoad?.id || "new-load-preview")?.distanceKm || 730}
+                            durationMinutes={getRouteDistance(editingLoad?.id || "new-load-preview")?.durationMinutes}
+                            loadProfile={{
+                              loadType: cargoType,
+                              tonnage: parseFloat(tonnage) || null,
+                              palletCount: parseInt(packageCount, 10) || null,
+                              packageCount: packageCount || null,
+                              temperatureClass,
+                              isDangerousGoods: cargoType.includes("ADR") || cargoType.includes("Tehlikeli"),
+                              adrClass,
+                              isOversize: cargoType.includes("Gabari") || cargoType.includes("Özel"),
+                              specialPermitRequired,
+                            }}
+                            initialVehicleType={
+                              vehicle?.toLowerCase().includes("kırkayak")
+                                ? "KIRKAYAK"
+                                : vehicle?.toLowerCase().includes("kamyonet")
+                                  ? "KAMYONET"
+                                  : vehicle?.toLowerCase().includes("kamyon")
+                                    ? "KAMYON"
+                                    : "TIR"
+                            }
+                          />
                         </div>
                       </div>
                     )}
@@ -3502,6 +3593,23 @@ export default function TorkApp() {
                               />
                             </div>
 
+                            {/* TORK HÜRMÜZ FAZ 5: TAŞIYICI AKILLI MALİYET & KÂRLILIK GÖRÜNÜMÜ */}
+                            <CarrierSmartBiddingWidget
+                              load={load}
+                              bidAmount={bidAmount}
+                              distanceKm={getRouteDistance(load.id)?.distanceKm || 730}
+                              durationMinutes={getRouteDistance(load.id)?.durationMinutes || 525}
+                              initialVehicleType={
+                                load.vehicle_type?.toLowerCase().includes("kırkayak")
+                                  ? "KIRKAYAK"
+                                  : load.vehicle_type?.toLowerCase().includes("kamyonet")
+                                    ? "KAMYONET"
+                                    : load.vehicle_type?.toLowerCase().includes("kamyon")
+                                      ? "KAMYON"
+                                      : "TIR"
+                              }
+                            />
+
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleSendBid(load.id)}
@@ -3881,6 +3989,10 @@ export default function TorkApp() {
                     <button className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs font-bold text-[#9AA7B5] transition-all hover:border-white/15 hover:bg-white/[0.05]">
                       Para çek
                     </button>
+                  </div>
+
+                  <div className="mt-4 rounded-xl border border-white/8 bg-white/[0.02] p-3 text-center text-xs text-slate-400">
+                    <span className="font-bold text-amber-400">Önizleme / Demo Modu:</span> Cüzdan ve bakiye transfer işlemleri canlı ödeme geçidi entegrasyonuyla aktif olacaktır.
                   </div>
                 </div>
 
@@ -5188,16 +5300,212 @@ export default function TorkApp() {
                <button
                  type="button"
                  onClick={confirmDeleteLoad}
-                 disabled={loadActionLoading}
-                 className="flex-1 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs font-black text-red-400 transition hover:border-red-500/40 hover:bg-red-500/15 disabled:opacity-50"
-               >
-                 {loadActionLoading ? "Siliniyor..." : "Evet, Sil"}
-               </button>
-                  </div>
-                  </div>
-                  </div>
+                  disabled={loadActionLoading}
+                  className="flex-1 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs font-black text-red-400 transition hover:border-red-500/40 hover:bg-red-500/15 disabled:opacity-50"
+                >
+                  {loadActionLoading ? "Siliniyor..." : "Evet, Sil"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================
+            MOBILE BOTTOM NAVIGATION BAR (iOS-Inspired Glassmorphic)
+           ========================================================= */}
+        <nav
+          aria-label="Mobil alt menü"
+          className="fixed bottom-0 inset-x-0 z-50 flex h-16 items-center justify-around border-t border-white/10 bg-[#0B111A]/92 px-2 backdrop-blur-2xl lg:hidden shadow-[0_-8px_32px_rgba(0,0,0,0.6)] pb-safe"
+        >
+          {userDashboard.role === "shipper" ? (
+            <>
+              {/* 1. Overview */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("overview");
+                  setMessage("");
+                }}
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "overview" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span className="mt-1 text-[10px] font-bold">Özet</span>
+              </button>
+
+              {/* 2. Loads */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("loads");
+                  setMessage("");
+                }}
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "loads" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <span className="mt-1 text-[10px] font-bold">İlanlarım</span>
+              </button>
+
+              {/* 3. Create (Action Highlight) */}
+              <button
+                type="button"
+                onClick={() => {
+                  resetCreateForm();
+                  setActiveTab("create");
+                  setMessage("");
+                }}
+                className="flex flex-1 flex-col items-center justify-center py-1 text-[#00E5A0] min-h-[44px]"
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00E5A0]/15 border border-[#00E5A0]/30 shadow-[0_0_12px_rgba(0,229,160,0.3)]">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <span className="mt-0.5 text-[10px] font-black text-[#00E5A0]">İlan Ver</span>
+              </button>
+
+              {/* 4. Bids */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("bids");
+                  setMessage("");
+                }}
+                className={`relative flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "bids" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                {incomingBids.filter((b) => b.status === "pending").length > 0 && (
+                  <span className="absolute top-1 right-[22%] flex h-4 w-4 items-center justify-center rounded-full bg-[#00E5A0] text-[9px] font-black text-black">
+                    {incomingBids.filter((b) => b.status === "pending").length}
+                  </span>
+                )}
+                <span className="mt-1 text-[10px] font-bold">Teklifler</span>
+              </button>
+
+              {/* 5. Wallet */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("wallet");
+                  setMessage("");
+                }}
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "wallet" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <span className="mt-1 text-[10px] font-bold">Cüzdan</span>
+              </button>
+            </>
+          ) : (
+            <>
+              {/* 1. Overview */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("overview");
+                  setMessage("");
+                }}
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "overview" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span className="mt-1 text-[10px] font-bold">Özet</span>
+              </button>
+
+              {/* 2. Board */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("board");
+                  setMessage("");
+                }}
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "board" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <span className="mt-1 text-[10px] font-bold">Yükler</span>
+              </button>
+
+              {/* 3. My Bids */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("my-bids");
+                  setMessage("");
+                }}
+                className={`relative flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "my-bids" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00E5A0]/15 border border-[#00E5A0]/30 shadow-[0_0_12px_rgba(0,229,160,0.3)] text-[#00E5A0]">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                {carrierBids.filter((b) => b.status === "pending").length > 0 && (
+                  <span className="absolute top-1 right-[22%] flex h-4 w-4 items-center justify-center rounded-full bg-[#00E5A0] text-[9px] font-black text-black">
+                    {carrierBids.filter((b) => b.status === "pending").length}
+                  </span>
+                )}
+                <span className="mt-0.5 text-[10px] font-black text-[#00E5A0]">Tekliflerim</span>
+              </button>
+
+              {/* 4. Transports */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("transports");
+                  setMessage("");
+                }}
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "transports" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1" />
+                </svg>
+                <span className="mt-1 text-[10px] font-bold">Taşımalar</span>
+              </button>
+
+              {/* 5. Wallet */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("wallet");
+                  setMessage("");
+                }}
+                className={`flex flex-1 flex-col items-center justify-center py-1 transition-colors min-h-[44px] ${
+                  activeTab === "wallet" ? "text-[#00E5A0]" : "text-[#9AA7B5] hover:text-[#F5F7FA]"
+                }`}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <span className="mt-1 text-[10px] font-bold">Cüzdan</span>
+              </button>
+            </>
           )}
-       </main>
-     );
-   }
-// 
+        </nav>
+      </main>
+    );
+  }

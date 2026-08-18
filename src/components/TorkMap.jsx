@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * - Dark muted cartography (CartoDB Dark Matter)
  * - Dual-layer glow route polyline (Emerald #00E5A0)
  * - Custom pulsing origin (Emerald) & destination (Gold #FFCC00) pins
- * - Sleek glassmorphic zoom & re-center controls
+ * - Sleek glassmorphic zoom & re-center controls with SVG iconography
  * - Robust ResizeObserver + map.invalidateSize() to prevent 0-height collapses
  * - SSR Safe dynamic Leaflet lifecycle
  */
@@ -116,12 +116,18 @@ export default function TorkMap({
     if (origin?.lat != null && origin?.lng != null) bounds.push([origin.lat, origin.lng]);
     if (destination?.lat != null && destination?.lng != null) bounds.push([destination.lat, destination.lng]);
 
+    if (routePoints && routePoints.length >= 2) {
+      routePoints.forEach((p) => {
+        if (p?.lat != null && p?.lng != null) bounds.push([p.lat, p.lng]);
+      });
+    }
+
     if (bounds.length > 0) {
-      mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 13, animate: true });
+      mapRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 14, animate: true, duration: 0.8 });
     } else {
       mapRef.current.setView([39.0, 35.2], 6, { animate: true });
     }
-  }, [origin, destination]);
+  }, [origin, destination, routePoints]);
 
   // Update Markers & Polylines when coordinates or route changes
   useEffect(() => {
@@ -161,8 +167,8 @@ export default function TorkMap({
         className: "tork-map-marker-wrap",
         html: `
           <div class="relative flex items-center justify-center">
-            <div class="absolute -inset-2.5 rounded-full bg-[#00E5A0]/25 animate-ping"></div>
-            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#00E5A0] shadow-[0_0_14px_rgba(0,229,160,0.85)] flex items-center justify-center">
+            <div class="absolute -inset-2 rounded-full bg-[#00E5A0]/25 animate-ping"></div>
+            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.85)] flex items-center justify-center">
               <div class="h-1.5 w-1.5 rounded-full bg-[#090D14]"></div>
             </div>
           </div>
@@ -188,8 +194,8 @@ export default function TorkMap({
         className: "tork-map-marker-wrap",
         html: `
           <div class="relative flex items-center justify-center">
-            <div class="absolute -inset-2.5 rounded-full bg-[#FFCC00]/25 animate-ping"></div>
-            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#FFCC00] shadow-[0_0_14px_rgba(255,204,0,0.85)] flex items-center justify-center">
+            <div class="absolute -inset-2 rounded-full bg-[#FFCC00]/25 animate-ping"></div>
+            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#FFCC00] shadow-[0_0_12px_rgba(255,204,0,0.85)] flex items-center justify-center">
               <div class="h-1.5 w-1.5 rounded-full bg-[#090D14]"></div>
             </div>
           </div>
@@ -209,18 +215,18 @@ export default function TorkMap({
       bounds.push([destination.lat, destination.lng]);
     }
 
-    // Route Polyline (Dual-Layer: Ambient Glow + High-Precision Emerald Vector)
+    // Route Polyline (Dual-Layer: Subtle Ambient Glow + High-Precision Emerald Vector)
     if (routePoints && routePoints.length >= 2) {
       const validPoints = routePoints.filter((p) => p?.lat != null && p?.lng != null);
 
       if (validPoints.length >= 2) {
         const latLngs = validPoints.map((p) => [p.lat, p.lng]);
 
-        // Outer soft glow layer
+        // Outer soft glow layer (subtle, non-distracting)
         const glowLine = L.polyline(latLngs, {
           color: "#00E5A0",
-          weight: 9,
-          opacity: 0.22,
+          weight: 8,
+          opacity: 0.18,
           lineCap: "round",
           lineJoin: "round",
         }).addTo(map);
@@ -229,7 +235,7 @@ export default function TorkMap({
         // Inner crisp core route layer
         const coreLine = L.polyline(latLngs, {
           color: "#00E5A0",
-          weight: 4.5,
+          weight: 4,
           opacity: 0.95,
           lineCap: "round",
           lineJoin: "round",
@@ -241,9 +247,9 @@ export default function TorkMap({
       }
     }
 
-    // Auto-fit to active bounds with comfortable padding
+    // Auto-fit to active bounds with comfortable padding and smooth animation
     if (bounds.length > 0) {
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14, animate: true, duration: 0.8 });
     }
 
     // Immediate resize check
@@ -272,7 +278,7 @@ export default function TorkMap({
 
       {/* Top Telemetry Header Pill */}
       {(origin?.lat != null || destination?.lat != null) && (
-        <div className="pointer-events-none absolute left-3 top-3 z-[400] max-w-[calc(100%-80px)] truncate flex items-center gap-2 rounded-full border border-white/10 bg-black/70 px-3.5 py-1.5 backdrop-blur-md">
+        <div className="pointer-events-none absolute left-3 top-3 z-[400] max-w-[calc(100%-80px)] truncate flex items-center gap-2 rounded-full border border-white/10 bg-black/75 px-3.5 py-1.5 backdrop-blur-md">
           <span className="h-2 w-2 shrink-0 rounded-full bg-[#00E5A0] animate-pulse" />
           <span className="truncate text-[10px] font-black uppercase tracking-[0.14em] text-white">
             {originLabel} {destination?.lat != null ? `→ ${destinationLabel}` : ""}
@@ -303,9 +309,12 @@ export default function TorkMap({
           onClick={handleFitBounds}
           aria-label="Rotaya Odaklan"
           title="Rotaya Odaklan"
-          className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/65 text-xs text-white backdrop-blur-md transition hover:bg-black/85 hover:border-white/20 active:scale-95"
+          className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-black/65 text-white backdrop-blur-md transition hover:bg-black/85 hover:border-white/20 active:scale-95"
         >
-          🎯
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <circle cx="12" cy="12" r="7" />
+            <path strokeLinecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+          </svg>
         </button>
       </div>
     </div>
