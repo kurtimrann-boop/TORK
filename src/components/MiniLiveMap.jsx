@@ -43,9 +43,10 @@ export default function MiniLiveMap({
 
     const L = window.L;
 
-    const initialLat = coords?.lat || 39.9334;
-    const initialLng = coords?.lng || 32.8597;
-    const initialZoom = coords ? 12 : 6;
+    // Neutral Turkey center when coords not available (no fake Ankara pin)
+    const initialLat = coords?.lat || 39.0;
+    const initialLng = coords?.lng || 35.2;
+    const initialZoom = coords ? 12 : 5.5;
 
     const map = L.map(mapContainerRef.current, {
       center: [initialLat, initialLng],
@@ -102,7 +103,7 @@ export default function MiniLiveMap({
 
       // Custom glowing location pin
       const locationIcon = L.divIcon({
-        className: "tork-map-marker",
+        className: "tork-map-marker-wrap",
         html: `
           <div class="relative flex items-center justify-center">
             <div class="absolute -inset-2.5 rounded-full bg-[#00E5A0]/25 animate-ping"></div>
@@ -118,7 +119,7 @@ export default function MiniLiveMap({
       const marker = L.marker([coords.lat, coords.lng], { icon: locationIcon })
         .addTo(map)
         .bindPopup(
-          `<div class="p-1 text-center font-sans"><strong class="text-xs text-white">${locationName}</strong><br/><span class="text-[10px] text-slate-300">Canlı Operasyon Noktası</span></div>`,
+          `<div class="p-1 text-center font-sans"><strong class="text-xs text-white">${locationName}</strong><br/><span class="text-[10px] text-slate-300">Operasyon Noktası</span></div>`,
           { closeButton: false }
         );
       markerRef.current = marker;
@@ -136,7 +137,7 @@ export default function MiniLiveMap({
       <div className="pointer-events-none absolute left-3 top-3 z-[400] flex items-center gap-2 rounded-full border border-white/10 bg-black/70 px-3.5 py-1.5 backdrop-blur-md">
         <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-pulse" />
         <span className="text-[10px] font-black uppercase tracking-[0.16em] text-white">
-          {coords ? locationName : "Canlı Harita"}
+          {coords ? locationName : "Operasyon Haritası"}
         </span>
       </div>
 
@@ -149,16 +150,19 @@ export default function MiniLiveMap({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
-          <p className="text-xs font-bold text-slate-300">Konumunuz Belirlenmedi</p>
-          <p className="mt-0.5 text-[11px] text-slate-400">Yakınınızdaki yükleri ve operasyonları görün</p>
+          <p className="text-xs font-bold text-slate-300">Konum Belirlenmedi</p>
+          <p className="mt-0.5 text-[11px] text-slate-400">Çevrenizdeki operasyon ve yükleri filtreleyin</p>
           {onRequestLocation && (
             <button
               type="button"
               onClick={onRequestLocation}
               disabled={isLocating}
-              className="mt-3 rounded-xl border border-[#00E5A0]/30 bg-[#00E5A0]/10 px-4 py-2 text-xs font-black text-[#00E5A0] transition hover:bg-[#00E5A0]/20 disabled:opacity-50"
+              className="mt-3 flex items-center gap-1.5 rounded-xl border border-[#00E5A0]/30 bg-[#00E5A0]/10 px-4 py-2 text-xs font-black text-[#00E5A0] transition hover:bg-[#00E5A0]/20 disabled:opacity-50"
             >
-              {isLocating ? "Konum Alınıyor..." : "📍 Konumumu Al"}
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              </svg>
+              {isLocating ? "Konum Alınıyor..." : "Konumu Belirle"}
             </button>
           )}
         </div>

@@ -1,0 +1,857 @@
+{
+  "01|KARAİSALI": {
+    "provinceCode": "01",
+    "districtName": "Karaisalı",
+    "latitude": 37.257184,
+    "longitude": 35.058641,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Karaisalı, Adana, Akdeniz Bölgesi, 01770, Türkiye"
+  },
+  "01|TUFANBEYLİ": {
+    "provinceCode": "01",
+    "districtName": "Tufanbeyli",
+    "latitude": 38.2603,
+    "longitude": 36.222074,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Tufanbeyli, Adana, Akdeniz Bölgesi, 01640, Türkiye"
+  },
+  "03|BAŞMAKÇI": {
+    "provinceCode": "03",
+    "districtName": "Başmakçı",
+    "latitude": 37.897358,
+    "longitude": 30.009778,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Başmakçı, Afyonkarahisar, Ege Bölgesi, Türkiye"
+  },
+  "03|HOCALAR": {
+    "provinceCode": "03",
+    "districtName": "Hocalar",
+    "latitude": 38.580813,
+    "longitude": 29.96688,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Hocalar, Afyonkarahisar, Ege Bölgesi, Türkiye"
+  },
+  "03|SİNANPAŞA": {
+    "provinceCode": "03",
+    "districtName": "Sinanpaşa",
+    "latitude": 38.745188,
+    "longitude": 30.245212,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Sinanpaşa, Afyonkarahisar, Ege Bölgesi, Türkiye"
+  },
+  "03|SULTANDAĞI": {
+    "provinceCode": "03",
+    "districtName": "Sultandağı",
+    "latitude": 38.547927,
+    "longitude": 31.268241,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Sultandağı, 03-28, Yeşilçiftlik, Sultandağı, Afyonkarahisar, Ege Bölgesi, 03940, Türkiye"
+  },
+  "04|DİYADİN": {
+    "provinceCode": "04",
+    "districtName": "Diyadin",
+    "latitude": 39.539769,
+    "longitude": 43.671203,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Diyadin, Ağrı, Doğu Anadolu Bölgesi, Türkiye"
+  },
+  "04|PATNOS": {
+    "provinceCode": "04",
+    "districtName": "Patnos",
+    "latitude": 39.23342,
+    "longitude": 42.861234,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Patnos, Ağrı, Doğu Anadolu Bölgesi, 04500, Türkiye"
+  },
+  "06|ÇANKAYA": {
+    "provinceCode": "06",
+    "districtName": "Çankaya",
+    "latitude": 39.885332,
+    "longitude": 32.855497,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Çankaya, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|NALLIHAN": {
+    "provinceCode": "06",
+    "districtName": "Nallıhan",
+    "latitude": 40.188822,
+    "longitude": 31.350345,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Nallıhan, Ankara, İç Anadolu Bölgesi, 06920, Türkiye"
+  },
+  "07|GÜNDOĞMUŞ": {
+    "provinceCode": "07",
+    "districtName": "Gündoğmuş",
+    "latitude": 36.814338,
+    "longitude": 31.998333,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Gündoğmuş, Antalya, Akdeniz Bölgesi, Türkiye"
+  },
+  "07|KORKUTELİ": {
+    "provinceCode": "07",
+    "districtName": "Korkuteli",
+    "latitude": 37.066652,
+    "longitude": 30.19705,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Korkuteli, Antalya, Akdeniz Bölgesi, Türkiye"
+  },
+  "09|EFELER": {
+    "provinceCode": "09",
+    "districtName": "Efeler",
+    "latitude": 37.847175,
+    "longitude": 27.833725,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Efeler, Aydın, Ege Bölgesi, Türkiye"
+  },
+  "09|KOÇARLI": {
+    "provinceCode": "09",
+    "districtName": "Koçarlı",
+    "latitude": 37.762218,
+    "longitude": 27.707338,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Koçarlı, Aydın, Ege Bölgesi, Türkiye"
+  },
+  "16|GÜRSU": {
+    "provinceCode": "16",
+    "districtName": "Gürsu",
+    "latitude": 40.217584,
+    "longitude": 29.193563,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Gürsu, Bursa, Marmara Bölgesi, 16580, Türkiye"
+  },
+  "16|MUSTAFAKEMALPAŞA": {
+    "provinceCode": "16",
+    "districtName": "Mustafakemalpaşa",
+    "latitude": 40.035048,
+    "longitude": 28.413271,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Mustafakemalpaşa, Bursa, Marmara Bölgesi, 16500, Türkiye"
+  },
+  "24|ÇAYIRLI": {
+    "provinceCode": "24",
+    "districtName": "Çayırlı",
+    "latitude": 39.804082,
+    "longitude": 40.037184,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Çayırlı, Erzincan, Doğu Anadolu Bölgesi, Türkiye"
+  },
+  "24|ÜZÜMLÜ": {
+    "provinceCode": "24",
+    "districtName": "Üzümlü",
+    "latitude": 39.710115,
+    "longitude": 39.701031,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Üzümlü, Erzincan, Doğu Anadolu Bölgesi, Türkiye"
+  },
+  "29|KÖSE": {
+    "provinceCode": "29",
+    "districtName": "Köse",
+    "latitude": 40.209617,
+    "longitude": 39.653016,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Köse, Gümüşhane, Karadeniz Bölgesi, Türkiye"
+  },
+  "29|KÜRTÜN": {
+    "provinceCode": "29",
+    "districtName": "Kürtün",
+    "latitude": 40.701864,
+    "longitude": 39.085711,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Kürtün, Gümüşhane, Karadeniz Bölgesi, Türkiye"
+  },
+  "34|BÜYÜKÇEKMECE": {
+    "provinceCode": "34",
+    "districtName": "Büyükçekmece",
+    "latitude": 41.021654,
+    "longitude": 28.579757,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Büyükçekmece, İstanbul, Marmara Bölgesi, Türkiye"
+  },
+  "34|KADIKÖY": {
+    "provinceCode": "34",
+    "districtName": "Kadıköy",
+    "latitude": 40.991295,
+    "longitude": 29.024563,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Kadıköy, İstanbul, Marmara Bölgesi, Türkiye"
+  },
+  "34|ŞİŞLİ": {
+    "provinceCode": "34",
+    "districtName": "Şişli",
+    "latitude": 41.063789,
+    "longitude": 28.983164,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Şişli, İstanbul, Marmara Bölgesi, Türkiye"
+  },
+  "34|SANCAKTEPE": {
+    "provinceCode": "34",
+    "districtName": "Sancaktepe",
+    "latitude": 40.99052,
+    "longitude": 29.228862,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Sancaktepe, İstanbul, Marmara Bölgesi, Türkiye"
+  },
+  "34|SULTANBEYLİ": {
+    "provinceCode": "34",
+    "districtName": "Sultanbeyli",
+    "latitude": 40.967024,
+    "longitude": 29.267131,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Sultanbeyli, İstanbul, Marmara Bölgesi, Türkiye"
+  },
+  "35|BORNOVA": {
+    "provinceCode": "35",
+    "districtName": "Bornova",
+    "latitude": 38.46619,
+    "longitude": 27.219194,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Bornova, İzmir, Ege Bölgesi, Türkiye"
+  },
+  "35|FOÇA": {
+    "provinceCode": "35",
+    "districtName": "Foça",
+    "latitude": 38.668916,
+    "longitude": 26.754775,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Foça, İzmir, Ege Bölgesi, Türkiye"
+  },
+  "35|GÜZELBAHÇE": {
+    "provinceCode": "35",
+    "districtName": "Güzelbahçe",
+    "latitude": 38.375516,
+    "longitude": 26.875553,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Güzelbahçe, İzmir, Ege Bölgesi, 35310, Türkiye"
+  },
+  "35|BUCA": {
+    "provinceCode": "35",
+    "districtName": "Buca",
+    "latitude": 38.383493,
+    "longitude": 27.168651,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Buca, İzmir, Ege Bölgesi, Türkiye"
+  },
+  "35|MENEMEN": {
+    "provinceCode": "35",
+    "districtName": "Menemen",
+    "latitude": 38.603362,
+    "longitude": 27.076431,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Menemen, Niyazi Kaplangı Caddesi, Menemen, Esatpaşa Mahallesi, Menemen, İzmir, Ege Bölgesi, 35660, Türkiye"
+  },
+  "35|KONAK": {
+    "provinceCode": "35",
+    "districtName": "Konak",
+    "latitude": 38.418717,
+    "longitude": 27.128267,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Konak, İzmir, Ege Bölgesi, Türkiye"
+  },
+  "35|TORBALI": {
+    "provinceCode": "35",
+    "districtName": "Torbalı",
+    "latitude": 38.170119,
+    "longitude": 27.347338,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Torbalı, 5058 Sk., Torbalı Mahallesi, Torbalı, İzmir, Ege Bölgesi, 35860, Türkiye"
+  },
+  "37|BOZKURT": {
+    "provinceCode": "37",
+    "districtName": "Bozkurt",
+    "latitude": 41.958798,
+    "longitude": 34.012628,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Bozkurt, Kastamonu, Karadeniz Bölgesi, 37680, Türkiye"
+  },
+  "37|DADAY": {
+    "provinceCode": "37",
+    "districtName": "Daday",
+    "latitude": 41.475156,
+    "longitude": 33.463749,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Daday, Kastamonu, Karadeniz Bölgesi, Türkiye"
+  },
+  "42|AKÖREN": {
+    "provinceCode": "42",
+    "districtName": "Akören",
+    "latitude": 37.452329,
+    "longitude": 32.372524,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Akören, Konya, İç Anadolu Bölgesi, Türkiye"
+  },
+  "42|ILGIN": {
+    "provinceCode": "42",
+    "districtName": "Ilgın",
+    "latitude": 38.281774,
+    "longitude": 31.917867,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Ilgın, Konya, İç Anadolu Bölgesi, Türkiye"
+  },
+  "45|AKHİSAR": {
+    "provinceCode": "45",
+    "districtName": "Akhisar",
+    "latitude": 38.924053,
+    "longitude": 27.84019,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Akhisar, Manisa, Ege Bölgesi, Türkiye"
+  },
+  "45|KÖPRÜBAŞI": {
+    "provinceCode": "45",
+    "districtName": "Köprübaşı",
+    "latitude": 38.748023,
+    "longitude": 28.402953,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Köprübaşı, Manisa, Ege Bölgesi, 45930, Türkiye"
+  },
+  "50|MERKEZ": {
+    "provinceCode": "50",
+    "districtName": "Merkez",
+    "latitude": 38.587156,
+    "longitude": 34.719663,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Nevşehir Merkez, Nevşehir, İç Anadolu Bölgesi, Türkiye"
+  },
+  "50|ÜRGÜP": {
+    "provinceCode": "50",
+    "districtName": "Ürgüp",
+    "latitude": 38.592812,
+    "longitude": 34.959455,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Ürgüp, Nevşehir, İç Anadolu Bölgesi, Türkiye"
+  },
+  "51|ALTUNHİSAR": {
+    "provinceCode": "51",
+    "districtName": "Altunhisar",
+    "latitude": 37.999013,
+    "longitude": 34.371506,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Altunhisar, Niğde, İç Anadolu Bölgesi, Türkiye"
+  },
+  "51|MERKEZ": {
+    "provinceCode": "51",
+    "districtName": "Merkez",
+    "latitude": 37.969849,
+    "longitude": 34.676449,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Niğde Merkez, Niğde, İç Anadolu Bölgesi, Türkiye"
+  },
+  "53|ÇAYELİ": {
+    "provinceCode": "53",
+    "districtName": "Çayeli",
+    "latitude": 41.087833,
+    "longitude": 40.723697,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Çayeli, Rize, Karadeniz Bölgesi, Türkiye"
+  },
+  "53|KALKANDERE": {
+    "provinceCode": "53",
+    "districtName": "Kalkandere",
+    "latitude": 40.927948,
+    "longitude": 40.442509,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Kalkandere, Rize, Karadeniz Bölgesi, Türkiye"
+  },
+  "54|HENDEK": {
+    "provinceCode": "54",
+    "districtName": "Hendek",
+    "latitude": 40.795503,
+    "longitude": 30.745273,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Hendek, Sakarya, Marmara Bölgesi, 54300, Türkiye"
+  },
+  "54|SÖĞÜTLÜ": {
+    "provinceCode": "54",
+    "districtName": "Söğütlü",
+    "latitude": 40.903921,
+    "longitude": 30.471664,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Söğütlü, Sakarya, Marmara Bölgesi, 54160, Türkiye"
+  },
+  "55|HAVZA": {
+    "provinceCode": "55",
+    "districtName": "Havza",
+    "latitude": 40.965707,
+    "longitude": 35.667103,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Havza, İnönü Bulvarı, İcadiye, Havza, Samsun, Karadeniz Bölgesi, 55700, Türkiye"
+  },
+  "55|İLKADIM": {
+    "provinceCode": "55",
+    "districtName": "İlkadım",
+    "latitude": 41.2902,
+    "longitude": 36.334676,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "İlkadım, Samsun, Karadeniz Bölgesi, Türkiye"
+  },
+  "55|KAVAK": {
+    "provinceCode": "55",
+    "districtName": "Kavak",
+    "latitude": 41.068537,
+    "longitude": 36.026884,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Kavak, Şht. Sedat Eş Sk., 19 Mayıs, Dura, Kavak, Samsun, Karadeniz Bölgesi, 55850, Türkiye"
+  },
+  "55|TEKKEKÖY": {
+    "provinceCode": "55",
+    "districtName": "Tekkeköy",
+    "latitude": 41.213498,
+    "longitude": 36.457804,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Tekkeköy, Samsun, Karadeniz Bölgesi, Türkiye"
+  },
+  "63|CEYLANPINAR": {
+    "provinceCode": "63",
+    "districtName": "Ceylanpınar",
+    "latitude": 36.843323,
+    "longitude": 40.05141,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Ceylanpınar, Şanlıurfa, Güneydoğu Anadolu Bölgesi, 63570, Türkiye"
+  },
+  "63|EYYÜBİYE": {
+    "provinceCode": "63",
+    "districtName": "Eyyübiye",
+    "latitude": 37.148136,
+    "longitude": 38.782466,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Eyyübiye, Şanlıurfa, Güneydoğu Anadolu Bölgesi, Türkiye"
+  },
+  "63|HARRAN": {
+    "provinceCode": "63",
+    "districtName": "Harran",
+    "latitude": 36.871006,
+    "longitude": 39.025136,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Harran, Şanlıurfa, Güneydoğu Anadolu Bölgesi, Türkiye"
+  },
+  "66|ÇEKEREK": {
+    "provinceCode": "66",
+    "districtName": "Çekerek",
+    "latitude": 40.064957,
+    "longitude": 35.50725,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Çekerek, Yozgat, İç Anadolu Bölgesi, Türkiye"
+  },
+  "66|SARIKAYA": {
+    "provinceCode": "66",
+    "districtName": "Sarıkaya",
+    "latitude": 39.49359,
+    "longitude": 35.37551,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Sarıkaya, Yozgat, İç Anadolu Bölgesi, 66650, Türkiye"
+  },
+  "66|MERKEZ": {
+    "provinceCode": "66",
+    "districtName": "Merkez",
+    "latitude": 39.756454,
+    "longitude": 34.783827,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Yozgat Merkez, Yozgat, İç Anadolu Bölgesi, Türkiye"
+  },
+  "66|SORGUN": {
+    "provinceCode": "66",
+    "districtName": "Sorgun",
+    "latitude": 39.809868,
+    "longitude": 35.185431,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Sorgun, Yozgat, İç Anadolu Bölgesi, 66700, Türkiye"
+  },
+  "06|AKYURT": {
+    "provinceCode": "06",
+    "districtName": "Akyurt",
+    "latitude": 40.130753,
+    "longitude": 33.087068,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Akyurt, Ankara, İç Anadolu Bölgesi, 06750, Türkiye"
+  },
+  "06|ALTINDAĞ": {
+    "provinceCode": "06",
+    "districtName": "Altındağ",
+    "latitude": 39.952359,
+    "longitude": 32.866202,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Altındağ, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|AYAŞ": {
+    "provinceCode": "06",
+    "districtName": "Ayaş",
+    "latitude": 40.015144,
+    "longitude": 32.332422,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Ayaş, Ankara, İç Anadolu Bölgesi, 06710, Türkiye"
+  },
+  "06|BALÂ": {
+    "provinceCode": "06",
+    "districtName": "Balâ",
+    "latitude": 39.553364,
+    "longitude": 33.123753,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Balâ, Ankara, İç Anadolu Bölgesi, 06720, Türkiye"
+  },
+  "06|BEYPAZARI": {
+    "provinceCode": "06",
+    "districtName": "Beypazarı",
+    "latitude": 40.165649,
+    "longitude": 31.920455,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Beypazarı, Ankara, İç Anadolu Bölgesi, 06730, Türkiye"
+  },
+  "06|ÇAMLIDERE": {
+    "provinceCode": "06",
+    "districtName": "Çamlıdere",
+    "latitude": 40.49148,
+    "longitude": 32.475826,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Çamlıdere, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|ÇUBUK": {
+    "provinceCode": "06",
+    "districtName": "Çubuk",
+    "latitude": 40.238896,
+    "longitude": 33.028947,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Çubuk, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|ELMADAĞ": {
+    "provinceCode": "06",
+    "districtName": "Elmadağ",
+    "latitude": 39.91732,
+    "longitude": 33.234395,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Elmadağ, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|ETİMESGUT": {
+    "provinceCode": "06",
+    "districtName": "Etimesgut",
+    "latitude": 39.949568,
+    "longitude": 32.661818,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Etimesgut, İkinci Yüzyıl Cumhuriyet Caddesi, Etiler Mahallesi, Etimesgut, Ankara, İç Anadolu Bölgesi, 06796, Türkiye"
+  },
+  "06|EVREN": {
+    "provinceCode": "06",
+    "districtName": "Evren",
+    "latitude": 39.02212,
+    "longitude": 33.807857,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Evren, Ankara, İç Anadolu Bölgesi, 06770, Türkiye"
+  },
+  "06|GÖLBAŞI": {
+    "provinceCode": "06",
+    "districtName": "Gölbaşı",
+    "latitude": 39.792529,
+    "longitude": 32.806665,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Gölbaşı, Ankara, İç Anadolu Bölgesi, 06830, Türkiye"
+  },
+  "06|GÜDÜL": {
+    "provinceCode": "06",
+    "districtName": "Güdül",
+    "latitude": 40.210461,
+    "longitude": 32.243225,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Güdül, Ankara, İç Anadolu Bölgesi, 06840, Türkiye"
+  },
+  "06|HAYMANA": {
+    "provinceCode": "06",
+    "districtName": "Haymana",
+    "latitude": 39.434135,
+    "longitude": 32.498792,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Haymana, Ankara, İç Anadolu Bölgesi, 06860, Türkiye"
+  },
+  "06|KAHRAMANKAZAN": {
+    "provinceCode": "06",
+    "districtName": "Kahramankazan",
+    "latitude": 40.205444,
+    "longitude": 32.681315,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Kahramankazan, Ankara, İç Anadolu Bölgesi, 06980, Türkiye"
+  },
+  "06|KALECİK": {
+    "provinceCode": "06",
+    "districtName": "Kalecik",
+    "latitude": 40.076398,
+    "longitude": 33.445043,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Kalecik, Kırıkkale-Çankırı yolu, Ahikemal Şenyurt Mahallesi, Kalecik, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|KEÇİÖREN": {
+    "provinceCode": "06",
+    "districtName": "Keçiören",
+    "latitude": 39.977713,
+    "longitude": 32.86698,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Keçiören, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|KIZILCAHAMAM": {
+    "provinceCode": "06",
+    "districtName": "Kızılcahamam",
+    "latitude": 40.470095,
+    "longitude": 32.652856,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Kızılcahamam, Ankara, İç Anadolu Bölgesi, 06890, Türkiye"
+  },
+  "06|MAMAK": {
+    "provinceCode": "06",
+    "districtName": "Mamak",
+    "latitude": 39.931399,
+    "longitude": 32.911611,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Mamak, Mamak Caddesi, Hüseyingazi Mahallesi, Mamak, Ankara, İç Anadolu Bölgesi, 06260, Türkiye"
+  },
+  "06|POLATLI": {
+    "provinceCode": "06",
+    "districtName": "Polatlı",
+    "latitude": 39.58567,
+    "longitude": 32.14173,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Polatlı, Turan Caddesi, Cumhuriyet Mahallesi, Polatlı, Ankara, İç Anadolu Bölgesi, 06900, Türkiye"
+  },
+  "06|PURSAKLAR": {
+    "provinceCode": "06",
+    "districtName": "Pursaklar",
+    "latitude": 40.038105,
+    "longitude": 32.896908,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Pursaklar, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|SİNCAN": {
+    "provinceCode": "06",
+    "districtName": "Sincan",
+    "latitude": 39.965035,
+    "longitude": 32.583083,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Sincan, Atatürk Caddesi, İstasyon Mahallesi, Sincan, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "06|ŞEREFLİKOÇHİSAR": {
+    "provinceCode": "06",
+    "districtName": "Şereflikoçhisar",
+    "latitude": 38.938933,
+    "longitude": 33.543884,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Şereflikoçhisar, Ankara, İç Anadolu Bölgesi, 06950, Türkiye"
+  },
+  "06|YENİMAHALLE": {
+    "provinceCode": "06",
+    "districtName": "Yenimahalle",
+    "latitude": 39.966106,
+    "longitude": 32.808779,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Yenimahalle, Ankara, İç Anadolu Bölgesi, Türkiye"
+  },
+  "05|SULUOVA": {
+    "provinceCode": "05",
+    "districtName": "Suluova",
+    "latitude": 40.836413,
+    "longitude": 35.645557,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Suluova, Amasya, Karadeniz Bölgesi, 05500, Türkiye"
+  },
+  "05|MERKEZ": {
+    "provinceCode": "05",
+    "districtName": "Merkez",
+    "latitude": 40.633968,
+    "longitude": 35.816385,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Amasya Merkez, Amasya, Karadeniz Bölgesi, Türkiye"
+  },
+  "22|SÜLOĞLU": {
+    "provinceCode": "22",
+    "districtName": "Süloğlu",
+    "latitude": 41.765698,
+    "longitude": 26.908007,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Süloğlu, Edirne, Marmara Bölgesi, 22580, Türkiye"
+  },
+  "22|KEŞAN": {
+    "provinceCode": "22",
+    "districtName": "Keşan",
+    "latitude": 40.854879,
+    "longitude": 26.630306,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Keşan, Edirne, Marmara Bölgesi, Türkiye"
+  },
+  "24|OTLUKBELİ": {
+    "provinceCode": "24",
+    "districtName": "Otlukbeli",
+    "latitude": 39.971948,
+    "longitude": 40.021676,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Otlukbeli, Erzincan, Doğu Anadolu Bölgesi, Türkiye"
+  },
+  "24|MERKEZ": {
+    "provinceCode": "24",
+    "districtName": "Merkez",
+    "latitude": 39.746755,
+    "longitude": 39.49103,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Erzincan Merkez, Erzincan, Doğu Anadolu Bölgesi, Türkiye"
+  },
+  "28|YAĞLIDERE": {
+    "provinceCode": "28",
+    "districtName": "Yağlıdere",
+    "latitude": 40.860535,
+    "longitude": 38.625158,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Yağlıdere, Giresun, Karadeniz Bölgesi, Türkiye"
+  },
+  "28|MERKEZ": {
+    "provinceCode": "28",
+    "districtName": "Merkez",
+    "latitude": 40.917635,
+    "longitude": 38.384153,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Giresun Merkez, Giresun, Karadeniz Bölgesi, 28100, Türkiye"
+  },
+  "29|TORUL": {
+    "provinceCode": "29",
+    "districtName": "Torul",
+    "latitude": 40.557658,
+    "longitude": 39.292636,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Torul, Gümüşhane, Karadeniz Bölgesi, 29800, Türkiye"
+  },
+  "29|MERKEZ": {
+    "provinceCode": "29",
+    "districtName": "Merkez",
+    "latitude": 40.461784,
+    "longitude": 39.475734,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Gümüşhane Merkez, Gümüşhane, Karadeniz Bölgesi, Türkiye"
+  },
+  "55|ONDOKUZMAYIS": {
+    "provinceCode": "55",
+    "districtName": "Ondokuzmayıs",
+    "latitude": 41.493655,
+    "longitude": 36.081049,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "19 Mayıs, Samsun, Karadeniz Bölgesi, 55420, Türkiye"
+  },
+  "57|ERFELEK": {
+    "provinceCode": "57",
+    "districtName": "Erfelek",
+    "latitude": 41.879362,
+    "longitude": 34.908051,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Erfelek, Sinop, Karadeniz Bölgesi, Türkiye"
+  },
+  "57|MERKEZ": {
+    "provinceCode": "57",
+    "districtName": "Merkez",
+    "latitude": 42.02658,
+    "longitude": 35.151151,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Sinop Merkez, Sinop, Karadeniz Bölgesi, 57002, Türkiye"
+  },
+  "62|NAZIMİYE": {
+    "provinceCode": "62",
+    "districtName": "Nazımiye",
+    "latitude": 39.179434,
+    "longitude": 39.828832,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Nazımiye, Tunceli, Doğu Anadolu Bölgesi, 62950, Türkiye"
+  },
+  "62|MERKEZ": {
+    "provinceCode": "62",
+    "districtName": "Merkez",
+    "latitude": 39.136581,
+    "longitude": 39.53342,
+    "source": "nominatim",
+    "verified": true,
+    "displayName": "Tunceli Merkez, Tunceli, Doğu Anadolu Bölgesi, 62000, Türkiye"
+  }
+}

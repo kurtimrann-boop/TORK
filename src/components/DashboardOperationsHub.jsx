@@ -7,27 +7,63 @@ import MiniLiveMap from "./MiniLiveMap";
 let sessionGeoCache = null;
 
 const WEATHER_CODES = {
-  0: { emoji: "☀️", label: "Açık" },
-  1: { emoji: "🌤️", label: "Az Bulutlu" },
-  2: { emoji: "⛅", label: "Parçalı Bulutlu" },
-  3: { emoji: "☁️", label: "Bulutlu" },
-  45: { emoji: "🌫️", label: "Sisli" },
-  48: { emoji: "🌫️", label: "Donlu Sis" },
-  51: { emoji: "🌦️", label: "Hafif Çisenti" },
-  53: { emoji: "🌦️", label: "Çisenti" },
-  55: { emoji: "🌧️", label: "Yoğun Yağmur" },
-  61: { emoji: "🌧️", label: "Hafif Yağmur" },
-  63: { emoji: "🌧️", label: "Orta Yağmur" },
-  65: { emoji: "🌧️", label: "Şiddetli Yağmur" },
-  71: { emoji: "❄️", label: "Hafif Kar" },
-  73: { emoji: "❄️", label: "Kar Yağışlı" },
-  75: { emoji: "❄️", label: "Yoğun Kar" },
-  80: { emoji: "🌦️", label: "Sağanak" },
-  95: { emoji: "⛈️", label: "Fırtına" },
+  0: { type: "sun", label: "Açık" },
+  1: { type: "cloud-sun", label: "Az Bulutlu" },
+  2: { type: "cloud-sun", label: "Parçalı Bulutlu" },
+  3: { type: "cloud", label: "Bulutlu" },
+  45: { type: "fog", label: "Sisli" },
+  48: { type: "fog", label: "Donlu Sis" },
+  51: { type: "rain", label: "Hafif Çisenti" },
+  53: { type: "rain", label: "Çisenti" },
+  55: { type: "rain", label: "Yoğun Yağmur" },
+  61: { type: "rain", label: "Hafif Yağmur" },
+  63: { type: "rain", label: "Orta Yağmur" },
+  65: { type: "rain", label: "Şiddetli Yağmur" },
+  71: { type: "snow", label: "Hafif Kar" },
+  73: { type: "snow", label: "Kar Yağışlı" },
+  75: { type: "snow", label: "Yoğun Kar" },
+  80: { type: "rain", label: "Sağanak" },
+  95: { type: "storm", label: "Fırtına" },
 };
 
 function getWeatherInfo(code) {
-  return WEATHER_CODES[code] || { emoji: "🌡️", label: "Bilinmiyor" };
+  return WEATHER_CODES[code] || { type: "cloud", label: "Bilinmiyor" };
+}
+
+function WeatherIcon({ type, className = "h-5 w-5 text-[#FFCC00]" }) {
+  if (type === "sun") {
+    return (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    );
+  }
+  if (type === "cloud-sun") {
+    return (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 1.414M7.05 16.95l-1.414 1.414M17.657 16.95l-1.414-1.414M7.05 7.05L5.636 5.636M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    );
+  }
+  if (type === "rain" || type === "storm") {
+    return (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 16.58A5 5 0 0018 7h-1.26A8 8 0 104 15.25M8 19v3m4-3v3m4-3v3" />
+      </svg>
+    );
+  }
+  if (type === "snow") {
+    return (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v18m-9-9h18m-15.364-6.364l12.728 12.728m0-12.728L6.343 17.657" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z" />
+    </svg>
+  );
 }
 
 export default function DashboardOperationsHub({
@@ -42,7 +78,7 @@ export default function DashboardOperationsHub({
     temp: null,
     feelsLike: null,
     weatherLabel: null,
-    weatherEmoji: "📍",
+    weatherType: "cloud",
     status: "idle", // idle | locating | success | error
     errorMsg: null,
   });
@@ -79,7 +115,7 @@ export default function DashboardOperationsHub({
           temp,
           feelsLike,
           weatherLabel: info.label,
-          weatherEmoji: info.emoji,
+          weatherType: info.type,
         };
       }
 
@@ -89,7 +125,7 @@ export default function DashboardOperationsHub({
         temp: weatherData?.temp ?? null,
         feelsLike: weatherData?.feelsLike ?? null,
         weatherLabel: weatherData?.weatherLabel ?? "Normal",
-        weatherEmoji: weatherData?.weatherEmoji ?? "📍",
+        weatherType: weatherData?.weatherType ?? "cloud",
         status: "success",
         errorMsg: null,
       };
@@ -198,16 +234,19 @@ export default function DashboardOperationsHub({
             </p>
           </div>
 
-          {/* Location & Weather Telemetry Card */}
+          {/* Location & Weather Telemetry Card (Clean SVGs, No Emojis) */}
           <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {/* Location Pill */}
             <div className="flex items-center gap-3 rounded-2xl border border-white/6 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#00E5A0]/20 bg-[#00E5A0]/10 text-base text-[#00E5A0]">
-                📍
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#00E5A0]/20 bg-[#00E5A0]/10 text-[#00E5A0]">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-                  Terminal Konumu
+                  Operasyon Konumu
                 </div>
                 <div className="truncate text-xs font-black text-white">
                   {geoState.locationName}
@@ -217,8 +256,8 @@ export default function DashboardOperationsHub({
 
             {/* Weather Pill */}
             <div className="flex items-center gap-3 rounded-2xl border border-white/6 bg-white/[0.02] p-3.5 backdrop-blur-md">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#ffcc00]/20 bg-[#ffcc00]/10 text-base">
-                {geoState.weatherEmoji}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#FFCC00]/20 bg-[#FFCC00]/10">
+                <WeatherIcon type={geoState.weatherType} />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
@@ -343,15 +382,15 @@ export default function DashboardOperationsHub({
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("wallet")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#ffcc00]/20 bg-[#ffcc00]/5 p-5 text-left transition hover:border-[#ffcc00]/40 hover:bg-[#ffcc00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-[#FFCC00]/20 bg-[#FFCC00]/5 p-5 text-left transition hover:border-[#FFCC00]/40 hover:bg-[#FFCC00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ffcc00]/30 bg-[#ffcc00]/15 text-[#ffcc00] transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#FFCC00]/30 bg-[#FFCC00]/15 text-[#FFCC00] transition group-hover:scale-110">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
                   </div>
-                  <span className="text-xs font-bold text-[#ffcc00] opacity-0 transition group-hover:opacity-100">
+                  <span className="text-xs font-bold text-[#FFCC00] opacity-0 transition group-hover:opacity-100">
                     Bakiye →
                   </span>
                 </div>
@@ -385,21 +424,45 @@ export default function DashboardOperationsHub({
                 </div>
               </button>
 
-              {/* 2. Aktif Taşımalar */}
+              {/* 2. Tekliflerim (ROUTES DIRECTLY TO CARRIER MY-BIDS) */}
               <button
                 type="button"
-                onClick={() => onNavigate && onNavigate("transports")}
+                onClick={() => onNavigate && onNavigate("my-bids")}
                 className="group flex flex-col justify-between rounded-2xl border border-[#06B6D4]/20 bg-[#06B6D4]/5 p-5 text-left transition hover:border-[#06B6D4]/40 hover:bg-[#06B6D4]/10 hover:shadow-[0_0_24px_rgba(6,182,212,0.15)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#06B6D4]/30 bg-[#06B6D4]/15 text-[#06B6D4] transition group-hover:scale-110">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  {counts.carrierBidsCount > 0 && (
+                    <span className="rounded-full bg-[#06B6D4] px-2 py-0.5 text-[10px] font-black text-black">
+                      {counts.carrierBidsCount}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-4">
+                  <div className="text-sm font-black text-white">Tekliflerim</div>
+                  <div className="mt-1 text-xs text-slate-400">Verdiğin tekliflerin durumları</div>
+                </div>
+              </button>
+
+              {/* 3. Aktif Taşımalar */}
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate("transports")}
+                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-5 text-left transition hover:border-white/20 hover:bg-white/[0.05] active:scale-[0.99]"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition group-hover:scale-110">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                     </svg>
                   </div>
                   {counts.activeTransportsCount > 0 && (
-                    <span className="rounded-full bg-[#06B6D4] px-2 py-0.5 text-[10px] font-black text-black">
+                    <span className="rounded-full bg-emerald-400 px-2 py-0.5 text-[10px] font-black text-black">
                       {counts.activeTransportsCount}
                     </span>
                   )}
@@ -410,41 +473,19 @@ export default function DashboardOperationsHub({
                 </div>
               </button>
 
-              {/* 3. Tekliflerim */}
-              <button
-                type="button"
-                onClick={() => onNavigate && onNavigate("board")}
-                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.02] p-5 text-left transition hover:border-white/20 hover:bg-white/[0.05] active:scale-[0.99]"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition group-hover:scale-110">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                  </div>
-                  <span className="text-xs font-bold text-slate-400 opacity-0 transition group-hover:opacity-100">
-                    Gör →
-                  </span>
-                </div>
-                <div className="mt-4">
-                  <div className="text-sm font-black text-white">Tekliflerim</div>
-                  <div className="mt-1 text-xs text-slate-400">Verdiğin tekliflerin durumları</div>
-                </div>
-              </button>
-
               {/* 4. Cüzdan */}
               <button
                 type="button"
                 onClick={() => onNavigate && onNavigate("wallet")}
-                className="group flex flex-col justify-between rounded-2xl border border-[#ffcc00]/20 bg-[#ffcc00]/5 p-5 text-left transition hover:border-[#ffcc00]/40 hover:bg-[#ffcc00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
+                className="group flex flex-col justify-between rounded-2xl border border-[#FFCC00]/20 bg-[#FFCC00]/5 p-5 text-left transition hover:border-[#FFCC00]/40 hover:bg-[#FFCC00]/10 hover:shadow-[0_0_24px_rgba(255,204,0,0.12)] active:scale-[0.99]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ffcc00]/30 bg-[#ffcc00]/15 text-[#ffcc00] transition group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#FFCC00]/30 bg-[#FFCC00]/15 text-[#FFCC00] transition group-hover:scale-110">
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
                   </div>
-                  <span className="text-xs font-bold text-[#ffcc00] opacity-0 transition group-hover:opacity-100">
+                  <span className="text-xs font-bold text-[#FFCC00] opacity-0 transition group-hover:opacity-100">
                     Bakiye →
                   </span>
                 </div>

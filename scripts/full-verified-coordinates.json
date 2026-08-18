@@ -1,0 +1,5840 @@
+{
+  "01|ALADAĞ": {
+    "latitude": 37.454864,
+    "longitude": 35.447315,
+    "source": "official",
+    "verified": true
+  },
+  "01|CEYHAN": {
+    "latitude": 37.139688,
+    "longitude": 35.844954,
+    "source": "official",
+    "verified": true
+  },
+  "01|ÇUKUROVA": {
+    "latitude": 37.048301,
+    "longitude": 35.805843,
+    "source": "official",
+    "verified": true
+  },
+  "01|FEKE": {
+    "latitude": 37.736207,
+    "longitude": 35.890403,
+    "source": "official",
+    "verified": true
+  },
+  "01|İMAMOĞLU": {
+    "latitude": 37.26151,
+    "longitude": 35.662909,
+    "source": "official",
+    "verified": true
+  },
+  "01|KARAİSALI": {
+    "latitude": 37.257184,
+    "longitude": 35.058641,
+    "source": "nominatim",
+    "verified": true
+  },
+  "01|KARATAŞ": {
+    "latitude": 36.630981,
+    "longitude": 35.540405,
+    "source": "official",
+    "verified": true
+  },
+  "01|KOZAN": {
+    "latitude": 37.475214,
+    "longitude": 35.915531,
+    "source": "official",
+    "verified": true
+  },
+  "01|POZANTI": {
+    "latitude": 37.337821,
+    "longitude": 34.801751,
+    "source": "official",
+    "verified": true
+  },
+  "01|SAİMBEYLİ": {
+    "latitude": 37.908726,
+    "longitude": 36.209404,
+    "source": "official",
+    "verified": true
+  },
+  "01|SARIÇAM": {
+    "latitude": 36.977311,
+    "longitude": 35.573477,
+    "source": "official",
+    "verified": true
+  },
+  "01|SEYHAN": {
+    "latitude": 37.028958,
+    "longitude": 35.265692,
+    "source": "official",
+    "verified": true
+  },
+  "01|TUFANBEYLİ": {
+    "latitude": 38.2603,
+    "longitude": 36.222074,
+    "source": "nominatim",
+    "verified": true
+  },
+  "01|YUMURTALIK": {
+    "latitude": 36.776173,
+    "longitude": 35.796735,
+    "source": "official",
+    "verified": true
+  },
+  "01|YÜREĞİR": {
+    "latitude": 36.977427,
+    "longitude": 35.363789,
+    "source": "official",
+    "verified": true
+  },
+  "02|BESNİ": {
+    "latitude": 37.687614,
+    "longitude": 37.82128,
+    "source": "official",
+    "verified": true
+  },
+  "02|ÇELİKHAN": {
+    "latitude": 38.012823,
+    "longitude": 38.186276,
+    "source": "official",
+    "verified": true
+  },
+  "02|GERGER": {
+    "latitude": 37.969775,
+    "longitude": 38.959439,
+    "source": "official",
+    "verified": true
+  },
+  "02|GÖLBAŞI": {
+    "latitude": 37.784405,
+    "longitude": 37.63956,
+    "source": "official",
+    "verified": true
+  },
+  "02|KAHTA": {
+    "latitude": 37.786072,
+    "longitude": 38.621718,
+    "source": "official",
+    "verified": true
+  },
+  "02|MERKEZ": {
+    "latitude": 37.739408,
+    "longitude": 38.399055,
+    "source": "official",
+    "verified": true
+  },
+  "02|SAMSAT": {
+    "latitude": 37.596614,
+    "longitude": 38.516152,
+    "source": "official",
+    "verified": true
+  },
+  "02|SİNCİK": {
+    "latitude": 38.029133,
+    "longitude": 38.619433,
+    "source": "official",
+    "verified": true
+  },
+  "02|TUT": {
+    "latitude": 37.794449,
+    "longitude": 37.914949,
+    "source": "official",
+    "verified": true
+  },
+  "03|BAŞMAKÇI": {
+    "latitude": 37.897358,
+    "longitude": 30.009778,
+    "source": "nominatim",
+    "verified": true
+  },
+  "03|BAYAT": {
+    "latitude": 38.984423,
+    "longitude": 30.925576,
+    "source": "official",
+    "verified": true
+  },
+  "03|BOLVADİN": {
+    "latitude": 38.711646,
+    "longitude": 31.052335,
+    "source": "official",
+    "verified": true
+  },
+  "03|ÇAY": {
+    "latitude": 38.592566,
+    "longitude": 31.027374,
+    "source": "official",
+    "verified": true
+  },
+  "03|ÇOBANLAR": {
+    "latitude": 38.701617,
+    "longitude": 30.781523,
+    "source": "official",
+    "verified": true
+  },
+  "03|DAZKIRI": {
+    "latitude": 37.919362,
+    "longitude": 29.86045,
+    "source": "official",
+    "verified": true
+  },
+  "03|DİNAR": {
+    "latitude": 38.06763,
+    "longitude": 30.166248,
+    "source": "official",
+    "verified": true
+  },
+  "03|EMİRDAĞ": {
+    "latitude": 39.019501,
+    "longitude": 31.150258,
+    "source": "official",
+    "verified": true
+  },
+  "03|EVCİLER": {
+    "latitude": 38.941141,
+    "longitude": 31.403513,
+    "source": "official",
+    "verified": true
+  },
+  "03|HOCALAR": {
+    "latitude": 38.580813,
+    "longitude": 29.96688,
+    "source": "nominatim",
+    "verified": true
+  },
+  "03|İHSANİYE": {
+    "latitude": 38.771209,
+    "longitude": 30.371127,
+    "source": "official",
+    "verified": true
+  },
+  "03|İSCEHİSAR": {
+    "latitude": 39.009494,
+    "longitude": 30.775056,
+    "source": "official",
+    "verified": true
+  },
+  "03|KIZILÖREN": {
+    "latitude": 38.589012,
+    "longitude": 30.965994,
+    "source": "official",
+    "verified": true
+  },
+  "03|MERKEZ": {
+    "latitude": 38.78323,
+    "longitude": 30.566517,
+    "source": "official",
+    "verified": true
+  },
+  "03|SANDIKLI": {
+    "latitude": 38.464764,
+    "longitude": 30.272542,
+    "source": "official",
+    "verified": true
+  },
+  "03|SİNANPAŞA": {
+    "latitude": 38.745188,
+    "longitude": 30.245212,
+    "source": "nominatim",
+    "verified": true
+  },
+  "03|SULTANDAĞI": {
+    "latitude": 38.547927,
+    "longitude": 31.268241,
+    "source": "nominatim",
+    "verified": true
+  },
+  "03|ŞUHUT": {
+    "latitude": 38.533961,
+    "longitude": 30.546129,
+    "source": "official",
+    "verified": true
+  },
+  "04|DİYADİN": {
+    "latitude": 39.539769,
+    "longitude": 43.671203,
+    "source": "nominatim",
+    "verified": true
+  },
+  "04|DOĞUBAYAZIT": {
+    "latitude": 39.539938,
+    "longitude": 44.083816,
+    "source": "official",
+    "verified": true
+  },
+  "04|ELEŞKİRT": {
+    "latitude": 39.798379,
+    "longitude": 42.67547,
+    "source": "official",
+    "verified": true
+  },
+  "04|HAMUR": {
+    "latitude": 39.402652,
+    "longitude": 42.919857,
+    "source": "official",
+    "verified": true
+  },
+  "04|MERKEZ": {
+    "latitude": 39.702337,
+    "longitude": 43.040336,
+    "source": "official",
+    "verified": true
+  },
+  "04|PATNOS": {
+    "latitude": 39.23342,
+    "longitude": 42.861234,
+    "source": "nominatim",
+    "verified": true
+  },
+  "04|TAŞLIÇAY": {
+    "latitude": 39.63333,
+    "longitude": 43.377676,
+    "source": "official",
+    "verified": true
+  },
+  "04|TUTAK": {
+    "latitude": 39.826023,
+    "longitude": 43.534282,
+    "source": "official",
+    "verified": true
+  },
+  "05|GÖYNÜCEK": {
+    "latitude": 40.397147,
+    "longitude": 35.523693,
+    "source": "official",
+    "verified": true
+  },
+  "05|GÜMÜŞHACIKÖY": {
+    "latitude": 40.871924,
+    "longitude": 35.222607,
+    "source": "official",
+    "verified": true
+  },
+  "05|HAMAMÖZÜ": {
+    "latitude": 40.783196,
+    "longitude": 35.024215,
+    "source": "official",
+    "verified": true
+  },
+  "05|MERKEZ": {
+    "latitude": 40.633968,
+    "longitude": 35.816385,
+    "source": "nominatim",
+    "verified": true
+  },
+  "05|MERZİFON": {
+    "latitude": 40.879224,
+    "longitude": 35.470511,
+    "source": "official",
+    "verified": true
+  },
+  "05|SULUOVA": {
+    "latitude": 40.836413,
+    "longitude": 35.645557,
+    "source": "nominatim",
+    "verified": true
+  },
+  "05|TAŞOVA": {
+    "latitude": 40.760349,
+    "longitude": 36.321973,
+    "source": "official",
+    "verified": true
+  },
+  "06|AKYURT": {
+    "latitude": 40.130753,
+    "longitude": 33.087068,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|ALTINDAĞ": {
+    "latitude": 39.952359,
+    "longitude": 32.866202,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|AYAŞ": {
+    "latitude": 40.015144,
+    "longitude": 32.332422,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|BALÂ": {
+    "latitude": 39.553364,
+    "longitude": 33.123753,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|BEYPAZARI": {
+    "latitude": 40.165649,
+    "longitude": 31.920455,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|ÇAMLIDERE": {
+    "latitude": 40.49148,
+    "longitude": 32.475826,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|ÇANKAYA": {
+    "latitude": 39.885332,
+    "longitude": 32.855497,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|ÇUBUK": {
+    "latitude": 40.238896,
+    "longitude": 33.028947,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|ELMADAĞ": {
+    "latitude": 39.91732,
+    "longitude": 33.234395,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|ETİMESGUT": {
+    "latitude": 39.949568,
+    "longitude": 32.661818,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|EVREN": {
+    "latitude": 39.02212,
+    "longitude": 33.807857,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|GÖLBAŞI": {
+    "latitude": 39.792529,
+    "longitude": 32.806665,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|GÜDÜL": {
+    "latitude": 40.210461,
+    "longitude": 32.243225,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|HAYMANA": {
+    "latitude": 39.434135,
+    "longitude": 32.498792,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|KAHRAMANKAZAN": {
+    "latitude": 40.205444,
+    "longitude": 32.681315,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|KALECİK": {
+    "latitude": 40.076398,
+    "longitude": 33.445043,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|KEÇİÖREN": {
+    "latitude": 39.977713,
+    "longitude": 32.86698,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|KIZILCAHAMAM": {
+    "latitude": 40.470095,
+    "longitude": 32.652856,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|MAMAK": {
+    "latitude": 39.931399,
+    "longitude": 32.911611,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|NALLIHAN": {
+    "latitude": 40.188822,
+    "longitude": 31.350345,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|POLATLI": {
+    "latitude": 39.58567,
+    "longitude": 32.14173,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|PURSAKLAR": {
+    "latitude": 40.038105,
+    "longitude": 32.896908,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|SİNCAN": {
+    "latitude": 39.965035,
+    "longitude": 32.583083,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|ŞEREFLİKOÇHİSAR": {
+    "latitude": 38.938933,
+    "longitude": 33.543884,
+    "source": "nominatim",
+    "verified": true
+  },
+  "06|YENİMAHALLE": {
+    "latitude": 39.966106,
+    "longitude": 32.808779,
+    "source": "nominatim",
+    "verified": true
+  },
+  "07|AKSEKİ": {
+    "latitude": 37.066774,
+    "longitude": 31.700153,
+    "source": "official",
+    "verified": true
+  },
+  "07|AKSU": {
+    "latitude": 37.055775,
+    "longitude": 30.884653,
+    "source": "official",
+    "verified": true
+  },
+  "07|ALANYA": {
+    "latitude": 36.571928,
+    "longitude": 32.139549,
+    "source": "official",
+    "verified": true
+  },
+  "07|DEMRE": {
+    "latitude": 36.258657,
+    "longitude": 29.988692,
+    "source": "official",
+    "verified": true
+  },
+  "07|DÖŞEMEALTI": {
+    "latitude": 37.21729,
+    "longitude": 30.735625,
+    "source": "official",
+    "verified": true
+  },
+  "07|ELMALI": {
+    "latitude": 36.566765,
+    "longitude": 29.75087,
+    "source": "official",
+    "verified": true
+  },
+  "07|FİNİKE": {
+    "latitude": 36.480238,
+    "longitude": 30.20927,
+    "source": "official",
+    "verified": true
+  },
+  "07|GAZİPAŞA": {
+    "latitude": 36.28605,
+    "longitude": 32.577931,
+    "source": "official",
+    "verified": true
+  },
+  "07|GÜNDOĞMUŞ": {
+    "latitude": 36.814338,
+    "longitude": 31.998333,
+    "source": "nominatim",
+    "verified": true
+  },
+  "07|İBRADI": {
+    "latitude": 36.757946,
+    "longitude": 30.421712,
+    "source": "official",
+    "verified": true
+  },
+  "07|KAŞ": {
+    "latitude": 36.217008,
+    "longitude": 29.684973,
+    "source": "official",
+    "verified": true
+  },
+  "07|KEMER": {
+    "latitude": 36.593363,
+    "longitude": 30.528401,
+    "source": "official",
+    "verified": true
+  },
+  "07|KEPEZ": {
+    "latitude": 36.265098,
+    "longitude": 29.736437,
+    "source": "official",
+    "verified": true
+  },
+  "07|KONYAALTI": {
+    "latitude": 36.868462,
+    "longitude": 30.525185,
+    "source": "official",
+    "verified": true
+  },
+  "07|KORKUTELİ": {
+    "latitude": 37.066652,
+    "longitude": 30.19705,
+    "source": "nominatim",
+    "verified": true
+  },
+  "07|KUMLUCA": {
+    "latitude": 36.33033,
+    "longitude": 30.432508,
+    "source": "official",
+    "verified": true
+  },
+  "07|MANAVGAT": {
+    "latitude": 36.787012,
+    "longitude": 31.440667,
+    "source": "official",
+    "verified": true
+  },
+  "07|MURATPAŞA": {
+    "latitude": 36.891238,
+    "longitude": 30.692187,
+    "source": "official",
+    "verified": true
+  },
+  "07|SERİK": {
+    "latitude": 36.99,
+    "longitude": 30.938611,
+    "source": "official",
+    "verified": true
+  },
+  "08|ARDANUÇ": {
+    "latitude": 41.122288,
+    "longitude": 42.06818,
+    "source": "official",
+    "verified": true
+  },
+  "08|ARHAVİ": {
+    "latitude": 41.35207,
+    "longitude": 41.309353,
+    "source": "official",
+    "verified": true
+  },
+  "08|BORÇKA": {
+    "latitude": 41.311398,
+    "longitude": 41.751377,
+    "source": "official",
+    "verified": true
+  },
+  "08|HOPA": {
+    "latitude": 41.388754,
+    "longitude": 41.418164,
+    "source": "official",
+    "verified": true
+  },
+  "08|KEMALPAŞA": {
+    "latitude": 41.335875,
+    "longitude": 41.305301,
+    "source": "official",
+    "verified": true
+  },
+  "08|MERKEZ": {
+    "latitude": 41.362783,
+    "longitude": 41.676711,
+    "source": "official",
+    "verified": true
+  },
+  "08|MURGUL": {
+    "latitude": 41.279681,
+    "longitude": 41.564126,
+    "source": "official",
+    "verified": true
+  },
+  "08|ŞAVŞAT": {
+    "latitude": 41.252488,
+    "longitude": 42.356886,
+    "source": "official",
+    "verified": true
+  },
+  "08|YUSUFELİ": {
+    "latitude": 40.810829,
+    "longitude": 41.527085,
+    "source": "official",
+    "verified": true
+  },
+  "09|BOZDOĞAN": {
+    "latitude": 37.686481,
+    "longitude": 28.320258,
+    "source": "official",
+    "verified": true
+  },
+  "09|BUHARKENT": {
+    "latitude": 38.049338,
+    "longitude": 28.718858,
+    "source": "official",
+    "verified": true
+  },
+  "09|ÇİNE": {
+    "latitude": 37.506046,
+    "longitude": 28.028214,
+    "source": "official",
+    "verified": true
+  },
+  "09|DİDİM": {
+    "latitude": 37.388014,
+    "longitude": 27.433011,
+    "source": "official",
+    "verified": true
+  },
+  "09|EFELER": {
+    "latitude": 37.847175,
+    "longitude": 27.833725,
+    "source": "nominatim",
+    "verified": true
+  },
+  "09|GERMENCİK": {
+    "latitude": 37.905689,
+    "longitude": 27.549871,
+    "source": "official",
+    "verified": true
+  },
+  "09|İNCİRLİOVA": {
+    "latitude": 37.82405,
+    "longitude": 27.744135,
+    "source": "official",
+    "verified": true
+  },
+  "09|KARACASU": {
+    "latitude": 37.755016,
+    "longitude": 28.563576,
+    "source": "official",
+    "verified": true
+  },
+  "09|KARPUZLU": {
+    "latitude": 37.610447,
+    "longitude": 27.865896,
+    "source": "official",
+    "verified": true
+  },
+  "09|KOÇARLI": {
+    "latitude": 37.762218,
+    "longitude": 27.707338,
+    "source": "nominatim",
+    "verified": true
+  },
+  "09|KÖŞK": {
+    "latitude": 37.986266,
+    "longitude": 28.093545,
+    "source": "official",
+    "verified": true
+  },
+  "09|KUŞADASI": {
+    "latitude": 37.857501,
+    "longitude": 27.258779,
+    "source": "official",
+    "verified": true
+  },
+  "09|KUYUCAK": {
+    "latitude": 37.86051,
+    "longitude": 28.674547,
+    "source": "official",
+    "verified": true
+  },
+  "09|NAZİLLİ": {
+    "latitude": 38.097718,
+    "longitude": 28.347341,
+    "source": "official",
+    "verified": true
+  },
+  "09|SÖKE": {
+    "latitude": 37.738557,
+    "longitude": 27.340926,
+    "source": "official",
+    "verified": true
+  },
+  "09|SULTANHİSAR": {
+    "latitude": 37.888871,
+    "longitude": 28.215125,
+    "source": "official",
+    "verified": true
+  },
+  "09|YENİPAZAR": {
+    "latitude": 37.80972,
+    "longitude": 28.166258,
+    "source": "official",
+    "verified": true
+  },
+  "10|ALTIEYLÜL": {
+    "latitude": 39.644633,
+    "longitude": 27.883441,
+    "source": "official",
+    "verified": true
+  },
+  "10|AYVALIK": {
+    "latitude": 39.327108,
+    "longitude": 26.698816,
+    "source": "official",
+    "verified": true
+  },
+  "10|BALYA": {
+    "latitude": 39.656907,
+    "longitude": 27.526459,
+    "source": "official",
+    "verified": true
+  },
+  "10|BANDIRMA": {
+    "latitude": 40.355471,
+    "longitude": 27.96976,
+    "source": "official",
+    "verified": true
+  },
+  "10|BİGADİÇ": {
+    "latitude": 39.382055,
+    "longitude": 28.125933,
+    "source": "official",
+    "verified": true
+  },
+  "10|BURHANİYE": {
+    "latitude": 39.408137,
+    "longitude": 26.934125,
+    "source": "official",
+    "verified": true
+  },
+  "10|DURSUNBEY": {
+    "latitude": 39.647697,
+    "longitude": 28.751916,
+    "source": "official",
+    "verified": true
+  },
+  "10|EDREMİT": {
+    "latitude": 39.583683,
+    "longitude": 26.923061,
+    "source": "official",
+    "verified": true
+  },
+  "10|ERDEK": {
+    "latitude": 40.400006,
+    "longitude": 27.794829,
+    "source": "official",
+    "verified": true
+  },
+  "10|GÖMEÇ": {
+    "latitude": 39.362446,
+    "longitude": 26.864795,
+    "source": "official",
+    "verified": true
+  },
+  "10|GÖNEN": {
+    "latitude": 40.104412,
+    "longitude": 27.656398,
+    "source": "official",
+    "verified": true
+  },
+  "10|HAVRAN": {
+    "latitude": 39.531035,
+    "longitude": 27.072495,
+    "source": "official",
+    "verified": true
+  },
+  "10|İVRİNDİ": {
+    "latitude": 39.582016,
+    "longitude": 27.485259,
+    "source": "official",
+    "verified": true
+  },
+  "10|KARESİ": {
+    "latitude": 39.646417,
+    "longitude": 27.885341,
+    "source": "official",
+    "verified": true
+  },
+  "10|KEPSUT": {
+    "latitude": 39.62537,
+    "longitude": 28.28046,
+    "source": "official",
+    "verified": true
+  },
+  "10|MANYAS": {
+    "latitude": 40.121223,
+    "longitude": 27.854626,
+    "source": "official",
+    "verified": true
+  },
+  "10|MARMARA": {
+    "latitude": 40.652844,
+    "longitude": 27.670353,
+    "source": "official",
+    "verified": true
+  },
+  "10|SAVAŞTEPE": {
+    "latitude": 39.462452,
+    "longitude": 27.633443,
+    "source": "official",
+    "verified": true
+  },
+  "10|SINDIRGI": {
+    "latitude": 39.349216,
+    "longitude": 27.957315,
+    "source": "official",
+    "verified": true
+  },
+  "10|SUSURLUK": {
+    "latitude": 39.869083,
+    "longitude": 28.048307,
+    "source": "official",
+    "verified": true
+  },
+  "11|BOZÜYÜK": {
+    "latitude": 39.904544,
+    "longitude": 30.059914,
+    "source": "official",
+    "verified": true
+  },
+  "11|GÖLPAZARI": {
+    "latitude": 40.283937,
+    "longitude": 30.316536,
+    "source": "official",
+    "verified": true
+  },
+  "11|İNHİSAR": {
+    "latitude": 40.076237,
+    "longitude": 30.377314,
+    "source": "official",
+    "verified": true
+  },
+  "11|MERKEZ": {
+    "latitude": 40.158541,
+    "longitude": 29.975724,
+    "source": "official",
+    "verified": true
+  },
+  "11|OSMANELİ": {
+    "latitude": 40.405587,
+    "longitude": 29.893892,
+    "source": "official",
+    "verified": true
+  },
+  "11|PAZARYERİ": {
+    "latitude": 39.995406,
+    "longitude": 29.903126,
+    "source": "official",
+    "verified": true
+  },
+  "11|SÖĞÜT": {
+    "latitude": 40.015552,
+    "longitude": 30.181427,
+    "source": "official",
+    "verified": true
+  },
+  "11|YENİPAZAR": {
+    "latitude": 40.212379,
+    "longitude": 30.40358,
+    "source": "official",
+    "verified": true
+  },
+  "12|ADAKLI": {
+    "latitude": 39.172817,
+    "longitude": 40.361828,
+    "source": "official",
+    "verified": true
+  },
+  "12|GENÇ": {
+    "latitude": 38.766448,
+    "longitude": 40.883067,
+    "source": "official",
+    "verified": true
+  },
+  "12|KARLIOVA": {
+    "latitude": 39.28788,
+    "longitude": 40.622223,
+    "source": "official",
+    "verified": true
+  },
+  "12|KİĞI": {
+    "latitude": 39.310367,
+    "longitude": 40.349628,
+    "source": "official",
+    "verified": true
+  },
+  "12|MERKEZ": {
+    "latitude": 39.228246,
+    "longitude": 40.070348,
+    "source": "official",
+    "verified": true
+  },
+  "12|SOLHAN": {
+    "latitude": 38.965935,
+    "longitude": 41.051815,
+    "source": "official",
+    "verified": true
+  },
+  "12|YAYLADERE": {
+    "latitude": 39.207994,
+    "longitude": 40.060843,
+    "source": "official",
+    "verified": true
+  },
+  "12|YEDİSU": {
+    "latitude": 39.433959,
+    "longitude": 40.545119,
+    "source": "official",
+    "verified": true
+  },
+  "13|ADİLCEVAZ": {
+    "latitude": 38.804306,
+    "longitude": 42.734637,
+    "source": "official",
+    "verified": true
+  },
+  "13|AHLAT": {
+    "latitude": 38.754653,
+    "longitude": 42.483327,
+    "source": "official",
+    "verified": true
+  },
+  "13|GÜROYMAK": {
+    "latitude": 38.506745,
+    "longitude": 41.990519,
+    "source": "official",
+    "verified": true
+  },
+  "13|HİZAN": {
+    "latitude": 38.172454,
+    "longitude": 42.399716,
+    "source": "official",
+    "verified": true
+  },
+  "13|MERKEZ": {
+    "latitude": 38.319645,
+    "longitude": 42.148317,
+    "source": "official",
+    "verified": true
+  },
+  "13|MUTKİ": {
+    "latitude": 38.408974,
+    "longitude": 41.921941,
+    "source": "official",
+    "verified": true
+  },
+  "13|TATVAN": {
+    "latitude": 38.493196,
+    "longitude": 42.287811,
+    "source": "official",
+    "verified": true
+  },
+  "14|DÖRTDİVAN": {
+    "latitude": 40.70871,
+    "longitude": 32.070904,
+    "source": "official",
+    "verified": true
+  },
+  "14|GEREDE": {
+    "latitude": 40.745631,
+    "longitude": 32.251396,
+    "source": "official",
+    "verified": true
+  },
+  "14|GÖYNÜK": {
+    "latitude": 40.398317,
+    "longitude": 30.786617,
+    "source": "official",
+    "verified": true
+  },
+  "14|KIBRISCIK": {
+    "latitude": 40.73308,
+    "longitude": 31.615981,
+    "source": "official",
+    "verified": true
+  },
+  "14|MENGEN": {
+    "latitude": 40.939662,
+    "longitude": 32.074833,
+    "source": "official",
+    "verified": true
+  },
+  "14|MERKEZ": {
+    "latitude": 40.78739,
+    "longitude": 31.885554,
+    "source": "official",
+    "verified": true
+  },
+  "14|MUDURNU": {
+    "latitude": 40.465696,
+    "longitude": 31.211231,
+    "source": "official",
+    "verified": true
+  },
+  "14|SEBEN": {
+    "latitude": 40.765922,
+    "longitude": 31.903835,
+    "source": "official",
+    "verified": true
+  },
+  "14|YENİÇAĞA": {
+    "latitude": 40.770385,
+    "longitude": 32.033641,
+    "source": "official",
+    "verified": true
+  },
+  "15|AĞLASUN": {
+    "latitude": 37.604104,
+    "longitude": 30.660121,
+    "source": "official",
+    "verified": true
+  },
+  "15|ALTINYAYLA": {
+    "latitude": 36.996179,
+    "longitude": 29.546769,
+    "source": "official",
+    "verified": true
+  },
+  "15|BUCAK": {
+    "latitude": 37.456745,
+    "longitude": 30.585539,
+    "source": "official",
+    "verified": true
+  },
+  "15|ÇAVDIR": {
+    "latitude": 37.712412,
+    "longitude": 30.239696,
+    "source": "official",
+    "verified": true
+  },
+  "15|ÇELTİKÇİ": {
+    "latitude": 37.533798,
+    "longitude": 30.482606,
+    "source": "official",
+    "verified": true
+  },
+  "15|GÖLHİSAR": {
+    "latitude": 37.151087,
+    "longitude": 29.510715,
+    "source": "official",
+    "verified": true
+  },
+  "15|KARAMANLI": {
+    "latitude": 37.370928,
+    "longitude": 29.822595,
+    "source": "official",
+    "verified": true
+  },
+  "15|KEMER": {
+    "latitude": 37.353895,
+    "longitude": 30.06113,
+    "source": "official",
+    "verified": true
+  },
+  "15|MERKEZ": {
+    "latitude": 37.716163,
+    "longitude": 30.291474,
+    "source": "official",
+    "verified": true
+  },
+  "15|TEFENNİ": {
+    "latitude": 37.243825,
+    "longitude": 29.856182,
+    "source": "official",
+    "verified": true
+  },
+  "15|YEŞİLOVA": {
+    "latitude": 37.506438,
+    "longitude": 29.755238,
+    "source": "official",
+    "verified": true
+  },
+  "16|BÜYÜKORHAN": {
+    "latitude": 39.660583,
+    "longitude": 28.91752,
+    "source": "official",
+    "verified": true
+  },
+  "16|GEMLİK": {
+    "latitude": 40.387697,
+    "longitude": 29.205424,
+    "source": "official",
+    "verified": true
+  },
+  "16|GÜRSU": {
+    "latitude": 40.217584,
+    "longitude": 29.193563,
+    "source": "nominatim",
+    "verified": true
+  },
+  "16|HARMANCIK": {
+    "latitude": 39.635008,
+    "longitude": 29.116099,
+    "source": "official",
+    "verified": true
+  },
+  "16|İNEGÖL": {
+    "latitude": 40.098265,
+    "longitude": 29.595075,
+    "source": "official",
+    "verified": true
+  },
+  "16|İZNİK": {
+    "latitude": 40.373397,
+    "longitude": 29.643966,
+    "source": "official",
+    "verified": true
+  },
+  "16|KARACABEY": {
+    "latitude": 40.218864,
+    "longitude": 28.361206,
+    "source": "official",
+    "verified": true
+  },
+  "16|KELES": {
+    "latitude": 40.168514,
+    "longitude": 29.577585,
+    "source": "official",
+    "verified": true
+  },
+  "16|KESTEL": {
+    "latitude": 40.282368,
+    "longitude": 29.288555,
+    "source": "official",
+    "verified": true
+  },
+  "16|MUDANYA": {
+    "latitude": 40.326571,
+    "longitude": 28.844178,
+    "source": "official",
+    "verified": true
+  },
+  "16|MUSTAFAKEMALPAŞA": {
+    "latitude": 40.035048,
+    "longitude": 28.413271,
+    "source": "nominatim",
+    "verified": true
+  },
+  "16|NİLÜFER": {
+    "latitude": 40.22872,
+    "longitude": 28.89728,
+    "source": "official",
+    "verified": true
+  },
+  "16|ORHANELİ": {
+    "latitude": 39.908436,
+    "longitude": 28.981526,
+    "source": "official",
+    "verified": true
+  },
+  "16|ORHANGAZİ": {
+    "latitude": 40.415782,
+    "longitude": 29.335935,
+    "source": "official",
+    "verified": true
+  },
+  "16|OSMANGAZİ": {
+    "latitude": 40.230542,
+    "longitude": 29.005146,
+    "source": "official",
+    "verified": true
+  },
+  "16|YENİŞEHİR": {
+    "latitude": 40.292908,
+    "longitude": 29.679464,
+    "source": "official",
+    "verified": true
+  },
+  "16|YILDIRIM": {
+    "latitude": 40.186636,
+    "longitude": 29.128191,
+    "source": "official",
+    "verified": true
+  },
+  "17|AYVACIK": {
+    "latitude": 39.601185,
+    "longitude": 26.403131,
+    "source": "official",
+    "verified": true
+  },
+  "17|BAYRAMİÇ": {
+    "latitude": 39.808624,
+    "longitude": 26.613004,
+    "source": "official",
+    "verified": true
+  },
+  "17|BİGA": {
+    "latitude": 40.226979,
+    "longitude": 27.242836,
+    "source": "official",
+    "verified": true
+  },
+  "17|BOZCAADA": {
+    "latitude": 39.833998,
+    "longitude": 26.070887,
+    "source": "official",
+    "verified": true
+  },
+  "17|ÇAN": {
+    "latitude": 39.814796,
+    "longitude": 27.213879,
+    "source": "official",
+    "verified": true
+  },
+  "17|ECEABAT": {
+    "latitude": 40.185214,
+    "longitude": 26.359097,
+    "source": "official",
+    "verified": true
+  },
+  "17|EZİNE": {
+    "latitude": 39.785705,
+    "longitude": 26.343394,
+    "source": "official",
+    "verified": true
+  },
+  "17|GELİBOLU": {
+    "latitude": 40.410036,
+    "longitude": 26.653137,
+    "source": "official",
+    "verified": true
+  },
+  "17|GÖKÇEADA": {
+    "latitude": 40.05248,
+    "longitude": 26.388293,
+    "source": "official",
+    "verified": true
+  },
+  "17|LAPSEKİ": {
+    "latitude": 40.344367,
+    "longitude": 26.684597,
+    "source": "official",
+    "verified": true
+  },
+  "17|MERKEZ": {
+    "latitude": 39.802113,
+    "longitude": 27.170572,
+    "source": "official",
+    "verified": true
+  },
+  "17|YENİCE": {
+    "latitude": 40.162971,
+    "longitude": 26.92193,
+    "source": "official",
+    "verified": true
+  },
+  "18|ATKARACALAR": {
+    "latitude": 40.830039,
+    "longitude": 33.142888,
+    "source": "official",
+    "verified": true
+  },
+  "18|BAYRAMÖREN": {
+    "latitude": 40.97678,
+    "longitude": 33.22649,
+    "source": "official",
+    "verified": true
+  },
+  "18|ÇERKEŞ": {
+    "latitude": 40.755966,
+    "longitude": 32.832707,
+    "source": "official",
+    "verified": true
+  },
+  "18|ELDİVAN": {
+    "latitude": 40.438521,
+    "longitude": 33.527162,
+    "source": "official",
+    "verified": true
+  },
+  "18|ILGAZ": {
+    "latitude": 40.987352,
+    "longitude": 33.260883,
+    "source": "official",
+    "verified": true
+  },
+  "18|KIZILIRMAK": {
+    "latitude": 40.345976,
+    "longitude": 33.987241,
+    "source": "official",
+    "verified": true
+  },
+  "18|KORGUN": {
+    "latitude": 40.803429,
+    "longitude": 33.461305,
+    "source": "official",
+    "verified": true
+  },
+  "18|KURŞUNLU": {
+    "latitude": 40.855281,
+    "longitude": 33.276581,
+    "source": "official",
+    "verified": true
+  },
+  "18|MERKEZ": {
+    "latitude": 40.595788,
+    "longitude": 33.615181,
+    "source": "official",
+    "verified": true
+  },
+  "18|ORTA": {
+    "latitude": 40.960858,
+    "longitude": 33.510902,
+    "source": "official",
+    "verified": true
+  },
+  "18|ŞABANÖZÜ": {
+    "latitude": 40.48316,
+    "longitude": 33.282615,
+    "source": "official",
+    "verified": true
+  },
+  "18|YAPRAKLI": {
+    "latitude": 40.749424,
+    "longitude": 33.828175,
+    "source": "official",
+    "verified": true
+  },
+  "19|ALACA": {
+    "latitude": 40.169012,
+    "longitude": 34.841477,
+    "source": "official",
+    "verified": true
+  },
+  "19|BAYAT": {
+    "latitude": 40.872227,
+    "longitude": 34.629527,
+    "source": "official",
+    "verified": true
+  },
+  "19|BOĞAZKALE": {
+    "latitude": 40.021537,
+    "longitude": 34.609226,
+    "source": "official",
+    "verified": true
+  },
+  "19|DODURGA": {
+    "latitude": 40.855307,
+    "longitude": 34.810331,
+    "source": "official",
+    "verified": true
+  },
+  "19|İSKİLİP": {
+    "latitude": 40.645825,
+    "longitude": 34.75176,
+    "source": "official",
+    "verified": true
+  },
+  "19|KARGI": {
+    "latitude": 41.204204,
+    "longitude": 34.346614,
+    "source": "official",
+    "verified": true
+  },
+  "19|LAÇİN": {
+    "latitude": 40.773801,
+    "longitude": 34.884353,
+    "source": "official",
+    "verified": true
+  },
+  "19|MECİTÖZÜ": {
+    "latitude": 40.209963,
+    "longitude": 35.230184,
+    "source": "official",
+    "verified": true
+  },
+  "19|MERKEZ": {
+    "latitude": 40.55837,
+    "longitude": 34.609725,
+    "source": "official",
+    "verified": true
+  },
+  "19|OĞUZLAR": {
+    "latitude": 40.75337,
+    "longitude": 34.70433,
+    "source": "official",
+    "verified": true
+  },
+  "19|ORTAKÖY": {
+    "latitude": 40.327821,
+    "longitude": 35.402007,
+    "source": "official",
+    "verified": true
+  },
+  "19|OSMANCIK": {
+    "latitude": 41.003183,
+    "longitude": 34.951099,
+    "source": "official",
+    "verified": true
+  },
+  "19|SUNGURLU": {
+    "latitude": 40.163824,
+    "longitude": 34.375335,
+    "source": "official",
+    "verified": true
+  },
+  "19|UĞURLUDAĞ": {
+    "latitude": 40.44476,
+    "longitude": 34.449855,
+    "source": "official",
+    "verified": true
+  },
+  "20|ACIPAYAM": {
+    "latitude": 37.372087,
+    "longitude": 29.355206,
+    "source": "official",
+    "verified": true
+  },
+  "20|BABADAĞ": {
+    "latitude": 37.817638,
+    "longitude": 28.845257,
+    "source": "official",
+    "verified": true
+  },
+  "20|BAKLAN": {
+    "latitude": 37.984807,
+    "longitude": 29.607521,
+    "source": "official",
+    "verified": true
+  },
+  "20|BEKİLLİ": {
+    "latitude": 38.235677,
+    "longitude": 29.421644,
+    "source": "official",
+    "verified": true
+  },
+  "20|BEYAĞAÇ": {
+    "latitude": 37.431387,
+    "longitude": 29.33767,
+    "source": "official",
+    "verified": true
+  },
+  "20|BOZKURT": {
+    "latitude": 37.842415,
+    "longitude": 29.458819,
+    "source": "official",
+    "verified": true
+  },
+  "20|BULDAN": {
+    "latitude": 38.020287,
+    "longitude": 28.745218,
+    "source": "official",
+    "verified": true
+  },
+  "20|ÇAL": {
+    "latitude": 38.152127,
+    "longitude": 29.379247,
+    "source": "official",
+    "verified": true
+  },
+  "20|ÇAMELİ": {
+    "latitude": 37.005547,
+    "longitude": 29.139721,
+    "source": "official",
+    "verified": true
+  },
+  "20|ÇARDAK": {
+    "latitude": 37.742039,
+    "longitude": 29.758489,
+    "source": "official",
+    "verified": true
+  },
+  "20|ÇİVRİL": {
+    "latitude": 38.243725,
+    "longitude": 29.715092,
+    "source": "official",
+    "verified": true
+  },
+  "20|GÜNEY": {
+    "latitude": 38.15065,
+    "longitude": 29.181194,
+    "source": "official",
+    "verified": true
+  },
+  "20|HONAZ": {
+    "latitude": 37.763216,
+    "longitude": 29.279342,
+    "source": "official",
+    "verified": true
+  },
+  "20|KALE": {
+    "latitude": 37.557205,
+    "longitude": 28.759739,
+    "source": "official",
+    "verified": true
+  },
+  "20|MERKEZEFENDİ": {
+    "latitude": 37.781538,
+    "longitude": 29.008706,
+    "source": "official",
+    "verified": true
+  },
+  "20|PAMUKKALE": {
+    "latitude": 37.778431,
+    "longitude": 29.086707,
+    "source": "official",
+    "verified": true
+  },
+  "20|SARAYKÖY": {
+    "latitude": 37.856259,
+    "longitude": 28.871766,
+    "source": "official",
+    "verified": true
+  },
+  "20|SERİNHİSAR": {
+    "latitude": 37.431681,
+    "longitude": 29.351118,
+    "source": "official",
+    "verified": true
+  },
+  "20|TAVAS": {
+    "latitude": 37.642727,
+    "longitude": 28.847494,
+    "source": "official",
+    "verified": true
+  },
+  "21|BAĞLAR": {
+    "latitude": 37.919016,
+    "longitude": 40.201951,
+    "source": "official",
+    "verified": true
+  },
+  "21|BİSMİL": {
+    "latitude": 37.848123,
+    "longitude": 40.66344,
+    "source": "official",
+    "verified": true
+  },
+  "21|ÇERMİK": {
+    "latitude": 37.971101,
+    "longitude": 39.328688,
+    "source": "official",
+    "verified": true
+  },
+  "21|ÇINAR": {
+    "latitude": 37.602595,
+    "longitude": 40.354094,
+    "source": "official",
+    "verified": true
+  },
+  "21|ÇÜNGÜŞ": {
+    "latitude": 38.265225,
+    "longitude": 39.30581,
+    "source": "official",
+    "verified": true
+  },
+  "21|DİCLE": {
+    "latitude": 38.369656,
+    "longitude": 40.069327,
+    "source": "official",
+    "verified": true
+  },
+  "21|EĞİL": {
+    "latitude": 38.2052,
+    "longitude": 40.201197,
+    "source": "official",
+    "verified": true
+  },
+  "21|ERGANİ": {
+    "latitude": 38.263879,
+    "longitude": 39.769635,
+    "source": "official",
+    "verified": true
+  },
+  "21|HANİ": {
+    "latitude": 38.43459,
+    "longitude": 40.304308,
+    "source": "official",
+    "verified": true
+  },
+  "21|HAZRO": {
+    "latitude": 38.156973,
+    "longitude": 40.819034,
+    "source": "official",
+    "verified": true
+  },
+  "21|KAYAPINAR": {
+    "latitude": 38.069747,
+    "longitude": 39.992663,
+    "source": "official",
+    "verified": true
+  },
+  "21|KOCAKÖY": {
+    "latitude": 37.85316,
+    "longitude": 40.527033,
+    "source": "official",
+    "verified": true
+  },
+  "21|KULP": {
+    "latitude": 38.580599,
+    "longitude": 41.106289,
+    "source": "official",
+    "verified": true
+  },
+  "21|LİCE": {
+    "latitude": 38.516537,
+    "longitude": 40.559922,
+    "source": "official",
+    "verified": true
+  },
+  "21|SİLVAN": {
+    "latitude": 37.99201,
+    "longitude": 40.989888,
+    "source": "official",
+    "verified": true
+  },
+  "21|SUR": {
+    "latitude": 37.908631,
+    "longitude": 40.235174,
+    "source": "official",
+    "verified": true
+  },
+  "21|YENİŞEHİR": {
+    "latitude": 38.072184,
+    "longitude": 40.045983,
+    "source": "official",
+    "verified": true
+  },
+  "22|ENEZ": {
+    "latitude": 40.735262,
+    "longitude": 26.152977,
+    "source": "official",
+    "verified": true
+  },
+  "22|HAVSA": {
+    "latitude": 41.549304,
+    "longitude": 26.820564,
+    "source": "official",
+    "verified": true
+  },
+  "22|İPSALA": {
+    "latitude": 41.673401,
+    "longitude": 26.580042,
+    "source": "official",
+    "verified": true
+  },
+  "22|KEŞAN": {
+    "latitude": 40.854879,
+    "longitude": 26.630306,
+    "source": "nominatim",
+    "verified": true
+  },
+  "22|LALAPAŞA": {
+    "latitude": 41.839039,
+    "longitude": 26.736102,
+    "source": "official",
+    "verified": true
+  },
+  "22|MERİÇ": {
+    "latitude": 41.191341,
+    "longitude": 26.42008,
+    "source": "official",
+    "verified": true
+  },
+  "22|MERKEZ": {
+    "latitude": 41.619749,
+    "longitude": 26.645793,
+    "source": "official",
+    "verified": true
+  },
+  "22|SÜLOĞLU": {
+    "latitude": 41.765698,
+    "longitude": 26.908007,
+    "source": "nominatim",
+    "verified": true
+  },
+  "22|UZUNKÖPRÜ": {
+    "latitude": 41.273854,
+    "longitude": 26.698121,
+    "source": "official",
+    "verified": true
+  },
+  "23|AĞIN": {
+    "latitude": 38.943909,
+    "longitude": 38.713977,
+    "source": "official",
+    "verified": true
+  },
+  "23|ALACAKAYA": {
+    "latitude": 38.462441,
+    "longitude": 39.863585,
+    "source": "official",
+    "verified": true
+  },
+  "23|ARICAK": {
+    "latitude": 38.563431,
+    "longitude": 40.134504,
+    "source": "official",
+    "verified": true
+  },
+  "23|BASKİL": {
+    "latitude": 38.567769,
+    "longitude": 38.823763,
+    "source": "official",
+    "verified": true
+  },
+  "23|KARAKOÇAN": {
+    "latitude": 38.956446,
+    "longitude": 40.038027,
+    "source": "official",
+    "verified": true
+  },
+  "23|KEBAN": {
+    "latitude": 38.731498,
+    "longitude": 38.595987,
+    "source": "official",
+    "verified": true
+  },
+  "23|KOVANCILAR": {
+    "latitude": 39.074482,
+    "longitude": 40.109093,
+    "source": "official",
+    "verified": true
+  },
+  "23|MADEN": {
+    "latitude": 38.393227,
+    "longitude": 39.670231,
+    "source": "official",
+    "verified": true
+  },
+  "23|MERKEZ": {
+    "latitude": 38.65607,
+    "longitude": 39.147281,
+    "source": "official",
+    "verified": true
+  },
+  "23|PALU": {
+    "latitude": 38.62122,
+    "longitude": 38.697399,
+    "source": "official",
+    "verified": true
+  },
+  "23|SİVRİCE": {
+    "latitude": 38.447417,
+    "longitude": 39.308265,
+    "source": "official",
+    "verified": true
+  },
+  "24|ÇAYIRLI": {
+    "latitude": 39.804082,
+    "longitude": 40.037184,
+    "source": "nominatim",
+    "verified": true
+  },
+  "24|İLİÇ": {
+    "latitude": 39.456405,
+    "longitude": 38.564831,
+    "source": "official",
+    "verified": true
+  },
+  "24|KEMAH": {
+    "latitude": 39.600494,
+    "longitude": 39.035389,
+    "source": "official",
+    "verified": true
+  },
+  "24|KEMALİYE": {
+    "latitude": 39.262097,
+    "longitude": 38.496527,
+    "source": "official",
+    "verified": true
+  },
+  "24|MERKEZ": {
+    "latitude": 39.746755,
+    "longitude": 39.49103,
+    "source": "nominatim",
+    "verified": true
+  },
+  "24|OTLUKBELİ": {
+    "latitude": 39.971948,
+    "longitude": 40.021676,
+    "source": "nominatim",
+    "verified": true
+  },
+  "24|REFAHİYE": {
+    "latitude": 39.902753,
+    "longitude": 38.768175,
+    "source": "official",
+    "verified": true
+  },
+  "24|TERCAN": {
+    "latitude": 39.776487,
+    "longitude": 40.383,
+    "source": "official",
+    "verified": true
+  },
+  "24|ÜZÜMLÜ": {
+    "latitude": 39.710115,
+    "longitude": 39.701031,
+    "source": "nominatim",
+    "verified": true
+  },
+  "25|AŞKALE": {
+    "latitude": 39.885712,
+    "longitude": 40.787842,
+    "source": "official",
+    "verified": true
+  },
+  "25|AZİZİYE": {
+    "latitude": 39.872646,
+    "longitude": 41.125931,
+    "source": "official",
+    "verified": true
+  },
+  "25|ÇAT": {
+    "latitude": 39.605843,
+    "longitude": 41.011402,
+    "source": "official",
+    "verified": true
+  },
+  "25|HINIS": {
+    "latitude": 39.398426,
+    "longitude": 41.61702,
+    "source": "official",
+    "verified": true
+  },
+  "25|HORASAN": {
+    "latitude": 40.032429,
+    "longitude": 42.171321,
+    "source": "official",
+    "verified": true
+  },
+  "25|İSPİR": {
+    "latitude": 40.584311,
+    "longitude": 41.290092,
+    "source": "official",
+    "verified": true
+  },
+  "25|KARAÇOBAN": {
+    "latitude": 39.277405,
+    "longitude": 41.997584,
+    "source": "official",
+    "verified": true
+  },
+  "25|KARAYAZI": {
+    "latitude": 39.597372,
+    "longitude": 42.496074,
+    "source": "official",
+    "verified": true
+  },
+  "25|KÖPRÜKÖY": {
+    "latitude": 39.915526,
+    "longitude": 41.982328,
+    "source": "official",
+    "verified": true
+  },
+  "25|NARMAN": {
+    "latitude": 40.430141,
+    "longitude": 41.935696,
+    "source": "official",
+    "verified": true
+  },
+  "25|OLTU": {
+    "latitude": 40.63253,
+    "longitude": 41.793056,
+    "source": "official",
+    "verified": true
+  },
+  "25|OLUR": {
+    "latitude": 39.473927,
+    "longitude": 41.768618,
+    "source": "official",
+    "verified": true
+  },
+  "25|PALANDÖKEN": {
+    "latitude": 39.893868,
+    "longitude": 41.286964,
+    "source": "official",
+    "verified": true
+  },
+  "25|PASİNLER": {
+    "latitude": 40.052471,
+    "longitude": 41.57996,
+    "source": "official",
+    "verified": true
+  },
+  "25|PAZARYOLU": {
+    "latitude": 40.414307,
+    "longitude": 40.773831,
+    "source": "official",
+    "verified": true
+  },
+  "25|ŞENKAYA": {
+    "latitude": 40.650016,
+    "longitude": 42.349068,
+    "source": "official",
+    "verified": true
+  },
+  "25|TEKMAN": {
+    "latitude": 39.744694,
+    "longitude": 41.550339,
+    "source": "official",
+    "verified": true
+  },
+  "25|TORTUM": {
+    "latitude": 40.243035,
+    "longitude": 41.481935,
+    "source": "official",
+    "verified": true
+  },
+  "25|UZUNDERE": {
+    "latitude": 40.570724,
+    "longitude": 41.619798,
+    "source": "official",
+    "verified": true
+  },
+  "25|YAKUTİYE": {
+    "latitude": 40.252567,
+    "longitude": 40.945076,
+    "source": "official",
+    "verified": true
+  },
+  "26|ALPU": {
+    "latitude": 39.918373,
+    "longitude": 31.149328,
+    "source": "official",
+    "verified": true
+  },
+  "26|BEYLİKOVA": {
+    "latitude": 39.690056,
+    "longitude": 31.227377,
+    "source": "official",
+    "verified": true
+  },
+  "26|ÇİFTELER": {
+    "latitude": 39.400935,
+    "longitude": 31.076417,
+    "source": "official",
+    "verified": true
+  },
+  "26|GÜNYÜZÜ": {
+    "latitude": 39.355312,
+    "longitude": 31.777075,
+    "source": "official",
+    "verified": true
+  },
+  "26|HAN": {
+    "latitude": 39.176929,
+    "longitude": 30.785058,
+    "source": "official",
+    "verified": true
+  },
+  "26|İNÖNÜ": {
+    "latitude": 39.699727,
+    "longitude": 30.06746,
+    "source": "official",
+    "verified": true
+  },
+  "26|MAHMUDİYE": {
+    "latitude": 39.624884,
+    "longitude": 30.887962,
+    "source": "official",
+    "verified": true
+  },
+  "26|MİHALGAZİ": {
+    "latitude": 40.014545,
+    "longitude": 30.501516,
+    "source": "official",
+    "verified": true
+  },
+  "26|MİHALIÇÇIK": {
+    "latitude": 39.690582,
+    "longitude": 31.430077,
+    "source": "official",
+    "verified": true
+  },
+  "26|ODUNPAZARI": {
+    "latitude": 39.746665,
+    "longitude": 30.580807,
+    "source": "official",
+    "verified": true
+  },
+  "26|SARICAKAYA": {
+    "latitude": 39.94244,
+    "longitude": 31.613377,
+    "source": "official",
+    "verified": true
+  },
+  "26|SEYİTGAZİ": {
+    "latitude": 39.338543,
+    "longitude": 30.519007,
+    "source": "official",
+    "verified": true
+  },
+  "26|SİVRİHİSAR": {
+    "latitude": 39.196587,
+    "longitude": 31.617013,
+    "source": "official",
+    "verified": true
+  },
+  "26|TEPEBAŞI": {
+    "latitude": 39.843946,
+    "longitude": 30.676386,
+    "source": "official",
+    "verified": true
+  },
+  "27|ARABAN": {
+    "latitude": 37.425286,
+    "longitude": 37.689419,
+    "source": "official",
+    "verified": true
+  },
+  "27|İSLAHİYE": {
+    "latitude": 37.025109,
+    "longitude": 36.63313,
+    "source": "official",
+    "verified": true
+  },
+  "27|KARKAMIŞ": {
+    "latitude": 36.831481,
+    "longitude": 37.869637,
+    "source": "official",
+    "verified": true
+  },
+  "27|NİZİP": {
+    "latitude": 37.169417,
+    "longitude": 37.677946,
+    "source": "official",
+    "verified": true
+  },
+  "27|NURDAĞI": {
+    "latitude": 37.191833,
+    "longitude": 36.744216,
+    "source": "official",
+    "verified": true
+  },
+  "27|OĞUZELİ": {
+    "latitude": 36.927262,
+    "longitude": 37.624244,
+    "source": "official",
+    "verified": true
+  },
+  "27|ŞAHİNBEY": {
+    "latitude": 37.047267,
+    "longitude": 37.332133,
+    "source": "official",
+    "verified": true
+  },
+  "27|ŞEHİTKAMİL": {
+    "latitude": 37.053728,
+    "longitude": 37.321007,
+    "source": "official",
+    "verified": true
+  },
+  "27|YAVUZELİ": {
+    "latitude": 37.383931,
+    "longitude": 37.567408,
+    "source": "official",
+    "verified": true
+  },
+  "28|ALUCRA": {
+    "latitude": 40.870323,
+    "longitude": 38.187965,
+    "source": "official",
+    "verified": true
+  },
+  "28|BULANCAK": {
+    "latitude": 40.938923,
+    "longitude": 38.231878,
+    "source": "official",
+    "verified": true
+  },
+  "28|ÇAMOLUK": {
+    "latitude": 40.135168,
+    "longitude": 38.733976,
+    "source": "official",
+    "verified": true
+  },
+  "28|ÇANAKÇI": {
+    "latitude": 40.787392,
+    "longitude": 38.544395,
+    "source": "official",
+    "verified": true
+  },
+  "28|DERELİ": {
+    "latitude": 40.995796,
+    "longitude": 39.096925,
+    "source": "official",
+    "verified": true
+  },
+  "28|DOĞANKENT": {
+    "latitude": 40.809918,
+    "longitude": 38.914729,
+    "source": "official",
+    "verified": true
+  },
+  "28|ESPİYE": {
+    "latitude": 40.957653,
+    "longitude": 38.730927,
+    "source": "official",
+    "verified": true
+  },
+  "28|EYNESİL": {
+    "latitude": 41.064688,
+    "longitude": 39.143405,
+    "source": "official",
+    "verified": true
+  },
+  "28|GÖRELE": {
+    "latitude": 41.033521,
+    "longitude": 38.998624,
+    "source": "official",
+    "verified": true
+  },
+  "28|GÜCE": {
+    "latitude": 40.89403,
+    "longitude": 38.808027,
+    "source": "official",
+    "verified": true
+  },
+  "28|KEŞAP": {
+    "latitude": 40.915148,
+    "longitude": 38.513856,
+    "source": "official",
+    "verified": true
+  },
+  "28|MERKEZ": {
+    "latitude": 40.917635,
+    "longitude": 38.384153,
+    "source": "nominatim",
+    "verified": true
+  },
+  "28|PİRAZİZ": {
+    "latitude": 40.952573,
+    "longitude": 38.124757,
+    "source": "official",
+    "verified": true
+  },
+  "28|ŞEBİNKARAHİSAR": {
+    "latitude": 40.288601,
+    "longitude": 38.423612,
+    "source": "official",
+    "verified": true
+  },
+  "28|TİREBOLU": {
+    "latitude": 41.007201,
+    "longitude": 38.814631,
+    "source": "official",
+    "verified": true
+  },
+  "28|YAĞLIDERE": {
+    "latitude": 40.860535,
+    "longitude": 38.625158,
+    "source": "nominatim",
+    "verified": true
+  },
+  "29|KELKİT": {
+    "latitude": 40.121469,
+    "longitude": 39.435339,
+    "source": "official",
+    "verified": true
+  },
+  "29|KÖSE": {
+    "latitude": 40.209617,
+    "longitude": 39.653016,
+    "source": "nominatim",
+    "verified": true
+  },
+  "29|KÜRTÜN": {
+    "latitude": 40.701864,
+    "longitude": 39.085711,
+    "source": "nominatim",
+    "verified": true
+  },
+  "29|MERKEZ": {
+    "latitude": 40.461784,
+    "longitude": 39.475734,
+    "source": "nominatim",
+    "verified": true
+  },
+  "29|ŞİRAN": {
+    "latitude": 40.189826,
+    "longitude": 39.125232,
+    "source": "official",
+    "verified": true
+  },
+  "29|TORUL": {
+    "latitude": 40.557658,
+    "longitude": 39.292636,
+    "source": "nominatim",
+    "verified": true
+  },
+  "30|ÇUKURCA": {
+    "latitude": 37.246819,
+    "longitude": 43.611042,
+    "source": "official",
+    "verified": true
+  },
+  "30|DERECİK": {
+    "latitude": 37.068231,
+    "longitude": 44.244805,
+    "source": "official",
+    "verified": true
+  },
+  "30|MERKEZ": {
+    "latitude": 37.082262,
+    "longitude": 44.310739,
+    "source": "official",
+    "verified": true
+  },
+  "30|ŞEMDİNLİ": {
+    "latitude": 37.373151,
+    "longitude": 44.552253,
+    "source": "official",
+    "verified": true
+  },
+  "30|YÜKSEKOVA": {
+    "latitude": 37.571769,
+    "longitude": 44.28217,
+    "source": "official",
+    "verified": true
+  },
+  "31|ALTINÖZÜ": {
+    "latitude": 36.091084,
+    "longitude": 36.232602,
+    "source": "official",
+    "verified": true
+  },
+  "31|ANTAKYA": {
+    "latitude": 36.21909,
+    "longitude": 36.259918,
+    "source": "official",
+    "verified": true
+  },
+  "31|ARSUZ": {
+    "latitude": 36.415472,
+    "longitude": 35.94571,
+    "source": "official",
+    "verified": true
+  },
+  "31|BELEN": {
+    "latitude": 36.509248,
+    "longitude": 36.219054,
+    "source": "official",
+    "verified": true
+  },
+  "31|DEFNE": {
+    "latitude": 36.191558,
+    "longitude": 36.148708,
+    "source": "official",
+    "verified": true
+  },
+  "31|DÖRTYOL": {
+    "latitude": 36.871361,
+    "longitude": 36.214283,
+    "source": "official",
+    "verified": true
+  },
+  "31|ERZİN": {
+    "latitude": 36.927097,
+    "longitude": 36.071983,
+    "source": "official",
+    "verified": true
+  },
+  "31|HASSA": {
+    "latitude": 36.855146,
+    "longitude": 36.516992,
+    "source": "official",
+    "verified": true
+  },
+  "31|İSKENDERUN": {
+    "latitude": 36.651191,
+    "longitude": 36.242208,
+    "source": "official",
+    "verified": true
+  },
+  "31|KIRIKHAN": {
+    "latitude": 36.506737,
+    "longitude": 36.36456,
+    "source": "official",
+    "verified": true
+  },
+  "31|KUMLU": {
+    "latitude": 36.364727,
+    "longitude": 36.409721,
+    "source": "official",
+    "verified": true
+  },
+  "31|PAYAS": {
+    "latitude": 36.755022,
+    "longitude": 36.242711,
+    "source": "official",
+    "verified": true
+  },
+  "31|REYHANLI": {
+    "latitude": 36.352082,
+    "longitude": 36.418612,
+    "source": "official",
+    "verified": true
+  },
+  "31|SAMANDAĞ": {
+    "latitude": 36.149523,
+    "longitude": 36.066918,
+    "source": "official",
+    "verified": true
+  },
+  "31|YAYLADAĞI": {
+    "latitude": 35.944841,
+    "longitude": 36.163737,
+    "source": "official",
+    "verified": true
+  },
+  "32|AKSU": {
+    "latitude": 38.257793,
+    "longitude": 31.04673,
+    "source": "official",
+    "verified": true
+  },
+  "32|ATABEY": {
+    "latitude": 37.950935,
+    "longitude": 30.637407,
+    "source": "official",
+    "verified": true
+  },
+  "32|EĞİRDİR": {
+    "latitude": 37.871328,
+    "longitude": 30.846841,
+    "source": "official",
+    "verified": true
+  },
+  "32|GELENDOST": {
+    "latitude": 38.121471,
+    "longitude": 31.013711,
+    "source": "official",
+    "verified": true
+  },
+  "32|GÖNEN": {
+    "latitude": 37.957545,
+    "longitude": 30.512863,
+    "source": "official",
+    "verified": true
+  },
+  "32|KEÇİBORLU": {
+    "latitude": 37.985927,
+    "longitude": 30.788314,
+    "source": "official",
+    "verified": true
+  },
+  "32|MERKEZ": {
+    "latitude": 37.820833,
+    "longitude": 30.579419,
+    "source": "official",
+    "verified": true
+  },
+  "32|SENİRKENT": {
+    "latitude": 38.107803,
+    "longitude": 30.550349,
+    "source": "official",
+    "verified": true
+  },
+  "32|SÜTÇÜLER": {
+    "latitude": 37.494994,
+    "longitude": 30.98056,
+    "source": "official",
+    "verified": true
+  },
+  "32|ŞARKİKARAAĞAÇ": {
+    "latitude": 38.080712,
+    "longitude": 31.366093,
+    "source": "official",
+    "verified": true
+  },
+  "32|ULUBORLU": {
+    "latitude": 38.078741,
+    "longitude": 30.449176,
+    "source": "official",
+    "verified": true
+  },
+  "32|YALVAÇ": {
+    "latitude": 38.284008,
+    "longitude": 31.176453,
+    "source": "official",
+    "verified": true
+  },
+  "32|YENİŞARBADEMLİ": {
+    "latitude": 37.709513,
+    "longitude": 31.39026,
+    "source": "official",
+    "verified": true
+  },
+  "33|AKDENİZ": {
+    "latitude": 36.829458,
+    "longitude": 34.710406,
+    "source": "official",
+    "verified": true
+  },
+  "33|ANAMUR": {
+    "latitude": 36.869919,
+    "longitude": 34.413189,
+    "source": "official",
+    "verified": true
+  },
+  "33|AYDINCIK": {
+    "latitude": 36.939668,
+    "longitude": 34.849021,
+    "source": "official",
+    "verified": true
+  },
+  "33|BOZYAZI": {
+    "latitude": 36.15114,
+    "longitude": 32.933529,
+    "source": "official",
+    "verified": true
+  },
+  "33|ÇAMLIYAYLA": {
+    "latitude": 37.130493,
+    "longitude": 34.73413,
+    "source": "official",
+    "verified": true
+  },
+  "33|ERDEMLİ": {
+    "latitude": 36.877286,
+    "longitude": 34.816055,
+    "source": "official",
+    "verified": true
+  },
+  "33|GÜLNAR": {
+    "latitude": 36.802059,
+    "longitude": 34.63321,
+    "source": "official",
+    "verified": true
+  },
+  "33|MEZİTLİ": {
+    "latitude": 36.722198,
+    "longitude": 34.489857,
+    "source": "official",
+    "verified": true
+  },
+  "33|MUT": {
+    "latitude": 36.692968,
+    "longitude": 33.265872,
+    "source": "official",
+    "verified": true
+  },
+  "33|SİLİFKE": {
+    "latitude": 36.240625,
+    "longitude": 33.750384,
+    "source": "official",
+    "verified": true
+  },
+  "33|TARSUS": {
+    "latitude": 36.916027,
+    "longitude": 34.915717,
+    "source": "official",
+    "verified": true
+  },
+  "33|TOROSLAR": {
+    "latitude": 36.825815,
+    "longitude": 34.601411,
+    "source": "official",
+    "verified": true
+  },
+  "33|YENİŞEHİR": {
+    "latitude": 36.798192,
+    "longitude": 34.568859,
+    "source": "official",
+    "verified": true
+  },
+  "34|ADALAR": {
+    "latitude": 40.880277,
+    "longitude": 29.069485,
+    "source": "official",
+    "verified": true
+  },
+  "34|ARNAVUTKÖY": {
+    "latitude": 41.213253,
+    "longitude": 28.703907,
+    "source": "official",
+    "verified": true
+  },
+  "34|ATAŞEHİR": {
+    "latitude": 41.004573,
+    "longitude": 29.091795,
+    "source": "official",
+    "verified": true
+  },
+  "34|AVCILAR": {
+    "latitude": 40.973732,
+    "longitude": 28.714165,
+    "source": "official",
+    "verified": true
+  },
+  "34|BAĞCILAR": {
+    "latitude": 41.063656,
+    "longitude": 28.85257,
+    "source": "official",
+    "verified": true
+  },
+  "34|BAHÇELİEVLER": {
+    "latitude": 41.00305,
+    "longitude": 28.86577,
+    "source": "official",
+    "verified": true
+  },
+  "34|BAKIRKÖY": {
+    "latitude": 40.977329,
+    "longitude": 28.867513,
+    "source": "official",
+    "verified": true
+  },
+  "34|BAŞAKŞEHİR": {
+    "latitude": 41.0689,
+    "longitude": 28.752908,
+    "source": "official",
+    "verified": true
+  },
+  "34|BAYRAMPAŞA": {
+    "latitude": 41.038874,
+    "longitude": 28.901587,
+    "source": "official",
+    "verified": true
+  },
+  "34|BEŞİKTAŞ": {
+    "latitude": 41.049574,
+    "longitude": 29.005171,
+    "source": "official",
+    "verified": true
+  },
+  "34|BEYKOZ": {
+    "latitude": 41.11242,
+    "longitude": 29.126861,
+    "source": "official",
+    "verified": true
+  },
+  "34|BEYLİKDÜZÜ": {
+    "latitude": 40.994926,
+    "longitude": 28.624934,
+    "source": "official",
+    "verified": true
+  },
+  "34|BEYOĞLU": {
+    "latitude": 41.023533,
+    "longitude": 28.971215,
+    "source": "official",
+    "verified": true
+  },
+  "34|BÜYÜKÇEKMECE": {
+    "latitude": 41.021654,
+    "longitude": 28.579757,
+    "source": "nominatim",
+    "verified": true
+  },
+  "34|ÇATALCA": {
+    "latitude": 41.257679,
+    "longitude": 28.419617,
+    "source": "official",
+    "verified": true
+  },
+  "34|ÇEKMEKÖY": {
+    "latitude": 41.049693,
+    "longitude": 29.237004,
+    "source": "official",
+    "verified": true
+  },
+  "34|ESENLER": {
+    "latitude": 41.037911,
+    "longitude": 28.819528,
+    "source": "official",
+    "verified": true
+  },
+  "34|ESENYURT": {
+    "latitude": 41.073313,
+    "longitude": 28.633427,
+    "source": "official",
+    "verified": true
+  },
+  "34|EYÜPSULTAN": {
+    "latitude": 41.047836,
+    "longitude": 28.932738,
+    "source": "official",
+    "verified": true
+  },
+  "34|FATİH": {
+    "latitude": 41.008312,
+    "longitude": 28.950284,
+    "source": "official",
+    "verified": true
+  },
+  "34|GAZİOSMANPAŞA": {
+    "latitude": 41.063115,
+    "longitude": 28.914384,
+    "source": "official",
+    "verified": true
+  },
+  "34|GÜNGÖREN": {
+    "latitude": 41.005998,
+    "longitude": 28.888545,
+    "source": "official",
+    "verified": true
+  },
+  "34|KADIKÖY": {
+    "latitude": 40.991295,
+    "longitude": 29.024563,
+    "source": "nominatim",
+    "verified": true
+  },
+  "34|KAĞITHANE": {
+    "latitude": 41.074626,
+    "longitude": 28.979989,
+    "source": "official",
+    "verified": true
+  },
+  "34|KARTAL": {
+    "latitude": 40.902383,
+    "longitude": 29.17311,
+    "source": "official",
+    "verified": true
+  },
+  "34|KÜÇÜKÇEKMECE": {
+    "latitude": 41.055331,
+    "longitude": 28.781933,
+    "source": "official",
+    "verified": true
+  },
+  "34|MALTEPE": {
+    "latitude": 40.927884,
+    "longitude": 29.131346,
+    "source": "official",
+    "verified": true
+  },
+  "34|PENDİK": {
+    "latitude": 40.868385,
+    "longitude": 29.308793,
+    "source": "official",
+    "verified": true
+  },
+  "34|SANCAKTEPE": {
+    "latitude": 40.99052,
+    "longitude": 29.228862,
+    "source": "nominatim",
+    "verified": true
+  },
+  "34|SARIYER": {
+    "latitude": 41.11575,
+    "longitude": 28.99856,
+    "source": "official",
+    "verified": true
+  },
+  "34|SİLİVRİ": {
+    "latitude": 41.196175,
+    "longitude": 28.336208,
+    "source": "official",
+    "verified": true
+  },
+  "34|SULTANBEYLİ": {
+    "latitude": 40.967024,
+    "longitude": 29.267131,
+    "source": "nominatim",
+    "verified": true
+  },
+  "34|SULTANGAZİ": {
+    "latitude": 41.089883,
+    "longitude": 28.870192,
+    "source": "official",
+    "verified": true
+  },
+  "34|ŞİLE": {
+    "latitude": 41.040279,
+    "longitude": 29.706234,
+    "source": "official",
+    "verified": true
+  },
+  "34|ŞİŞLİ": {
+    "latitude": 41.063789,
+    "longitude": 28.983164,
+    "source": "nominatim",
+    "verified": true
+  },
+  "34|TUZLA": {
+    "latitude": 40.925184,
+    "longitude": 29.417775,
+    "source": "official",
+    "verified": true
+  },
+  "34|ÜMRANİYE": {
+    "latitude": 41.019737,
+    "longitude": 29.155592,
+    "source": "official",
+    "verified": true
+  },
+  "34|ÜSKÜDAR": {
+    "latitude": 41.003768,
+    "longitude": 29.043716,
+    "source": "official",
+    "verified": true
+  },
+  "34|ZEYTİNBURNU": {
+    "latitude": 40.999487,
+    "longitude": 28.904502,
+    "source": "official",
+    "verified": true
+  },
+  "35|ALİAĞA": {
+    "latitude": 38.922417,
+    "longitude": 27.096216,
+    "source": "official",
+    "verified": true
+  },
+  "35|BALÇOVA": {
+    "latitude": 38.400968,
+    "longitude": 27.049999,
+    "source": "official",
+    "verified": true
+  },
+  "35|BAYINDIR": {
+    "latitude": 38.28739,
+    "longitude": 27.628577,
+    "source": "official",
+    "verified": true
+  },
+  "35|BAYRAKLI": {
+    "latitude": 38.487712,
+    "longitude": 27.170876,
+    "source": "official",
+    "verified": true
+  },
+  "35|BERGAMA": {
+    "latitude": 39.177407,
+    "longitude": 27.276676,
+    "source": "official",
+    "verified": true
+  },
+  "35|BEYDAĞ": {
+    "latitude": 38.072019,
+    "longitude": 28.201125,
+    "source": "official",
+    "verified": true
+  },
+  "35|BORNOVA": {
+    "latitude": 38.46619,
+    "longitude": 27.219194,
+    "source": "nominatim",
+    "verified": true
+  },
+  "35|BUCA": {
+    "latitude": 38.383493,
+    "longitude": 27.168651,
+    "source": "nominatim",
+    "verified": true
+  },
+  "35|ÇEŞME": {
+    "latitude": 38.325857,
+    "longitude": 26.305006,
+    "source": "official",
+    "verified": true
+  },
+  "35|ÇİĞLİ": {
+    "latitude": 38.520844,
+    "longitude": 27.039748,
+    "source": "official",
+    "verified": true
+  },
+  "35|DİKİLİ": {
+    "latitude": 39.028,
+    "longitude": 26.824698,
+    "source": "official",
+    "verified": true
+  },
+  "35|FOÇA": {
+    "latitude": 38.668916,
+    "longitude": 26.754775,
+    "source": "nominatim",
+    "verified": true
+  },
+  "35|GAZİEMİR": {
+    "latitude": 38.103698,
+    "longitude": 28.260451,
+    "source": "official",
+    "verified": true
+  },
+  "35|GÜZELBAHÇE": {
+    "latitude": 38.375516,
+    "longitude": 26.875553,
+    "source": "nominatim",
+    "verified": true
+  },
+  "35|KARABAĞLAR": {
+    "latitude": 38.367742,
+    "longitude": 27.118446,
+    "source": "official",
+    "verified": true
+  },
+  "35|KARABURUN": {
+    "latitude": 38.613544,
+    "longitude": 26.522784,
+    "source": "official",
+    "verified": true
+  },
+  "35|KARŞIYAKA": {
+    "latitude": 38.455064,
+    "longitude": 27.108723,
+    "source": "official",
+    "verified": true
+  },
+  "35|KEMALPAŞA": {
+    "latitude": 38.463085,
+    "longitude": 27.482339,
+    "source": "official",
+    "verified": true
+  },
+  "35|KINIK": {
+    "latitude": 38.999348,
+    "longitude": 27.464508,
+    "source": "official",
+    "verified": true
+  },
+  "35|KİRAZ": {
+    "latitude": 38.241059,
+    "longitude": 27.615505,
+    "source": "official",
+    "verified": true
+  },
+  "35|KONAK": {
+    "latitude": 38.418717,
+    "longitude": 27.128267,
+    "source": "nominatim",
+    "verified": true
+  },
+  "35|MENDERES": {
+    "latitude": 38.022688,
+    "longitude": 27.186202,
+    "source": "official",
+    "verified": true
+  },
+  "35|MENEMEN": {
+    "latitude": 38.603362,
+    "longitude": 27.076431,
+    "source": "nominatim",
+    "verified": true
+  },
+  "35|NARLIDERE": {
+    "latitude": 38.388261,
+    "longitude": 27.01339,
+    "source": "official",
+    "verified": true
+  },
+  "35|ÖDEMİŞ": {
+    "latitude": 38.385983,
+    "longitude": 27.143895,
+    "source": "official",
+    "verified": true
+  },
+  "35|SEFERİHİSAR": {
+    "latitude": 38.164665,
+    "longitude": 26.82394,
+    "source": "official",
+    "verified": true
+  },
+  "35|SELÇUK": {
+    "latitude": 37.949104,
+    "longitude": 27.376275,
+    "source": "official",
+    "verified": true
+  },
+  "35|TİRE": {
+    "latitude": 38.088702,
+    "longitude": 27.726488,
+    "source": "official",
+    "verified": true
+  },
+  "35|TORBALI": {
+    "latitude": 38.170119,
+    "longitude": 27.347338,
+    "source": "nominatim",
+    "verified": true
+  },
+  "35|URLA": {
+    "latitude": 38.408597,
+    "longitude": 27.124785,
+    "source": "official",
+    "verified": true
+  },
+  "36|AKYAKA": {
+    "latitude": 40.740012,
+    "longitude": 43.623809,
+    "source": "official",
+    "verified": true
+  },
+  "36|ARPAÇAY": {
+    "latitude": 40.846429,
+    "longitude": 43.329006,
+    "source": "official",
+    "verified": true
+  },
+  "36|DİGOR": {
+    "latitude": 40.376509,
+    "longitude": 43.411947,
+    "source": "official",
+    "verified": true
+  },
+  "36|KAĞIZMAN": {
+    "latitude": 40.140677,
+    "longitude": 43.120463,
+    "source": "official",
+    "verified": true
+  },
+  "36|MERKEZ": {
+    "latitude": 40.61088,
+    "longitude": 43.101591,
+    "source": "official",
+    "verified": true
+  },
+  "36|SARIKAMIŞ": {
+    "latitude": 40.33374,
+    "longitude": 42.589468,
+    "source": "official",
+    "verified": true
+  },
+  "36|SELİM": {
+    "latitude": 40.464073,
+    "longitude": 42.790843,
+    "source": "official",
+    "verified": true
+  },
+  "36|SUSUZ": {
+    "latitude": 40.109978,
+    "longitude": 42.83212,
+    "source": "official",
+    "verified": true
+  },
+  "37|ABANA": {
+    "latitude": 41.978501,
+    "longitude": 34.007723,
+    "source": "official",
+    "verified": true
+  },
+  "37|AĞLI": {
+    "latitude": 41.713292,
+    "longitude": 33.643518,
+    "source": "official",
+    "verified": true
+  },
+  "37|ARAÇ": {
+    "latitude": 41.241201,
+    "longitude": 33.324933,
+    "source": "official",
+    "verified": true
+  },
+  "37|AZDAVAY": {
+    "latitude": 41.642076,
+    "longitude": 33.300936,
+    "source": "official",
+    "verified": true
+  },
+  "37|BOZKURT": {
+    "latitude": 41.958798,
+    "longitude": 34.012628,
+    "source": "nominatim",
+    "verified": true
+  },
+  "37|CİDE": {
+    "latitude": 41.891571,
+    "longitude": 33.003712,
+    "source": "official",
+    "verified": true
+  },
+  "37|ÇATALZEYTİN": {
+    "latitude": 41.814544,
+    "longitude": 33.602045,
+    "source": "official",
+    "verified": true
+  },
+  "37|DADAY": {
+    "latitude": 41.475156,
+    "longitude": 33.463749,
+    "source": "nominatim",
+    "verified": true
+  },
+  "37|DEVREKANİ": {
+    "latitude": 41.706096,
+    "longitude": 33.960935,
+    "source": "official",
+    "verified": true
+  },
+  "37|DOĞANYURT": {
+    "latitude": 41.445545,
+    "longitude": 33.409981,
+    "source": "official",
+    "verified": true
+  },
+  "37|HANÖNÜ": {
+    "latitude": 41.698783,
+    "longitude": 34.400566,
+    "source": "official",
+    "verified": true
+  },
+  "37|İHSANGAZİ": {
+    "latitude": 41.575656,
+    "longitude": 34.134492,
+    "source": "official",
+    "verified": true
+  },
+  "37|İNEBOLU": {
+    "latitude": 41.978576,
+    "longitude": 33.759903,
+    "source": "official",
+    "verified": true
+  },
+  "37|KÜRE": {
+    "latitude": 41.805882,
+    "longitude": 33.710262,
+    "source": "official",
+    "verified": true
+  },
+  "37|MERKEZ": {
+    "latitude": 41.812124,
+    "longitude": 33.234341,
+    "source": "official",
+    "verified": true
+  },
+  "37|PINARBAŞI": {
+    "latitude": 41.603603,
+    "longitude": 33.110875,
+    "source": "official",
+    "verified": true
+  },
+  "37|SEYDİLER": {
+    "latitude": 41.618845,
+    "longitude": 33.718625,
+    "source": "official",
+    "verified": true
+  },
+  "37|ŞENPAZAR": {
+    "latitude": 41.775395,
+    "longitude": 33.206079,
+    "source": "official",
+    "verified": true
+  },
+  "37|TAŞKÖPRÜ": {
+    "latitude": 41.518995,
+    "longitude": 34.193554,
+    "source": "official",
+    "verified": true
+  },
+  "37|TOSYA": {
+    "latitude": 41.016496,
+    "longitude": 34.038608,
+    "source": "official",
+    "verified": true
+  },
+  "38|AKKIŞLA": {
+    "latitude": 38.992575,
+    "longitude": 36.123599,
+    "source": "official",
+    "verified": true
+  },
+  "38|BÜNYAN": {
+    "latitude": 38.758873,
+    "longitude": 36.016605,
+    "source": "official",
+    "verified": true
+  },
+  "38|DEVELİ": {
+    "latitude": 38.384684,
+    "longitude": 35.491931,
+    "source": "official",
+    "verified": true
+  },
+  "38|FELAHİYE": {
+    "latitude": 39.024921,
+    "longitude": 35.43465,
+    "source": "official",
+    "verified": true
+  },
+  "38|HACILAR": {
+    "latitude": 38.644802,
+    "longitude": 35.459603,
+    "source": "official",
+    "verified": true
+  },
+  "38|İNCESU": {
+    "latitude": 38.688571,
+    "longitude": 35.548051,
+    "source": "official",
+    "verified": true
+  },
+  "38|KOCASİNAN": {
+    "latitude": 38.765503,
+    "longitude": 35.570362,
+    "source": "official",
+    "verified": true
+  },
+  "38|MELİKGAZİ": {
+    "latitude": 38.742536,
+    "longitude": 35.381813,
+    "source": "official",
+    "verified": true
+  },
+  "38|ÖZVATAN": {
+    "latitude": 39.01928,
+    "longitude": 35.50845,
+    "source": "official",
+    "verified": true
+  },
+  "38|PINARBAŞI": {
+    "latitude": 38.815769,
+    "longitude": 36.16938,
+    "source": "official",
+    "verified": true
+  },
+  "38|SARIOĞLAN": {
+    "latitude": 39.262752,
+    "longitude": 35.858904,
+    "source": "official",
+    "verified": true
+  },
+  "38|SARIZ": {
+    "latitude": 38.540999,
+    "longitude": 36.747184,
+    "source": "official",
+    "verified": true
+  },
+  "38|TALAS": {
+    "latitude": 38.649082,
+    "longitude": 35.572075,
+    "source": "official",
+    "verified": true
+  },
+  "38|TOMARZA": {
+    "latitude": 38.486456,
+    "longitude": 35.675622,
+    "source": "official",
+    "verified": true
+  },
+  "38|YAHYALI": {
+    "latitude": 38.100343,
+    "longitude": 35.354101,
+    "source": "official",
+    "verified": true
+  },
+  "38|YEŞİLHİSAR": {
+    "latitude": 38.339425,
+    "longitude": 35.033365,
+    "source": "official",
+    "verified": true
+  },
+  "39|BABAESKİ": {
+    "latitude": 41.40376,
+    "longitude": 27.368201,
+    "source": "official",
+    "verified": true
+  },
+  "39|DEMİRKÖY": {
+    "latitude": 41.879299,
+    "longitude": 27.985936,
+    "source": "official",
+    "verified": true
+  },
+  "39|KOFÇAZ": {
+    "latitude": 41.944962,
+    "longitude": 27.157854,
+    "source": "official",
+    "verified": true
+  },
+  "39|LÜLEBURGAZ": {
+    "latitude": 41.389749,
+    "longitude": 27.355751,
+    "source": "official",
+    "verified": true
+  },
+  "39|MERKEZ": {
+    "latitude": 41.737627,
+    "longitude": 27.225984,
+    "source": "official",
+    "verified": true
+  },
+  "39|PEHLİVANKÖY": {
+    "latitude": 41.34704,
+    "longitude": 26.920248,
+    "source": "official",
+    "verified": true
+  },
+  "39|PINARHİSAR": {
+    "latitude": 41.625495,
+    "longitude": 27.515775,
+    "source": "official",
+    "verified": true
+  },
+  "39|VİZE": {
+    "latitude": 41.747717,
+    "longitude": 27.21962,
+    "source": "official",
+    "verified": true
+  },
+  "40|AKÇAKENT": {
+    "latitude": 39.625024,
+    "longitude": 34.096216,
+    "source": "official",
+    "verified": true
+  },
+  "40|AKPINAR": {
+    "latitude": 39.447968,
+    "longitude": 33.963927,
+    "source": "official",
+    "verified": true
+  },
+  "40|BOZTEPE": {
+    "latitude": 39.144367,
+    "longitude": 34.141716,
+    "source": "official",
+    "verified": true
+  },
+  "40|ÇİÇEKDAĞI": {
+    "latitude": 39.603596,
+    "longitude": 34.415803,
+    "source": "official",
+    "verified": true
+  },
+  "40|KAMAN": {
+    "latitude": 39.358898,
+    "longitude": 33.724396,
+    "source": "official",
+    "verified": true
+  },
+  "40|MERKEZ": {
+    "latitude": 39.17306,
+    "longitude": 34.147862,
+    "source": "official",
+    "verified": true
+  },
+  "40|MUCUR": {
+    "latitude": 39.059874,
+    "longitude": 34.380006,
+    "source": "official",
+    "verified": true
+  },
+  "41|BAŞİSKELE": {
+    "latitude": 40.630404,
+    "longitude": 29.965921,
+    "source": "official",
+    "verified": true
+  },
+  "41|ÇAYIROVA": {
+    "latitude": 40.83238,
+    "longitude": 29.413863,
+    "source": "official",
+    "verified": true
+  },
+  "41|DARICA": {
+    "latitude": 40.780541,
+    "longitude": 29.414434,
+    "source": "official",
+    "verified": true
+  },
+  "41|DERİNCE": {
+    "latitude": 40.915245,
+    "longitude": 29.821521,
+    "source": "official",
+    "verified": true
+  },
+  "41|DİLOVASI": {
+    "latitude": 40.815,
+    "longitude": 29.581667,
+    "source": "official",
+    "verified": true
+  },
+  "41|GEBZE": {
+    "latitude": 40.817902,
+    "longitude": 29.378643,
+    "source": "official",
+    "verified": true
+  },
+  "41|GÖLCÜK": {
+    "latitude": 40.837646,
+    "longitude": 29.381574,
+    "source": "official",
+    "verified": true
+  },
+  "41|İZMİT": {
+    "latitude": 40.773305,
+    "longitude": 29.951917,
+    "source": "official",
+    "verified": true
+  },
+  "41|KANDIRA": {
+    "latitude": 40.983259,
+    "longitude": 29.980263,
+    "source": "official",
+    "verified": true
+  },
+  "41|KARAMÜRSEL": {
+    "latitude": 40.693079,
+    "longitude": 29.619219,
+    "source": "official",
+    "verified": true
+  },
+  "41|KARTEPE": {
+    "latitude": 40.718395,
+    "longitude": 30.115862,
+    "source": "official",
+    "verified": true
+  },
+  "41|KÖRFEZ": {
+    "latitude": 40.793718,
+    "longitude": 29.646354,
+    "source": "official",
+    "verified": true
+  },
+  "42|AHIRLI": {
+    "latitude": 37.365496,
+    "longitude": 32.132408,
+    "source": "official",
+    "verified": true
+  },
+  "42|AKÖREN": {
+    "latitude": 37.452329,
+    "longitude": 32.372524,
+    "source": "nominatim",
+    "verified": true
+  },
+  "42|AKŞEHİR": {
+    "latitude": 38.372626,
+    "longitude": 31.451404,
+    "source": "official",
+    "verified": true
+  },
+  "42|ALTINEKİN": {
+    "latitude": 38.264027,
+    "longitude": 32.920816,
+    "source": "official",
+    "verified": true
+  },
+  "42|BEYŞEHİR": {
+    "latitude": 37.51833,
+    "longitude": 31.486586,
+    "source": "official",
+    "verified": true
+  },
+  "42|BOZKIR": {
+    "latitude": 37.198425,
+    "longitude": 32.201527,
+    "source": "official",
+    "verified": true
+  },
+  "42|CİHANBEYLİ": {
+    "latitude": 38.476242,
+    "longitude": 32.832355,
+    "source": "official",
+    "verified": true
+  },
+  "42|ÇELTİK": {
+    "latitude": 38.956717,
+    "longitude": 31.892867,
+    "source": "official",
+    "verified": true
+  },
+  "42|ÇUMRA": {
+    "latitude": 37.738761,
+    "longitude": 32.752835,
+    "source": "official",
+    "verified": true
+  },
+  "42|DERBENT": {
+    "latitude": 37.983246,
+    "longitude": 31.891762,
+    "source": "official",
+    "verified": true
+  },
+  "42|DEREBUCAK": {
+    "latitude": 37.35109,
+    "longitude": 31.638945,
+    "source": "official",
+    "verified": true
+  },
+  "42|DOĞANHİSAR": {
+    "latitude": 38.146017,
+    "longitude": 31.676864,
+    "source": "official",
+    "verified": true
+  },
+  "42|EMİRGAZİ": {
+    "latitude": 37.900751,
+    "longitude": 33.836159,
+    "source": "official",
+    "verified": true
+  },
+  "42|EREĞLİ": {
+    "latitude": 37.531609,
+    "longitude": 34.092163,
+    "source": "official",
+    "verified": true
+  },
+  "42|GÜNEYSINIR": {
+    "latitude": 37.298065,
+    "longitude": 32.721141,
+    "source": "official",
+    "verified": true
+  },
+  "42|HADİM": {
+    "latitude": 36.986545,
+    "longitude": 32.447435,
+    "source": "official",
+    "verified": true
+  },
+  "42|HALKAPINAR": {
+    "latitude": 37.694567,
+    "longitude": 31.719918,
+    "source": "official",
+    "verified": true
+  },
+  "42|HÜYÜK": {
+    "latitude": 37.960424,
+    "longitude": 31.596916,
+    "source": "official",
+    "verified": true
+  },
+  "42|ILGIN": {
+    "latitude": 38.281774,
+    "longitude": 31.917867,
+    "source": "nominatim",
+    "verified": true
+  },
+  "42|KADINHANI": {
+    "latitude": 38.318287,
+    "longitude": 32.15139,
+    "source": "official",
+    "verified": true
+  },
+  "42|KARAPINAR": {
+    "latitude": 37.716723,
+    "longitude": 33.52169,
+    "source": "official",
+    "verified": true
+  },
+  "42|KARATAY": {
+    "latitude": 37.969795,
+    "longitude": 32.8008,
+    "source": "official",
+    "verified": true
+  },
+  "42|KULU": {
+    "latitude": 38.838086,
+    "longitude": 32.991427,
+    "source": "official",
+    "verified": true
+  },
+  "42|MERAM": {
+    "latitude": 37.767303,
+    "longitude": 32.494398,
+    "source": "official",
+    "verified": true
+  },
+  "42|SARAYÖNÜ": {
+    "latitude": 38.153811,
+    "longitude": 32.462078,
+    "source": "official",
+    "verified": true
+  },
+  "42|SELÇUKLU": {
+    "latitude": 38.015273,
+    "longitude": 32.50494,
+    "source": "official",
+    "verified": true
+  },
+  "42|SEYDİŞEHİR": {
+    "latitude": 37.523056,
+    "longitude": 31.842835,
+    "source": "official",
+    "verified": true
+  },
+  "42|TAŞKENT": {
+    "latitude": 36.912986,
+    "longitude": 32.560145,
+    "source": "official",
+    "verified": true
+  },
+  "42|TUZLUKÇU": {
+    "latitude": 38.472923,
+    "longitude": 31.627061,
+    "source": "official",
+    "verified": true
+  },
+  "42|YALIHÜYÜK": {
+    "latitude": 37.281754,
+    "longitude": 32.100914,
+    "source": "official",
+    "verified": true
+  },
+  "42|YUNAK": {
+    "latitude": 38.876456,
+    "longitude": 32.099138,
+    "source": "official",
+    "verified": true
+  },
+  "43|ALTINTAŞ": {
+    "latitude": 39.339575,
+    "longitude": 30.018189,
+    "source": "official",
+    "verified": true
+  },
+  "43|ASLANAPA": {
+    "latitude": 39.215223,
+    "longitude": 29.869627,
+    "source": "official",
+    "verified": true
+  },
+  "43|ÇAVDARHİSAR": {
+    "latitude": 39.194385,
+    "longitude": 29.619524,
+    "source": "official",
+    "verified": true
+  },
+  "43|DOMANİÇ": {
+    "latitude": 39.373907,
+    "longitude": 29.230168,
+    "source": "official",
+    "verified": true
+  },
+  "43|DUMLUPINAR": {
+    "latitude": 38.854363,
+    "longitude": 29.977641,
+    "source": "official",
+    "verified": true
+  },
+  "43|EMET": {
+    "latitude": 39.13805,
+    "longitude": 29.547321,
+    "source": "official",
+    "verified": true
+  },
+  "43|GEDİZ": {
+    "latitude": 39.069834,
+    "longitude": 29.389771,
+    "source": "official",
+    "verified": true
+  },
+  "43|HİSARCIK": {
+    "latitude": 39.25051,
+    "longitude": 29.231291,
+    "source": "official",
+    "verified": true
+  },
+  "43|MERKEZ": {
+    "latitude": 39.399886,
+    "longitude": 30.016231,
+    "source": "official",
+    "verified": true
+  },
+  "43|PAZARLAR": {
+    "latitude": 38.9949,
+    "longitude": 29.114961,
+    "source": "official",
+    "verified": true
+  },
+  "43|SİMAV": {
+    "latitude": 39.09645,
+    "longitude": 28.965642,
+    "source": "official",
+    "verified": true
+  },
+  "43|ŞAPHANE": {
+    "latitude": 39.025409,
+    "longitude": 29.219954,
+    "source": "official",
+    "verified": true
+  },
+  "43|TAVŞANLI": {
+    "latitude": 39.545115,
+    "longitude": 29.495534,
+    "source": "official",
+    "verified": true
+  },
+  "44|AKÇADAĞ": {
+    "latitude": 38.437225,
+    "longitude": 38.134682,
+    "source": "official",
+    "verified": true
+  },
+  "44|ARAPGİR": {
+    "latitude": 38.934956,
+    "longitude": 38.46943,
+    "source": "official",
+    "verified": true
+  },
+  "44|ARGUVAN": {
+    "latitude": 38.848502,
+    "longitude": 38.236634,
+    "source": "official",
+    "verified": true
+  },
+  "44|BATTALGAZİ": {
+    "latitude": 38.447173,
+    "longitude": 38.462052,
+    "source": "official",
+    "verified": true
+  },
+  "44|DARENDE": {
+    "latitude": 38.548278,
+    "longitude": 37.824103,
+    "source": "official",
+    "verified": true
+  },
+  "44|DOĞANŞEHİR": {
+    "latitude": 38.053459,
+    "longitude": 37.877174,
+    "source": "official",
+    "verified": true
+  },
+  "44|DOĞANYOL": {
+    "latitude": 38.322926,
+    "longitude": 39.104713,
+    "source": "official",
+    "verified": true
+  },
+  "44|HEKİMHAN": {
+    "latitude": 39.026302,
+    "longitude": 37.808436,
+    "source": "official",
+    "verified": true
+  },
+  "44|KALE": {
+    "latitude": 38.423246,
+    "longitude": 38.772564,
+    "source": "official",
+    "verified": true
+  },
+  "44|KULUNCAK": {
+    "latitude": 38.900707,
+    "longitude": 37.612918,
+    "source": "official",
+    "verified": true
+  },
+  "44|PÜTÜRGE": {
+    "latitude": 38.195983,
+    "longitude": 38.867945,
+    "source": "official",
+    "verified": true
+  },
+  "44|YAZIHAN": {
+    "latitude": 38.687619,
+    "longitude": 38.123756,
+    "source": "official",
+    "verified": true
+  },
+  "44|YEŞİLYURT": {
+    "latitude": 38.295488,
+    "longitude": 38.247452,
+    "source": "official",
+    "verified": true
+  },
+  "45|AHMETLİ": {
+    "latitude": 38.494189,
+    "longitude": 27.897077,
+    "source": "official",
+    "verified": true
+  },
+  "45|AKHİSAR": {
+    "latitude": 38.924053,
+    "longitude": 27.84019,
+    "source": "nominatim",
+    "verified": true
+  },
+  "45|ALAŞEHİR": {
+    "latitude": 38.380554,
+    "longitude": 28.486595,
+    "source": "official",
+    "verified": true
+  },
+  "45|DEMİRCİ": {
+    "latitude": 38.909822,
+    "longitude": 28.649113,
+    "source": "official",
+    "verified": true
+  },
+  "45|GÖLMARMARA": {
+    "latitude": 38.180378,
+    "longitude": 28.54009,
+    "source": "official",
+    "verified": true
+  },
+  "45|GÖRDES": {
+    "latitude": 38.617298,
+    "longitude": 27.458615,
+    "source": "official",
+    "verified": true
+  },
+  "45|KIRKAĞAÇ": {
+    "latitude": 39.20248,
+    "longitude": 27.838141,
+    "source": "official",
+    "verified": true
+  },
+  "45|KÖPRÜBAŞI": {
+    "latitude": 38.748023,
+    "longitude": 28.402953,
+    "source": "nominatim",
+    "verified": true
+  },
+  "45|KULA": {
+    "latitude": 38.544112,
+    "longitude": 28.636229,
+    "source": "official",
+    "verified": true
+  },
+  "45|SALİHLİ": {
+    "latitude": 38.577583,
+    "longitude": 28.268293,
+    "source": "official",
+    "verified": true
+  },
+  "45|SARIGÖL": {
+    "latitude": 38.220753,
+    "longitude": 28.625059,
+    "source": "official",
+    "verified": true
+  },
+  "45|SARUHANLI": {
+    "latitude": 38.755927,
+    "longitude": 27.550915,
+    "source": "official",
+    "verified": true
+  },
+  "45|SELENDİ": {
+    "latitude": 38.802807,
+    "longitude": 28.820663,
+    "source": "official",
+    "verified": true
+  },
+  "45|SOMA": {
+    "latitude": 39.10574,
+    "longitude": 27.616995,
+    "source": "official",
+    "verified": true
+  },
+  "45|ŞEHZADELER": {
+    "latitude": 38.614046,
+    "longitude": 27.432492,
+    "source": "official",
+    "verified": true
+  },
+  "45|TURGUTLU": {
+    "latitude": 38.493737,
+    "longitude": 27.706581,
+    "source": "official",
+    "verified": true
+  },
+  "45|YUNUSEMRE": {
+    "latitude": 38.629088,
+    "longitude": 27.399888,
+    "source": "official",
+    "verified": true
+  },
+  "46|AFŞİN": {
+    "latitude": 38.248839,
+    "longitude": 36.944854,
+    "source": "official",
+    "verified": true
+  },
+  "46|ANDIRIN": {
+    "latitude": 37.34565,
+    "longitude": 37.185194,
+    "source": "official",
+    "verified": true
+  },
+  "46|ÇAĞLAYANCERİT": {
+    "latitude": 37.743533,
+    "longitude": 37.345179,
+    "source": "official",
+    "verified": true
+  },
+  "46|DULKADİROĞLU": {
+    "latitude": 37.387083,
+    "longitude": 37.044284,
+    "source": "official",
+    "verified": true
+  },
+  "46|EKİNÖZÜ": {
+    "latitude": 38.101782,
+    "longitude": 37.220541,
+    "source": "official",
+    "verified": true
+  },
+  "46|ELBİSTAN": {
+    "latitude": 38.258109,
+    "longitude": 37.150097,
+    "source": "official",
+    "verified": true
+  },
+  "46|GÖKSUN": {
+    "latitude": 38.006493,
+    "longitude": 36.413264,
+    "source": "official",
+    "verified": true
+  },
+  "46|NURHAK": {
+    "latitude": 38.079248,
+    "longitude": 37.349721,
+    "source": "official",
+    "verified": true
+  },
+  "46|ONİKİŞUBAT": {
+    "latitude": 37.600341,
+    "longitude": 36.872593,
+    "source": "official",
+    "verified": true
+  },
+  "46|PAZARCIK": {
+    "latitude": 37.493691,
+    "longitude": 37.299041,
+    "source": "official",
+    "verified": true
+  },
+  "46|TÜRKOĞLU": {
+    "latitude": 37.324888,
+    "longitude": 36.794236,
+    "source": "official",
+    "verified": true
+  },
+  "47|ARTUKLU": {
+    "latitude": 37.328161,
+    "longitude": 40.720123,
+    "source": "official",
+    "verified": true
+  },
+  "47|DARGEÇİT": {
+    "latitude": 37.564224,
+    "longitude": 41.771572,
+    "source": "official",
+    "verified": true
+  },
+  "47|DERİK": {
+    "latitude": 37.284699,
+    "longitude": 40.068823,
+    "source": "official",
+    "verified": true
+  },
+  "47|KIZILTEPE": {
+    "latitude": 37.152264,
+    "longitude": 40.616531,
+    "source": "official",
+    "verified": true
+  },
+  "47|MAZIDAĞI": {
+    "latitude": 37.54189,
+    "longitude": 40.552384,
+    "source": "official",
+    "verified": true
+  },
+  "47|MİDYAT": {
+    "latitude": 37.455455,
+    "longitude": 41.295451,
+    "source": "official",
+    "verified": true
+  },
+  "47|NUSAYBİN": {
+    "latitude": 37.083224,
+    "longitude": 41.209164,
+    "source": "official",
+    "verified": true
+  },
+  "47|ÖMERLİ": {
+    "latitude": 37.40346,
+    "longitude": 41.13117,
+    "source": "official",
+    "verified": true
+  },
+  "47|SAVUR": {
+    "latitude": 37.598698,
+    "longitude": 41.083401,
+    "source": "official",
+    "verified": true
+  },
+  "47|YEŞİLLİ": {
+    "latitude": 37.257098,
+    "longitude": 40.91559,
+    "source": "official",
+    "verified": true
+  },
+  "48|BODRUM": {
+    "latitude": 37.012343,
+    "longitude": 27.279343,
+    "source": "official",
+    "verified": true
+  },
+  "48|DALAMAN": {
+    "latitude": 36.803619,
+    "longitude": 28.785902,
+    "source": "official",
+    "verified": true
+  },
+  "48|DATÇA": {
+    "latitude": 36.698819,
+    "longitude": 27.457898,
+    "source": "official",
+    "verified": true
+  },
+  "48|FETHİYE": {
+    "latitude": 36.6534,
+    "longitude": 29.122415,
+    "source": "official",
+    "verified": true
+  },
+  "48|KAVAKLIDERE": {
+    "latitude": 37.447376,
+    "longitude": 28.363931,
+    "source": "official",
+    "verified": true
+  },
+  "48|KÖYCEĞİZ": {
+    "latitude": 36.951023,
+    "longitude": 28.919052,
+    "source": "official",
+    "verified": true
+  },
+  "48|MARMARİS": {
+    "latitude": 36.817274,
+    "longitude": 28.300934,
+    "source": "official",
+    "verified": true
+  },
+  "48|MENTEŞE": {
+    "latitude": 37.23523,
+    "longitude": 28.296159,
+    "source": "official",
+    "verified": true
+  },
+  "48|MİLAS": {
+    "latitude": 37.220715,
+    "longitude": 27.746398,
+    "source": "official",
+    "verified": true
+  },
+  "48|ORTACA": {
+    "latitude": 36.789649,
+    "longitude": 28.766719,
+    "source": "official",
+    "verified": true
+  },
+  "48|SEYDİKEMER": {
+    "latitude": 36.5294,
+    "longitude": 29.329573,
+    "source": "official",
+    "verified": true
+  },
+  "48|ULA": {
+    "latitude": 37.025759,
+    "longitude": 28.357859,
+    "source": "official",
+    "verified": true
+  },
+  "48|YATAĞAN": {
+    "latitude": 37.274874,
+    "longitude": 28.214097,
+    "source": "official",
+    "verified": true
+  },
+  "49|BULANIK": {
+    "latitude": 39.092386,
+    "longitude": 42.270834,
+    "source": "official",
+    "verified": true
+  },
+  "49|HASKÖY": {
+    "latitude": 38.682616,
+    "longitude": 41.688529,
+    "source": "official",
+    "verified": true
+  },
+  "49|KORKUT": {
+    "latitude": 38.738805,
+    "longitude": 41.783,
+    "source": "official",
+    "verified": true
+  },
+  "49|MALAZGİRT": {
+    "latitude": 39.146141,
+    "longitude": 42.540946,
+    "source": "official",
+    "verified": true
+  },
+  "49|MERKEZ": {
+    "latitude": 38.751288,
+    "longitude": 41.515009,
+    "source": "official",
+    "verified": true
+  },
+  "49|VARTO": {
+    "latitude": 39.172087,
+    "longitude": 41.454664,
+    "source": "official",
+    "verified": true
+  },
+  "50|ACIGÖL": {
+    "latitude": 38.550155,
+    "longitude": 34.508966,
+    "source": "official",
+    "verified": true
+  },
+  "50|AVANOS": {
+    "latitude": 38.718737,
+    "longitude": 34.846866,
+    "source": "official",
+    "verified": true
+  },
+  "50|DERİNKUYU": {
+    "latitude": 38.374388,
+    "longitude": 34.733619,
+    "source": "official",
+    "verified": true
+  },
+  "50|GÜLŞEHİR": {
+    "latitude": 38.74263,
+    "longitude": 34.619258,
+    "source": "official",
+    "verified": true
+  },
+  "50|HACIBEKTAŞ": {
+    "latitude": 38.632072,
+    "longitude": 34.71324,
+    "source": "official",
+    "verified": true
+  },
+  "50|KOZAKLI": {
+    "latitude": 39.214744,
+    "longitude": 34.853213,
+    "source": "official",
+    "verified": true
+  },
+  "50|MERKEZ": {
+    "latitude": 38.587156,
+    "longitude": 34.719663,
+    "source": "nominatim",
+    "verified": true
+  },
+  "50|ÜRGÜP": {
+    "latitude": 38.592812,
+    "longitude": 34.959455,
+    "source": "nominatim",
+    "verified": true
+  },
+  "51|ALTUNHİSAR": {
+    "latitude": 37.999013,
+    "longitude": 34.371506,
+    "source": "nominatim",
+    "verified": true
+  },
+  "51|BOR": {
+    "latitude": 37.876028,
+    "longitude": 34.553041,
+    "source": "official",
+    "verified": true
+  },
+  "51|ÇAMARDI": {
+    "latitude": 37.83441,
+    "longitude": 34.986392,
+    "source": "official",
+    "verified": true
+  },
+  "51|ÇİFTLİK": {
+    "latitude": 38.174971,
+    "longitude": 34.484796,
+    "source": "official",
+    "verified": true
+  },
+  "51|MERKEZ": {
+    "latitude": 37.969849,
+    "longitude": 34.676449,
+    "source": "nominatim",
+    "verified": true
+  },
+  "51|ULUKIŞLA": {
+    "latitude": 37.547811,
+    "longitude": 34.482729,
+    "source": "official",
+    "verified": true
+  },
+  "52|AKKUŞ": {
+    "latitude": 40.901541,
+    "longitude": 37.799297,
+    "source": "official",
+    "verified": true
+  },
+  "52|ALTINORDU": {
+    "latitude": 40.962485,
+    "longitude": 37.958783,
+    "source": "official",
+    "verified": true
+  },
+  "52|AYBASTI": {
+    "latitude": 40.690422,
+    "longitude": 37.447395,
+    "source": "official",
+    "verified": true
+  },
+  "52|ÇAMAŞ": {
+    "latitude": 40.89991,
+    "longitude": 37.497291,
+    "source": "official",
+    "verified": true
+  },
+  "52|ÇATALPINAR": {
+    "latitude": 40.904649,
+    "longitude": 37.439664,
+    "source": "official",
+    "verified": true
+  },
+  "52|ÇAYBAŞI": {
+    "latitude": 40.974889,
+    "longitude": 37.077407,
+    "source": "official",
+    "verified": true
+  },
+  "52|FATSA": {
+    "latitude": 41.05141,
+    "longitude": 37.423653,
+    "source": "official",
+    "verified": true
+  },
+  "52|GÖLKÖY": {
+    "latitude": 40.725496,
+    "longitude": 37.548051,
+    "source": "official",
+    "verified": true
+  },
+  "52|GÜLYALI": {
+    "latitude": 40.925579,
+    "longitude": 38.055816,
+    "source": "official",
+    "verified": true
+  },
+  "52|GÜRGENTEPE": {
+    "latitude": 40.788486,
+    "longitude": 37.602589,
+    "source": "official",
+    "verified": true
+  },
+  "52|İKİZCE": {
+    "latitude": 41.070616,
+    "longitude": 37.095164,
+    "source": "official",
+    "verified": true
+  },
+  "52|KABADÜZ": {
+    "latitude": 40.819799,
+    "longitude": 37.876079,
+    "source": "official",
+    "verified": true
+  },
+  "52|KABATAŞ": {
+    "latitude": 40.753637,
+    "longitude": 37.394637,
+    "source": "official",
+    "verified": true
+  },
+  "52|KORGAN": {
+    "latitude": 40.783207,
+    "longitude": 37.317932,
+    "source": "official",
+    "verified": true
+  },
+  "52|KUMRU": {
+    "latitude": 40.940182,
+    "longitude": 37.285538,
+    "source": "official",
+    "verified": true
+  },
+  "52|MESUDİYE": {
+    "latitude": 40.556076,
+    "longitude": 37.64188,
+    "source": "official",
+    "verified": true
+  },
+  "52|PERŞEMBE": {
+    "latitude": 40.869076,
+    "longitude": 37.996979,
+    "source": "official",
+    "verified": true
+  },
+  "52|ULUBEY": {
+    "latitude": 40.830753,
+    "longitude": 37.693809,
+    "source": "official",
+    "verified": true
+  },
+  "52|ÜNYE": {
+    "latitude": 40.991793,
+    "longitude": 37.317415,
+    "source": "official",
+    "verified": true
+  },
+  "53|ARDEŞEN": {
+    "latitude": 41.191875,
+    "longitude": 40.989418,
+    "source": "official",
+    "verified": true
+  },
+  "53|ÇAMLIHEMŞİN": {
+    "latitude": 41.167003,
+    "longitude": 41.040895,
+    "source": "official",
+    "verified": true
+  },
+  "53|ÇAYELİ": {
+    "latitude": 41.087833,
+    "longitude": 40.723697,
+    "source": "nominatim",
+    "verified": true
+  },
+  "53|DEREPAZARI": {
+    "latitude": 41.015766,
+    "longitude": 40.413436,
+    "source": "official",
+    "verified": true
+  },
+  "53|FINDIKLI": {
+    "latitude": 41.271235,
+    "longitude": 41.141416,
+    "source": "official",
+    "verified": true
+  },
+  "53|GÜNEYSU": {
+    "latitude": 41.127712,
+    "longitude": 41.138928,
+    "source": "official",
+    "verified": true
+  },
+  "53|HEMŞİN": {
+    "latitude": 41.047521,
+    "longitude": 40.898798,
+    "source": "official",
+    "verified": true
+  },
+  "53|İKİZDERE": {
+    "latitude": 40.777992,
+    "longitude": 40.559574,
+    "source": "official",
+    "verified": true
+  },
+  "53|İYİDERE": {
+    "latitude": 41.008407,
+    "longitude": 40.382273,
+    "source": "official",
+    "verified": true
+  },
+  "53|KALKANDERE": {
+    "latitude": 40.927948,
+    "longitude": 40.442509,
+    "source": "nominatim",
+    "verified": true
+  },
+  "53|MERKEZ": {
+    "latitude": 41.044633,
+    "longitude": 40.76425,
+    "source": "official",
+    "verified": true
+  },
+  "53|PAZAR": {
+    "latitude": 41.180258,
+    "longitude": 40.886848,
+    "source": "official",
+    "verified": true
+  },
+  "54|ADAPAZARI": {
+    "latitude": 40.868914,
+    "longitude": 30.313085,
+    "source": "official",
+    "verified": true
+  },
+  "54|AKYAZI": {
+    "latitude": 40.681055,
+    "longitude": 30.573817,
+    "source": "official",
+    "verified": true
+  },
+  "54|ARİFİYE": {
+    "latitude": 40.666967,
+    "longitude": 30.363882,
+    "source": "official",
+    "verified": true
+  },
+  "54|ERENLER": {
+    "latitude": 40.723283,
+    "longitude": 30.434129,
+    "source": "official",
+    "verified": true
+  },
+  "54|FERİZLİ": {
+    "latitude": 40.996822,
+    "longitude": 30.456677,
+    "source": "official",
+    "verified": true
+  },
+  "54|GEYVE": {
+    "latitude": 40.477847,
+    "longitude": 30.367141,
+    "source": "official",
+    "verified": true
+  },
+  "54|HENDEK": {
+    "latitude": 40.795503,
+    "longitude": 30.745273,
+    "source": "nominatim",
+    "verified": true
+  },
+  "54|KARAPÜRÇEK": {
+    "latitude": 40.606616,
+    "longitude": 30.558555,
+    "source": "official",
+    "verified": true
+  },
+  "54|KARASU": {
+    "latitude": 41.029854,
+    "longitude": 30.594825,
+    "source": "official",
+    "verified": true
+  },
+  "54|KAYNARCA": {
+    "latitude": 40.970567,
+    "longitude": 30.283444,
+    "source": "official",
+    "verified": true
+  },
+  "54|KOCAALİ": {
+    "latitude": 40.979325,
+    "longitude": 30.888635,
+    "source": "official",
+    "verified": true
+  },
+  "54|PAMUKOVA": {
+    "latitude": 40.542996,
+    "longitude": 30.125611,
+    "source": "official",
+    "verified": true
+  },
+  "54|SAPANCA": {
+    "latitude": 40.668992,
+    "longitude": 30.326668,
+    "source": "official",
+    "verified": true
+  },
+  "54|SERDİVAN": {
+    "latitude": 40.775488,
+    "longitude": 30.379493,
+    "source": "official",
+    "verified": true
+  },
+  "54|SÖĞÜTLÜ": {
+    "latitude": 40.903921,
+    "longitude": 30.471664,
+    "source": "nominatim",
+    "verified": true
+  },
+  "54|TARAKLI": {
+    "latitude": 40.30077,
+    "longitude": 30.540236,
+    "source": "official",
+    "verified": true
+  },
+  "55|ALAÇAM": {
+    "latitude": 41.578813,
+    "longitude": 35.645064,
+    "source": "official",
+    "verified": true
+  },
+  "55|ASARCIK": {
+    "latitude": 41.016341,
+    "longitude": 36.283617,
+    "source": "official",
+    "verified": true
+  },
+  "55|ATAKUM": {
+    "latitude": 41.334866,
+    "longitude": 35.699768,
+    "source": "official",
+    "verified": true
+  },
+  "55|AYVACIK": {
+    "latitude": 40.922516,
+    "longitude": 36.615746,
+    "source": "official",
+    "verified": true
+  },
+  "55|BAFRA": {
+    "latitude": 41.597705,
+    "longitude": 35.890152,
+    "source": "official",
+    "verified": true
+  },
+  "55|CANİK": {
+    "latitude": 41.178629,
+    "longitude": 35.454655,
+    "source": "official",
+    "verified": true
+  },
+  "55|ÇARŞAMBA": {
+    "latitude": 41.205502,
+    "longitude": 36.771915,
+    "source": "official",
+    "verified": true
+  },
+  "55|HAVZA": {
+    "latitude": 40.965707,
+    "longitude": 35.667103,
+    "source": "nominatim",
+    "verified": true
+  },
+  "55|İLKADIM": {
+    "latitude": 41.2902,
+    "longitude": 36.334676,
+    "source": "nominatim",
+    "verified": true
+  },
+  "55|KAVAK": {
+    "latitude": 41.068537,
+    "longitude": 36.026884,
+    "source": "nominatim",
+    "verified": true
+  },
+  "55|LADİK": {
+    "latitude": 40.91139,
+    "longitude": 35.811054,
+    "source": "official",
+    "verified": true
+  },
+  "55|ONDOKUZMAYIS": {
+    "latitude": 41.493655,
+    "longitude": 36.081049,
+    "source": "nominatim",
+    "verified": true
+  },
+  "55|SALIPAZARI": {
+    "latitude": 41.350412,
+    "longitude": 35.118382,
+    "source": "official",
+    "verified": true
+  },
+  "55|TEKKEKÖY": {
+    "latitude": 41.213498,
+    "longitude": 36.457804,
+    "source": "nominatim",
+    "verified": true
+  },
+  "55|TERME": {
+    "latitude": 41.191099,
+    "longitude": 36.979441,
+    "source": "official",
+    "verified": true
+  },
+  "55|VEZİRKÖPRÜ": {
+    "latitude": 41.142055,
+    "longitude": 35.45537,
+    "source": "official",
+    "verified": true
+  },
+  "55|YAKAKENT": {
+    "latitude": 41.649907,
+    "longitude": 35.418338,
+    "source": "official",
+    "verified": true
+  },
+  "56|BAYKAN": {
+    "latitude": 38.160999,
+    "longitude": 41.823513,
+    "source": "official",
+    "verified": true
+  },
+  "56|ERUH": {
+    "latitude": 37.703482,
+    "longitude": 42.068227,
+    "source": "official",
+    "verified": true
+  },
+  "56|KURTALAN": {
+    "latitude": 37.926114,
+    "longitude": 41.700188,
+    "source": "official",
+    "verified": true
+  },
+  "56|MERKEZ": {
+    "latitude": 37.949685,
+    "longitude": 41.903758,
+    "source": "official",
+    "verified": true
+  },
+  "56|PERVARİ": {
+    "latitude": 37.932504,
+    "longitude": 42.547991,
+    "source": "official",
+    "verified": true
+  },
+  "56|ŞİRVAN": {
+    "latitude": 37.9539,
+    "longitude": 41.807477,
+    "source": "official",
+    "verified": true
+  },
+  "56|TİLLO": {
+    "latitude": 37.950064,
+    "longitude": 42.012517,
+    "source": "official",
+    "verified": true
+  },
+  "57|AYANCIK": {
+    "latitude": 41.946072,
+    "longitude": 34.588309,
+    "source": "official",
+    "verified": true
+  },
+  "57|BOYABAT": {
+    "latitude": 41.468974,
+    "longitude": 34.767227,
+    "source": "official",
+    "verified": true
+  },
+  "57|DİKMEN": {
+    "latitude": 41.651624,
+    "longitude": 35.265057,
+    "source": "official",
+    "verified": true
+  },
+  "57|DURAĞAN": {
+    "latitude": 41.417967,
+    "longitude": 35.05581,
+    "source": "official",
+    "verified": true
+  },
+  "57|ERFELEK": {
+    "latitude": 41.879362,
+    "longitude": 34.908051,
+    "source": "nominatim",
+    "verified": true
+  },
+  "57|GERZE": {
+    "latitude": 41.809804,
+    "longitude": 35.182772,
+    "source": "official",
+    "verified": true
+  },
+  "57|MERKEZ": {
+    "latitude": 42.02658,
+    "longitude": 35.151151,
+    "source": "nominatim",
+    "verified": true
+  },
+  "57|SARAYDÜZÜ": {
+    "latitude": 41.321288,
+    "longitude": 34.765125,
+    "source": "official",
+    "verified": true
+  },
+  "57|TÜRKELİ": {
+    "latitude": 41.869177,
+    "longitude": 34.40609,
+    "source": "official",
+    "verified": true
+  },
+  "58|AKINCILAR": {
+    "latitude": 40.101508,
+    "longitude": 38.388382,
+    "source": "official",
+    "verified": true
+  },
+  "58|ALTINYAYLA": {
+    "latitude": 39.271668,
+    "longitude": 36.751548,
+    "source": "official",
+    "verified": true
+  },
+  "58|DİVRİĞİ": {
+    "latitude": 39.368946,
+    "longitude": 38.11177,
+    "source": "official",
+    "verified": true
+  },
+  "58|DOĞANŞAR": {
+    "latitude": 40.214232,
+    "longitude": 37.53651,
+    "source": "official",
+    "verified": true
+  },
+  "58|GEMEREK": {
+    "latitude": 39.183122,
+    "longitude": 36.071104,
+    "source": "official",
+    "verified": true
+  },
+  "58|GÖLOVA": {
+    "latitude": 40.061289,
+    "longitude": 38.608431,
+    "source": "official",
+    "verified": true
+  },
+  "58|GÜRÜN": {
+    "latitude": 38.721334,
+    "longitude": 37.270935,
+    "source": "official",
+    "verified": true
+  },
+  "58|HAFİK": {
+    "latitude": 39.75204,
+    "longitude": 37.586202,
+    "source": "official",
+    "verified": true
+  },
+  "58|İMRANLI": {
+    "latitude": 40.047741,
+    "longitude": 37.388241,
+    "source": "official",
+    "verified": true
+  },
+  "58|KANGAL": {
+    "latitude": 39.390572,
+    "longitude": 37.611908,
+    "source": "official",
+    "verified": true
+  },
+  "58|KOYULHİSAR": {
+    "latitude": 40.446439,
+    "longitude": 38.012319,
+    "source": "official",
+    "verified": true
+  },
+  "58|MERKEZ": {
+    "latitude": 39.325409,
+    "longitude": 36.787651,
+    "source": "official",
+    "verified": true
+  },
+  "58|SUŞEHRİ": {
+    "latitude": 40.146405,
+    "longitude": 38.263321,
+    "source": "official",
+    "verified": true
+  },
+  "58|ŞARKIŞLA": {
+    "latitude": 39.199681,
+    "longitude": 36.43078,
+    "source": "official",
+    "verified": true
+  },
+  "58|ULAŞ": {
+    "latitude": 40.129924,
+    "longitude": 38.468419,
+    "source": "official",
+    "verified": true
+  },
+  "58|YILDIZELİ": {
+    "latitude": 39.866721,
+    "longitude": 36.601635,
+    "source": "official",
+    "verified": true
+  },
+  "58|ZARA": {
+    "latitude": 39.733911,
+    "longitude": 37.871964,
+    "source": "official",
+    "verified": true
+  },
+  "59|ÇERKEZKÖY": {
+    "latitude": 41.295747,
+    "longitude": 28.009508,
+    "source": "official",
+    "verified": true
+  },
+  "59|ÇORLU": {
+    "latitude": 41.150369,
+    "longitude": 27.82382,
+    "source": "official",
+    "verified": true
+  },
+  "59|ERGENE": {
+    "latitude": 41.2592,
+    "longitude": 27.6833,
+    "source": "official",
+    "verified": true
+  },
+  "59|HAYRABOLU": {
+    "latitude": 41.178521,
+    "longitude": 27.039312,
+    "source": "official",
+    "verified": true
+  },
+  "59|KAPAKLI": {
+    "latitude": 41.330684,
+    "longitude": 27.987503,
+    "source": "official",
+    "verified": true
+  },
+  "59|MALKARA": {
+    "latitude": 40.883377,
+    "longitude": 27.070895,
+    "source": "official",
+    "verified": true
+  },
+  "59|MARMARAEREĞLİSİ": {
+    "latitude": 40.9697,
+    "longitude": 27.9553,
+    "source": "official",
+    "verified": true
+  },
+  "59|MURATLI": {
+    "latitude": 41.213486,
+    "longitude": 27.425142,
+    "source": "official",
+    "verified": true
+  },
+  "59|SARAY": {
+    "latitude": 41.331883,
+    "longitude": 27.973177,
+    "source": "official",
+    "verified": true
+  },
+  "59|SÜLEYMANPAŞA": {
+    "latitude": 40.96917,
+    "longitude": 27.492449,
+    "source": "official",
+    "verified": true
+  },
+  "59|ŞARKÖY": {
+    "latitude": 40.65166,
+    "longitude": 27.20806,
+    "source": "official",
+    "verified": true
+  },
+  "60|ALMUS": {
+    "latitude": 40.375013,
+    "longitude": 36.903732,
+    "source": "official",
+    "verified": true
+  },
+  "60|ARTOVA": {
+    "latitude": 40.117527,
+    "longitude": 36.291535,
+    "source": "official",
+    "verified": true
+  },
+  "60|BAŞÇİFTLİK": {
+    "latitude": 40.586021,
+    "longitude": 37.084217,
+    "source": "official",
+    "verified": true
+  },
+  "60|ERBAA": {
+    "latitude": 40.672798,
+    "longitude": 36.571506,
+    "source": "official",
+    "verified": true
+  },
+  "60|MERKEZ": {
+    "latitude": 40.305949,
+    "longitude": 36.551223,
+    "source": "official",
+    "verified": true
+  },
+  "60|NİKSAR": {
+    "latitude": 40.591328,
+    "longitude": 36.943493,
+    "source": "official",
+    "verified": true
+  },
+  "60|PAZAR": {
+    "latitude": 40.247015,
+    "longitude": 36.224177,
+    "source": "official",
+    "verified": true
+  },
+  "60|REŞADİYE": {
+    "latitude": 40.392069,
+    "longitude": 37.338322,
+    "source": "official",
+    "verified": true
+  },
+  "60|SULUSARAY": {
+    "latitude": 40.234921,
+    "longitude": 35.887359,
+    "source": "official",
+    "verified": true
+  },
+  "60|TURHAL": {
+    "latitude": 40.389585,
+    "longitude": 35.962645,
+    "source": "official",
+    "verified": true
+  },
+  "60|YEŞİLYURT": {
+    "latitude": 40.007566,
+    "longitude": 36.210508,
+    "source": "official",
+    "verified": true
+  },
+  "60|ZİLE": {
+    "latitude": 40.300534,
+    "longitude": 35.882348,
+    "source": "official",
+    "verified": true
+  },
+  "61|AKÇAABAT": {
+    "latitude": 40.939235,
+    "longitude": 39.460066,
+    "source": "official",
+    "verified": true
+  },
+  "61|ARAKLI": {
+    "latitude": 40.687325,
+    "longitude": 39.905674,
+    "source": "official",
+    "verified": true
+  },
+  "61|ARSİN": {
+    "latitude": 40.824223,
+    "longitude": 39.900607,
+    "source": "official",
+    "verified": true
+  },
+  "61|BEŞİKDÜZÜ": {
+    "latitude": 41.047586,
+    "longitude": 39.480473,
+    "source": "official",
+    "verified": true
+  },
+  "61|ÇARŞIBAŞI": {
+    "latitude": 41.0825,
+    "longitude": 39.38,
+    "source": "official",
+    "verified": true
+  },
+  "61|ÇAYKARA": {
+    "latitude": 40.756963,
+    "longitude": 40.232917,
+    "source": "official",
+    "verified": true
+  },
+  "61|DERNEKPAZARI": {
+    "latitude": 40.791164,
+    "longitude": 40.275861,
+    "source": "official",
+    "verified": true
+  },
+  "61|DÜZKÖY": {
+    "latitude": 40.852686,
+    "longitude": 39.379167,
+    "source": "official",
+    "verified": true
+  },
+  "61|HAYRAT": {
+    "latitude": 40.873895,
+    "longitude": 40.343191,
+    "source": "official",
+    "verified": true
+  },
+  "61|KÖPRÜBAŞI": {
+    "latitude": 40.924062,
+    "longitude": 39.506692,
+    "source": "official",
+    "verified": true
+  },
+  "61|MAÇKA": {
+    "latitude": 40.723946,
+    "longitude": 39.599133,
+    "source": "official",
+    "verified": true
+  },
+  "61|OF": {
+    "latitude": 40.916977,
+    "longitude": 40.297498,
+    "source": "official",
+    "verified": true
+  },
+  "61|ORTAHİSAR": {
+    "latitude": 40.993436,
+    "longitude": 39.664979,
+    "source": "official",
+    "verified": true
+  },
+  "61|SÜRMENE": {
+    "latitude": 40.863908,
+    "longitude": 40.119421,
+    "source": "official",
+    "verified": true
+  },
+  "61|ŞALPAZARI": {
+    "latitude": 40.936127,
+    "longitude": 39.168736,
+    "source": "official",
+    "verified": true
+  },
+  "61|TONYA": {
+    "latitude": 40.848628,
+    "longitude": 39.306819,
+    "source": "official",
+    "verified": true
+  },
+  "61|VAKFIKEBİR": {
+    "latitude": 40.965565,
+    "longitude": 39.306572,
+    "source": "official",
+    "verified": true
+  },
+  "61|YOMRA": {
+    "latitude": 40.88591,
+    "longitude": 40.037102,
+    "source": "official",
+    "verified": true
+  },
+  "62|ÇEMİŞGEZEK": {
+    "latitude": 39.159475,
+    "longitude": 38.774867,
+    "source": "official",
+    "verified": true
+  },
+  "62|HOZAT": {
+    "latitude": 39.107587,
+    "longitude": 39.219392,
+    "source": "official",
+    "verified": true
+  },
+  "62|MAZGİRT": {
+    "latitude": 39.019546,
+    "longitude": 39.605911,
+    "source": "official",
+    "verified": true
+  },
+  "62|MERKEZ": {
+    "latitude": 39.136581,
+    "longitude": 39.53342,
+    "source": "nominatim",
+    "verified": true
+  },
+  "62|NAZIMİYE": {
+    "latitude": 39.179434,
+    "longitude": 39.828832,
+    "source": "nominatim",
+    "verified": true
+  },
+  "62|OVACIK": {
+    "latitude": 39.358383,
+    "longitude": 39.214447,
+    "source": "official",
+    "verified": true
+  },
+  "62|PERTEK": {
+    "latitude": 38.865556,
+    "longitude": 39.327653,
+    "source": "official",
+    "verified": true
+  },
+  "62|PÜLÜMÜR": {
+    "latitude": 39.487607,
+    "longitude": 39.899072,
+    "source": "official",
+    "verified": true
+  },
+  "63|AKÇAKALE": {
+    "latitude": 36.734744,
+    "longitude": 39.114587,
+    "source": "official",
+    "verified": true
+  },
+  "63|BİRECİK": {
+    "latitude": 36.981839,
+    "longitude": 38.048983,
+    "source": "official",
+    "verified": true
+  },
+  "63|BOZOVA": {
+    "latitude": 37.361958,
+    "longitude": 38.525358,
+    "source": "official",
+    "verified": true
+  },
+  "63|CEYLANPINAR": {
+    "latitude": 36.843323,
+    "longitude": 40.05141,
+    "source": "nominatim",
+    "verified": true
+  },
+  "63|EYYÜBİYE": {
+    "latitude": 37.148136,
+    "longitude": 38.782466,
+    "source": "nominatim",
+    "verified": true
+  },
+  "63|HALFETİ": {
+    "latitude": 37.091808,
+    "longitude": 37.912346,
+    "source": "official",
+    "verified": true
+  },
+  "63|HALİLİYE": {
+    "latitude": 37.33036,
+    "longitude": 39.219944,
+    "source": "official",
+    "verified": true
+  },
+  "63|HARRAN": {
+    "latitude": 36.871006,
+    "longitude": 39.025136,
+    "source": "nominatim",
+    "verified": true
+  },
+  "63|HİLVAN": {
+    "latitude": 37.439937,
+    "longitude": 39.010051,
+    "source": "official",
+    "verified": true
+  },
+  "63|KARAKÖPRÜ": {
+    "latitude": 37.086988,
+    "longitude": 38.528409,
+    "source": "official",
+    "verified": true
+  },
+  "63|SİVEREK": {
+    "latitude": 37.746622,
+    "longitude": 39.3104,
+    "source": "official",
+    "verified": true
+  },
+  "63|SURUÇ": {
+    "latitude": 37.069865,
+    "longitude": 38.214705,
+    "source": "official",
+    "verified": true
+  },
+  "63|VİRANŞEHİR": {
+    "latitude": 37.214103,
+    "longitude": 39.5545,
+    "source": "official",
+    "verified": true
+  },
+  "64|BANAZ": {
+    "latitude": 38.739973,
+    "longitude": 29.75319,
+    "source": "official",
+    "verified": true
+  },
+  "64|EŞME": {
+    "latitude": 38.399867,
+    "longitude": 28.967014,
+    "source": "official",
+    "verified": true
+  },
+  "64|KARAHALLI": {
+    "latitude": 38.32,
+    "longitude": 29.53,
+    "source": "official",
+    "verified": true
+  },
+  "64|MERKEZ": {
+    "latitude": 38.64656,
+    "longitude": 29.391601,
+    "source": "official",
+    "verified": true
+  },
+  "64|SİVASLI": {
+    "latitude": 38.500031,
+    "longitude": 29.683952,
+    "source": "official",
+    "verified": true
+  },
+  "64|ULUBEY": {
+    "latitude": 38.299539,
+    "longitude": 29.141793,
+    "source": "official",
+    "verified": true
+  },
+  "65|BAHÇESARAY": {
+    "latitude": 38.020221,
+    "longitude": 42.743807,
+    "source": "official",
+    "verified": true
+  },
+  "65|BAŞKALE": {
+    "latitude": 37.995601,
+    "longitude": 44.142645,
+    "source": "official",
+    "verified": true
+  },
+  "65|ÇALDIRAN": {
+    "latitude": 38.96694,
+    "longitude": 43.951321,
+    "source": "official",
+    "verified": true
+  },
+  "65|ÇATAK": {
+    "latitude": 39.012525,
+    "longitude": 43.406495,
+    "source": "official",
+    "verified": true
+  },
+  "65|EDREMİT": {
+    "latitude": 38.411638,
+    "longitude": 43.372499,
+    "source": "official",
+    "verified": true
+  },
+  "65|ERCİŞ": {
+    "latitude": 39.13456,
+    "longitude": 43.269725,
+    "source": "official",
+    "verified": true
+  },
+  "65|GEVAŞ": {
+    "latitude": 38.282696,
+    "longitude": 43.209521,
+    "source": "official",
+    "verified": true
+  },
+  "65|GÜRPINAR": {
+    "latitude": 38.302753,
+    "longitude": 43.681739,
+    "source": "official",
+    "verified": true
+  },
+  "65|İPEKYOLU": {
+    "latitude": 38.693787,
+    "longitude": 43.758072,
+    "source": "official",
+    "verified": true
+  },
+  "65|MURADİYE": {
+    "latitude": 38.971007,
+    "longitude": 43.712239,
+    "source": "official",
+    "verified": true
+  },
+  "65|ÖZALP": {
+    "latitude": 38.818638,
+    "longitude": 43.986874,
+    "source": "official",
+    "verified": true
+  },
+  "65|SARAY": {
+    "latitude": 38.647847,
+    "longitude": 44.174995,
+    "source": "official",
+    "verified": true
+  },
+  "65|TUŞBA": {
+    "latitude": 38.514573,
+    "longitude": 43.364666,
+    "source": "official",
+    "verified": true
+  },
+  "66|AKDAĞMADENİ": {
+    "latitude": 39.661931,
+    "longitude": 35.880712,
+    "source": "official",
+    "verified": true
+  },
+  "66|AYDINCIK": {
+    "latitude": 40.130252,
+    "longitude": 35.285161,
+    "source": "official",
+    "verified": true
+  },
+  "66|BOĞAZLIYAN": {
+    "latitude": 39.191259,
+    "longitude": 35.246284,
+    "source": "official",
+    "verified": true
+  },
+  "66|ÇANDIR": {
+    "latitude": 39.2393,
+    "longitude": 35.514947,
+    "source": "official",
+    "verified": true
+  },
+  "66|ÇAYIRALAN": {
+    "latitude": 39.300872,
+    "longitude": 35.64188,
+    "source": "official",
+    "verified": true
+  },
+  "66|ÇEKEREK": {
+    "latitude": 40.064957,
+    "longitude": 35.50725,
+    "source": "nominatim",
+    "verified": true
+  },
+  "66|KADIŞEHRİ": {
+    "latitude": 40.019872,
+    "longitude": 35.861127,
+    "source": "official",
+    "verified": true
+  },
+  "66|MERKEZ": {
+    "latitude": 39.756454,
+    "longitude": 34.783827,
+    "source": "nominatim",
+    "verified": true
+  },
+  "66|SARAYKENT": {
+    "latitude": 39.6978,
+    "longitude": 35.5028,
+    "source": "official",
+    "verified": true
+  },
+  "66|SARIKAYA": {
+    "latitude": 39.49359,
+    "longitude": 35.37551,
+    "source": "nominatim",
+    "verified": true
+  },
+  "66|SORGUN": {
+    "latitude": 39.809868,
+    "longitude": 35.185431,
+    "source": "nominatim",
+    "verified": true
+  },
+  "66|ŞEFAATLİ": {
+    "latitude": 39.496202,
+    "longitude": 34.756899,
+    "source": "official",
+    "verified": true
+  },
+  "66|YENİFAKILI": {
+    "latitude": 39.21105,
+    "longitude": 35.00189,
+    "source": "official",
+    "verified": true
+  },
+  "66|YERKÖY": {
+    "latitude": 39.641334,
+    "longitude": 34.468266,
+    "source": "official",
+    "verified": true
+  },
+  "67|ALAPLI": {
+    "latitude": 41.125813,
+    "longitude": 31.447871,
+    "source": "official",
+    "verified": true
+  },
+  "67|ÇAYCUMA": {
+    "latitude": 41.55119,
+    "longitude": 32.011856,
+    "source": "official",
+    "verified": true
+  },
+  "67|DEVREK": {
+    "latitude": 41.35456,
+    "longitude": 31.753963,
+    "source": "official",
+    "verified": true
+  },
+  "67|GÖKÇEBEY": {
+    "latitude": 41.305643,
+    "longitude": 32.142956,
+    "source": "official",
+    "verified": true
+  },
+  "67|KARADENİZ EREĞLİ": {
+    "latitude": 41.2844,
+    "longitude": 31.4178,
+    "source": "official",
+    "verified": true
+  },
+  "67|KİLİMLİ": {
+    "latitude": 41.197999,
+    "longitude": 31.606843,
+    "source": "official",
+    "verified": true
+  },
+  "67|KOZLU": {
+    "latitude": 41.429152,
+    "longitude": 31.75003,
+    "source": "official",
+    "verified": true
+  },
+  "67|MERKEZ": {
+    "latitude": 41.363293,
+    "longitude": 31.638258,
+    "source": "official",
+    "verified": true
+  },
+  "68|AĞAÇÖREN": {
+    "latitude": 38.868972,
+    "longitude": 33.915577,
+    "source": "official",
+    "verified": true
+  },
+  "68|ESKİL": {
+    "latitude": 38.173744,
+    "longitude": 33.391375,
+    "source": "official",
+    "verified": true
+  },
+  "68|GÜLAĞAÇ": {
+    "latitude": 38.3975,
+    "longitude": 34.3389,
+    "source": "official",
+    "verified": true
+  },
+  "68|GÜZELYURT": {
+    "latitude": 38.759489,
+    "longitude": 34.009856,
+    "source": "official",
+    "verified": true
+  },
+  "68|MERKEZ": {
+    "latitude": 38.400105,
+    "longitude": 33.412924,
+    "source": "official",
+    "verified": true
+  },
+  "68|ORTAKÖY": {
+    "latitude": 38.736624,
+    "longitude": 34.041219,
+    "source": "official",
+    "verified": true
+  },
+  "68|SARIYAHŞİ": {
+    "latitude": 38.984935,
+    "longitude": 33.845537,
+    "source": "official",
+    "verified": true
+  },
+  "68|SULTANHANI": {
+    "latitude": 38.2433,
+    "longitude": 33.5489,
+    "source": "official",
+    "verified": true
+  },
+  "69|AYDINTEPE": {
+    "latitude": 40.388986,
+    "longitude": 40.147388,
+    "source": "official",
+    "verified": true
+  },
+  "69|DEMİRÖZÜ": {
+    "latitude": 40.192631,
+    "longitude": 39.907883,
+    "source": "official",
+    "verified": true
+  },
+  "69|MERKEZ": {
+    "latitude": 40.146921,
+    "longitude": 40.324556,
+    "source": "official",
+    "verified": true
+  },
+  "70|AYRANCI": {
+    "latitude": 37.264965,
+    "longitude": 34.04946,
+    "source": "official",
+    "verified": true
+  },
+  "70|BAŞYAYLA": {
+    "latitude": 36.753962,
+    "longitude": 32.677775,
+    "source": "official",
+    "verified": true
+  },
+  "70|ERMENEK": {
+    "latitude": 36.6289,
+    "longitude": 32.8931,
+    "source": "official",
+    "verified": true
+  },
+  "70|KAZIMKARABEKİR": {
+    "latitude": 37.225863,
+    "longitude": 32.956098,
+    "source": "official",
+    "verified": true
+  },
+  "70|MERKEZ": {
+    "latitude": 37.178775,
+    "longitude": 33.223069,
+    "source": "official",
+    "verified": true
+  },
+  "70|SARIVELİLER": {
+    "latitude": 36.685294,
+    "longitude": 32.619997,
+    "source": "official",
+    "verified": true
+  },
+  "71|BAHŞILI": {
+    "latitude": 39.8039,
+    "longitude": 33.4356,
+    "source": "official",
+    "verified": true
+  },
+  "71|BALIŞEYH": {
+    "latitude": 39.90972,
+    "longitude": 33.718343,
+    "source": "official",
+    "verified": true
+  },
+  "71|ÇELEBİ": {
+    "latitude": 39.463699,
+    "longitude": 33.524414,
+    "source": "official",
+    "verified": true
+  },
+  "71|DELİCE": {
+    "latitude": 39.945517,
+    "longitude": 34.031297,
+    "source": "official",
+    "verified": true
+  },
+  "71|KARAKEÇİLİ": {
+    "latitude": 39.591056,
+    "longitude": 33.379061,
+    "source": "official",
+    "verified": true
+  },
+  "71|KESKİN": {
+    "latitude": 39.673994,
+    "longitude": 33.615167,
+    "source": "official",
+    "verified": true
+  },
+  "71|MERKEZ": {
+    "latitude": 39.850638,
+    "longitude": 33.568463,
+    "source": "official",
+    "verified": true
+  },
+  "71|SULAKYURT": {
+    "latitude": 40.157677,
+    "longitude": 33.715667,
+    "source": "official",
+    "verified": true
+  },
+  "71|YAHŞİHAN": {
+    "latitude": 39.849754,
+    "longitude": 33.452421,
+    "source": "official",
+    "verified": true
+  },
+  "72|BEŞİRİ": {
+    "latitude": 37.907612,
+    "longitude": 41.2506,
+    "source": "official",
+    "verified": true
+  },
+  "72|GERCÜŞ": {
+    "latitude": 37.725733,
+    "longitude": 41.178834,
+    "source": "official",
+    "verified": true
+  },
+  "72|HASANKEYF": {
+    "latitude": 37.730469,
+    "longitude": 41.416086,
+    "source": "official",
+    "verified": true
+  },
+  "72|KOZLUK": {
+    "latitude": 38.166635,
+    "longitude": 41.506357,
+    "source": "official",
+    "verified": true
+  },
+  "72|MERKEZ": {
+    "latitude": 37.880836,
+    "longitude": 41.111222,
+    "source": "official",
+    "verified": true
+  },
+  "72|SASON": {
+    "latitude": 38.333947,
+    "longitude": 41.420234,
+    "source": "official",
+    "verified": true
+  },
+  "73|BEYTÜŞŞEBAP": {
+    "latitude": 37.569486,
+    "longitude": 43.159062,
+    "source": "official",
+    "verified": true
+  },
+  "73|CİZRE": {
+    "latitude": 37.324039,
+    "longitude": 42.192204,
+    "source": "official",
+    "verified": true
+  },
+  "73|GÜÇLÜKONAK": {
+    "latitude": 37.470247,
+    "longitude": 41.9118,
+    "source": "official",
+    "verified": true
+  },
+  "73|İDİL": {
+    "latitude": 37.420969,
+    "longitude": 41.711723,
+    "source": "official",
+    "verified": true
+  },
+  "73|MERKEZ": {
+    "latitude": 37.336795,
+    "longitude": 41.896451,
+    "source": "official",
+    "verified": true
+  },
+  "73|SİLOPİ": {
+    "latitude": 37.521851,
+    "longitude": 42.453602,
+    "source": "official",
+    "verified": true
+  },
+  "73|ULUDERE": {
+    "latitude": 37.36047,
+    "longitude": 43.246694,
+    "source": "official",
+    "verified": true
+  },
+  "74|AMASRA": {
+    "latitude": 41.748917,
+    "longitude": 32.386696,
+    "source": "official",
+    "verified": true
+  },
+  "74|KURUCAŞİLE": {
+    "latitude": 41.84389,
+    "longitude": 32.720789,
+    "source": "official",
+    "verified": true
+  },
+  "74|MERKEZ": {
+    "latitude": 41.337117,
+    "longitude": 32.390912,
+    "source": "official",
+    "verified": true
+  },
+  "74|ULUS": {
+    "latitude": 41.434249,
+    "longitude": 32.582703,
+    "source": "official",
+    "verified": true
+  },
+  "75|ÇILDIR": {
+    "latitude": 41.142984,
+    "longitude": 43.215156,
+    "source": "official",
+    "verified": true
+  },
+  "75|DAMAL": {
+    "latitude": 41.3411,
+    "longitude": 42.84,
+    "source": "official",
+    "verified": true
+  },
+  "75|GÖLE": {
+    "latitude": 40.901943,
+    "longitude": 42.53353,
+    "source": "official",
+    "verified": true
+  },
+  "75|HANAK": {
+    "latitude": 41.23677,
+    "longitude": 42.844903,
+    "source": "official",
+    "verified": true
+  },
+  "75|MERKEZ": {
+    "latitude": 41.02431,
+    "longitude": 42.904437,
+    "source": "official",
+    "verified": true
+  },
+  "75|POSOF": {
+    "latitude": 41.508378,
+    "longitude": 42.727952,
+    "source": "official",
+    "verified": true
+  },
+  "76|ARALIK": {
+    "latitude": 39.873699,
+    "longitude": 44.516037,
+    "source": "official",
+    "verified": true
+  },
+  "76|KARAKOYUNLU": {
+    "latitude": 39.9722,
+    "longitude": 44.175,
+    "source": "official",
+    "verified": true
+  },
+  "76|MERKEZ": {
+    "latitude": 39.927551,
+    "longitude": 44.047605,
+    "source": "official",
+    "verified": true
+  },
+  "76|TUZLUCA": {
+    "latitude": 40.040216,
+    "longitude": 43.663788,
+    "source": "official",
+    "verified": true
+  },
+  "77|ALTINOVA": {
+    "latitude": 40.671019,
+    "longitude": 29.475661,
+    "source": "official",
+    "verified": true
+  },
+  "77|ARMUTLU": {
+    "latitude": 40.51962,
+    "longitude": 28.828011,
+    "source": "official",
+    "verified": true
+  },
+  "77|ÇINARCIK": {
+    "latitude": 40.6433,
+    "longitude": 29.1172,
+    "source": "official",
+    "verified": true
+  },
+  "77|ÇİFTLİKKÖY": {
+    "latitude": 40.643505,
+    "longitude": 29.330676,
+    "source": "official",
+    "verified": true
+  },
+  "77|MERKEZ": {
+    "latitude": 40.648286,
+    "longitude": 29.259086,
+    "source": "official",
+    "verified": true
+  },
+  "77|TERMAL": {
+    "latitude": 40.607488,
+    "longitude": 29.173104,
+    "source": "official",
+    "verified": true
+  },
+  "78|EFLANİ": {
+    "latitude": 41.434221,
+    "longitude": 32.856635,
+    "source": "official",
+    "verified": true
+  },
+  "78|ESKİPAZAR": {
+    "latitude": 41.015252,
+    "longitude": 32.663748,
+    "source": "official",
+    "verified": true
+  },
+  "78|MERKEZ": {
+    "latitude": 41.261127,
+    "longitude": 32.346724,
+    "source": "official",
+    "verified": true
+  },
+  "78|OVACIK": {
+    "latitude": 41.025823,
+    "longitude": 32.880042,
+    "source": "official",
+    "verified": true
+  },
+  "78|SAFRANBOLU": {
+    "latitude": 41.243375,
+    "longitude": 32.720494,
+    "source": "official",
+    "verified": true
+  },
+  "78|YENİCE": {
+    "latitude": 41.200666,
+    "longitude": 32.327925,
+    "source": "official",
+    "verified": true
+  },
+  "79|ELBEYLİ": {
+    "latitude": 36.675039,
+    "longitude": 37.466866,
+    "source": "official",
+    "verified": true
+  },
+  "79|MERKEZ": {
+    "latitude": 36.713271,
+    "longitude": 37.119188,
+    "source": "official",
+    "verified": true
+  },
+  "79|MUSABEYLİ": {
+    "latitude": 36.886129,
+    "longitude": 36.915586,
+    "source": "official",
+    "verified": true
+  },
+  "79|POLATELİ": {
+    "latitude": 36.727162,
+    "longitude": 37.107276,
+    "source": "official",
+    "verified": true
+  },
+  "80|BAHÇE": {
+    "latitude": 37.205638,
+    "longitude": 36.173778,
+    "source": "official",
+    "verified": true
+  },
+  "80|DÜZİÇİ": {
+    "latitude": 37.305904,
+    "longitude": 36.354453,
+    "source": "official",
+    "verified": true
+  },
+  "80|HASANBEYLİ": {
+    "latitude": 37.483149,
+    "longitude": 36.050065,
+    "source": "official",
+    "verified": true
+  },
+  "80|KADİRLİ": {
+    "latitude": 37.372075,
+    "longitude": 36.103007,
+    "source": "official",
+    "verified": true
+  },
+  "80|MERKEZ": {
+    "latitude": 37.194906,
+    "longitude": 36.436244,
+    "source": "official",
+    "verified": true
+  },
+  "80|SUMBAS": {
+    "latitude": 37.453623,
+    "longitude": 36.02476,
+    "source": "official",
+    "verified": true
+  },
+  "80|TOPRAKKALE": {
+    "latitude": 37.02861,
+    "longitude": 36.099936,
+    "source": "official",
+    "verified": true
+  },
+  "81|AKÇAKOCA": {
+    "latitude": 41.088228,
+    "longitude": 31.123983,
+    "source": "official",
+    "verified": true
+  },
+  "81|CUMAYERİ": {
+    "latitude": 40.874689,
+    "longitude": 30.950414,
+    "source": "official",
+    "verified": true
+  },
+  "81|ÇİLİMLİ": {
+    "latitude": 40.893252,
+    "longitude": 31.04663,
+    "source": "official",
+    "verified": true
+  },
+  "81|GÖLYAKA": {
+    "latitude": 40.765546,
+    "longitude": 30.991887,
+    "source": "official",
+    "verified": true
+  },
+  "81|GÜMÜŞOVA": {
+    "latitude": 40.846577,
+    "longitude": 30.938601,
+    "source": "official",
+    "verified": true
+  },
+  "81|KAYNAŞLI": {
+    "latitude": 40.772098,
+    "longitude": 31.319201,
+    "source": "official",
+    "verified": true
+  },
+  "81|MERKEZ": {
+    "latitude": 40.873098,
+    "longitude": 31.296942,
+    "source": "official",
+    "verified": true
+  },
+  "81|YIĞILCA": {
+    "latitude": 40.970762,
+    "longitude": 31.442096,
+    "source": "official",
+    "verified": true
+  }
+}

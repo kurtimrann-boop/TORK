@@ -41,6 +41,7 @@ const SHIPPER_TABS = [
 const CARRIER_TABS = [
   { id: "overview", label: "Genel Bakış", icon: <IconHome className="h-4 w-4" /> },
   { id: "board", label: "Uygun Yükler", icon: <IconPackage className="h-4 w-4" /> },
+  { id: "my-bids", label: "Tekliflerim", icon: <IconInbox className="h-4 w-4" /> },
   { id: "transports", label: "Aktif Taşımalar", icon: <IconTruck className="h-4 w-4" /> },
   { id: "wallet", label: "Cüzdan", icon: <IconWallet className="h-4 w-4" /> },
   { id: "profile", label: "Profilim", icon: <IconUser className="h-4 w-4" /> },
@@ -396,6 +397,15 @@ export default function TorkApp() {
   const [activeTransports, setActiveTransports] =
     useState([]);
 
+  const [carrierBids, setCarrierBids] =
+    useState([]);
+
+  const [carrierBidFilter, setCarrierBidFilter] =
+    useState("all");
+
+  const [carrierBidSort, setCarrierBidSort] =
+    useState("newest");
+
   const [bidFilter, setBidFilter] =
     useState("active");
 
@@ -571,6 +581,15 @@ export default function TorkApp() {
 
     if (!error && data) {
       setLoads(data);
+      data.forEach((load) => {
+        if (load.distance_km) {
+          setRouteDistance(
+            load.id,
+            Number(load.distance_km),
+            load.duration_minutes ? Number(load.duration_minutes) : null
+          );
+        }
+      });
     }
   };
 
@@ -579,7 +598,7 @@ export default function TorkApp() {
       await supabase
         .from("bids")
         .select(
-          "id, load_id, amount, status, loads(origin, destination, tonnage, vehicle_type, status, created_at)"
+          "id, load_id, amount, status, loads(id, origin, destination, tonnage, vehicle_type, status, created_at, distance_km, duration_minutes)"
         )
         .eq("carrier_id", userDashboard.id)
         .eq("status", "accepted")
@@ -590,12 +609,48 @@ export default function TorkApp() {
     if (!error && data) {
       const transports = data
         .filter((item) => item.loads)
-        .map((item) => ({
-          ...item.loads,
-          acceptedAmount: item.amount,
-          acceptedBidId: item.id,
-        }));
+        .map((item) => {
+          if (item.loads?.distance_km) {
+            setRouteDistance(
+              item.load_id,
+              Number(item.loads.distance_km),
+              item.loads.duration_minutes ? Number(item.loads.duration_minutes) : null
+            );
+          }
+          return {
+            ...item.loads,
+            acceptedAmount: item.amount,
+            acceptedBidId: item.id,
+          };
+        });
       setActiveTransports(transports);
+    }
+  };
+
+  const fetchCarrierBids = async (carrierId) => {
+    if (!carrierId) return;
+    const { data, error } =
+      await supabase
+        .from("bids")
+        .select(
+          "id, load_id, amount, status, created_at, loads(id, origin, destination, tonnage, vehicle_type, status, distance_km, duration_minutes)"
+        )
+        .eq("carrier_id", carrierId)
+        .order("created_at", {
+          ascending: false,
+        });
+
+    if (!error && data) {
+      setCarrierBids(data);
+      data.forEach((item) => {
+        if (item.loads?.distance_km) {
+          setRouteDistance(
+            item.load_id,
+            Number(item.loads.distance_km),
+            item.loads.duration_minutes ? Number(item.loads.duration_minutes) : null
+          );
+        }
+      });
     }
   };
 
@@ -612,6 +667,15 @@ export default function TorkApp() {
         });
 
     setMyLoads(loadsData || []);
+    loadsData?.forEach((load) => {
+      if (load.distance_km) {
+        setRouteDistance(
+          load.id,
+          Number(load.distance_km),
+          load.duration_minutes ? Number(load.duration_minutes) : null
+        );
+      }
+    });
 
     const loadIds =
       loadsData?.map(
@@ -627,7 +691,7 @@ export default function TorkApp() {
       await supabase
         .from("bids")
         .select(
-          "id, load_id, carrier_id, amount, status, created_at, loads(origin, destination, tonnage, vehicle_type, status), profiles(company_name)",
+          "id, load_id, carrier_id, amount, status, created_at, loads(id, origin, destination, tonnage, vehicle_type, status, distance_km, duration_minutes), profiles(company_name)",
         )
         .in(
           "load_id",
@@ -646,9 +710,16 @@ export default function TorkApp() {
       return;
     }
 
-    setIncomingBids(
-      bidsData || [],
-    );
+    setIncomingBids(bidsData || []);
+    bidsData?.forEach((bid) => {
+      if (bid.loads?.distance_km) {
+        setRouteDistance(
+          bid.load_id,
+          Number(bid.loads.distance_km),
+          bid.loads.duration_minutes ? Number(bid.loads.duration_minutes) : null
+        );
+      }
+    });
   };
 
   const startEditLoad = (load) => {
@@ -844,11 +915,9 @@ export default function TorkApp() {
       userDashboard.role ===
       "carrier"
     ) {
-      if (activeTab === "transports") {
-        fetchActiveTransports();
-      } else {
-        fetchOpenLoads();
-      }
+      fetchOpenLoads();
+      fetchActiveTransports();
+      fetchCarrierBids(userDashboard.id);
     } else {
       fetchShipperData(
         userDashboard.id,
@@ -1085,27 +1154,71 @@ export default function TorkApp() {
         ? ` / ${destinationDistrict}`
         : "";
 
-      const originDisplay =
-        `${originProvince.name}${originDistrictPart}`;
-      const destinationDisplay =
-        `${destinationProvince.name}${destinationDistrictPart}`;
+      // Check if distance/duration was calculated in preview
+      const previewRoute =
+        getRouteDistance("new-load-preview") ||
+        (editingLoad ? getRouteDistance(editingLoad.id) : null);
+      const calculatedDistance = previewRoute?.distanceKm || null;
+      const calculatedDuration = previewRoute?.durationMinutes || null;
 
-      const { error } =
-        await supabase
+      const loadPayload = {
+        shipper_id: userDashboard.id,
+        origin: originDisplay,
+        destination: destinationDisplay,
+        tonnage,
+        vehicle_type: vehicle,
+        cargo_type: cargoType,
+        package_count: packageCount,
+        description: loadDescription,
+        status: "open",
+      };
+
+      if (calculatedDistance != null) {
+        loadPayload.distance_km = calculatedDistance;
+      }
+      if (calculatedDuration != null) {
+        loadPayload.duration_minutes = calculatedDuration;
+      }
+
+      let error = null;
+      let insertedLoad = null;
+
+      if (editingLoad) {
+        const { error: updateError } = await supabase
           .from("loads")
-          .insert({
-            shipper_id:
-              userDashboard.id,
-            origin: originDisplay,
-            destination: destinationDisplay,
-            tonnage,
-            vehicle_type:
-              vehicle,
-            cargo_type: cargoType,
-            package_count: packageCount,
-            description: loadDescription,
-            status: "open",
-          });
+          .update(loadPayload)
+          .eq("id", editingLoad.id)
+          .eq("shipper_id", userDashboard.id);
+        error = updateError;
+      } else {
+        const { data: insertData, error: insertError } = await supabase
+          .from("loads")
+          .insert(loadPayload)
+          .select()
+          .single();
+        error = insertError;
+        insertedLoad = insertData;
+      }
+
+      if (error && (error.message?.includes("distance_km") || error.message?.includes("duration_minutes"))) {
+        delete loadPayload.distance_km;
+        delete loadPayload.duration_minutes;
+        if (editingLoad) {
+          const { error: retryError } = await supabase
+            .from("loads")
+            .update(loadPayload)
+            .eq("id", editingLoad.id);
+          error = retryError;
+        } else {
+          const { data: retryData, error: retryError } = await supabase
+            .from("loads")
+            .insert(loadPayload)
+            .select()
+            .single();
+          error = retryError;
+          insertedLoad = retryData;
+        }
+      }
 
       if (error) {
         setMessage(
@@ -1113,8 +1226,12 @@ export default function TorkApp() {
             error.message,
         );
       } else {
+        if (insertedLoad && calculatedDistance != null) {
+          setRouteDistance(insertedLoad.id, calculatedDistance, calculatedDuration);
+        }
+
         setMessage(
-          "Yük ilanı başarıyla yayınlandı.",
+          editingLoad ? "Yük ilanı başarıyla güncellendi." : "Yük ilanı başarıyla yayınlandı.",
         );
 
         // Reset form
@@ -1138,36 +1255,65 @@ export default function TorkApp() {
         return;
       }
 
-      setLoading(true);
-
-      const {
-        error: insertError,
-      } =
-        await supabase
-          .from("bids")
-          .insert({
-            load_id: loadId,
-            carrier_id:
-              userDashboard.id,
-            amount: bidAmount,
-            status: "pending",
-          });
-
-      if (insertError) {
-        setMessage(
-          "Teklif verme hatası: " +
-            insertError.message,
-        );
-        setLoading(false);
+      const numAmount = Number(bidAmount);
+      if (!Number.isFinite(numAmount) || numAmount <= 0) {
+        setMessage("Lütfen geçerli bir teklif tutarı giriniz.");
         return;
       }
 
-      setMessage(
-        "Navlun teklifiniz başarıyla iletildi.",
+      setLoading(true);
+      setMessage("");
+
+      // Check if carrier already has an active pending bid on this load
+      const existingPending = carrierBids.find(
+        (b) => b.load_id === loadId && b.status === "pending"
       );
+
+      if (existingPending) {
+        // Update existing pending bid amount
+        const { error: updateError } = await supabase
+          .from("bids")
+          .update({ amount: numAmount })
+          .eq("id", existingPending.id)
+          .eq("carrier_id", userDashboard.id)
+          .eq("status", "pending");
+
+        if (updateError) {
+          setMessage("Teklif güncelleme hatası: " + updateError.message);
+          setLoading(false);
+          return;
+        }
+
+        setMessage(`Navlun teklifiniz ₺${numAmount.toLocaleString("tr-TR")} olarak güncellendi.`);
+      } else {
+        // Insert new pending bid
+        const { error: insertError } = await supabase
+          .from("bids")
+          .insert({
+            load_id: loadId,
+            carrier_id: userDashboard.id,
+            amount: numAmount,
+            status: "pending",
+          });
+
+        if (insertError) {
+          if (insertError.code === "23505" || insertError.message?.includes("unique") || insertError.message?.includes("duplicate")) {
+            setMessage("Bu ilana zaten aktif bir teklifiniz bulunmaktadır.");
+          } else {
+            setMessage("Teklif verme hatası: " + insertError.message);
+          }
+          setLoading(false);
+          return;
+        }
+
+        setMessage("Navlun teklifiniz başarıyla iletildi.");
+      }
 
       setActiveBidLoadId(null);
       setBidAmount("");
+
+      await fetchCarrierBids(userDashboard.id);
+      await fetchActiveTransports();
 
       setLoading(false);
     };
@@ -1820,6 +1966,7 @@ export default function TorkApp() {
                  onResetCreateForm={resetCreateForm}
                  counts={{
                    bidsCount: incomingBids.filter((b) => b.status === "pending").length,
+                   carrierBidsCount: carrierBids.filter((b) => b.status === "pending").length,
                    activeTransportsCount: activeTransports.length,
                    loadsCount: loads.length,
                    myLoadsCount: myLoads.length,
@@ -1845,7 +1992,7 @@ export default function TorkApp() {
                      <StatCard
                        label="Gelen Teklifler"
                        value={incomingBids.length}
-                       detail="Taşıyıcı teklifleri"
+                       detail={`${incomingBids.filter((b) => b.status === "pending").length} bekleyen`}
                        accent="amber"
                      />
                      <StatCard
@@ -1871,8 +2018,8 @@ export default function TorkApp() {
                      />
                      <StatCard
                        label="Tekliflerim"
-                       value={incomingBids.length}
-                       detail="Bekleyen"
+                       value={carrierBids.length}
+                       detail={`${carrierBids.filter((b) => b.status === "pending").length} bekleyen`}
                        accent="amber"
                      />
                      <StatCard
@@ -1954,27 +2101,31 @@ export default function TorkApp() {
                    )}
 
                    {/* RECENT BIDS */}
-                   {incomingBids.length > 0 && (
-                     <div>
-                       <div className="mb-4 flex items-center justify-between">
-                         <div>
-                           <h3 className="text-lg font-black text-[#F5F7FA]">
-                             {userDashboard.role === "shipper" ? "Son Teklifler" : "Tekliflerim"}
-                           </h3>
-                           <p className="mt-1 text-xs text-[#9AA7B5]">
-                             {userDashboard.role === "shipper" ? "Gelen teklifler" : "Aktif teklifleriniz"}
-                           </p>
-                         </div>
-                         <button
-                           onClick={() => setActiveTab("bids")}
-                           className="text-xs font-bold text-[#00E5A0] hover:text-[#00E5A0]/80"
-                         >
-                           Tümünü Gör →
-                         </button>
+                   <div>
+                     <div className="mb-4 flex items-center justify-between">
+                       <div>
+                         <h3 className="text-lg font-black text-[#F5F7FA]">
+                           {userDashboard.role === "shipper" ? "Son Gelen Teklifler" : "Son Tekliflerim"}
+                         </h3>
+                         <p className="mt-1 text-xs text-[#9AA7B5]">
+                           {userDashboard.role === "shipper" ? "İlanlarınıza gelen teklifler" : "Verdiğiniz son navlun teklifleri"}
+                         </p>
                        </div>
+                       <button
+                         onClick={() => setActiveTab(userDashboard.role === "shipper" ? "bids" : "my-bids")}
+                         className="text-xs font-bold text-[#00E5A0] hover:text-[#00E5A0]/80"
+                       >
+                         Tümünü Gör →
+                       </button>
+                     </div>
 
-                       <div className="space-y-3">
-                         {incomingBids.slice(0, 2).map((bid) => (
+                     <div className="space-y-3">
+                       {(userDashboard.role === "shipper" ? incomingBids : carrierBids).length === 0 ? (
+                         <div className="rounded-2xl border border-white/6 bg-white/[0.02] p-6 text-center text-xs text-slate-400">
+                           {userDashboard.role === "shipper" ? "Henüz gelen teklif bulunmuyor." : "Henüz teklif vermediniz."}
+                         </div>
+                       ) : (
+                         (userDashboard.role === "shipper" ? incomingBids : carrierBids).slice(0, 2).map((bid) => (
                            <BidCard
                              key={bid.id}
                              bid={bid}
@@ -1985,24 +2136,83 @@ export default function TorkApp() {
                              onReject={() =>
                                handleUpdateBidStatus(bid.id, bid.load_id, "rejected")
                              }
+                             onViewLoad={(loadId) => setActiveDetailLoadId(loadId)}
                            />
-                         ))}
-                       </div>
+                         ))
+                       )}
                      </div>
-                   )}
+                   </div>
                  </div>
 
                  {/* RIGHT: ANALYTICS + SYSTEM STATUS */}
                  <div className="lg:col-span-2 space-y-6">
                    <div className="rounded-2xl border border-white/8 bg-[#0F1723] p-6">
-                     <h3 className="mb-2 text-sm font-black text-[#F5F7FA]">
-                       {userDashboard.role === "shipper" ? "Navlun Maliyet Trendleri" : "Teklif Performansı"}
-                     </h3>
+                     <div className="flex items-center justify-between mb-2">
+                       <h3 className="text-sm font-black text-[#F5F7FA]">
+                         {userDashboard.role === "shipper" ? "Navlun Maliyet Analizi" : "Teklif Performansı"}
+                       </h3>
+                       <span className="text-[10px] font-black uppercase tracking-wider text-[#00E5A0]">
+                         CANLI KPI
+                       </span>
+                     </div>
                      <p className="text-xs text-[#9AA7B5]">
-                       {userDashboard.role === "shipper" ? "Son 30 günün maliyet analizi" : "Kabul edilen teklifler ve kazanma oranı"}
+                       {userDashboard.role === "shipper" ? "Gelen tekliflerin piyasa özeti" : "Verilen teklifler ve başarı oranları"}
                      </p>
-                     <div className="mt-6 flex h-[200px] items-center justify-center rounded-xl border border-dashed border-white/8 text-xs text-[#667085]">
-                       Yeterli veri bulunmuyor
+
+                     <div className="mt-5 space-y-2.5">
+                       {userDashboard.role === "shipper" ? (
+                         incomingBids.length > 0 ? (
+                           <>
+                             <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
+                               <span className="text-slate-400 font-bold">Ortalama Teklif:</span>
+                               <span className="font-black text-white">
+                                 ₺{Math.round(incomingBids.reduce((s, b) => s + Number(b.amount || 0), 0) / incomingBids.length).toLocaleString("tr-TR")}
+                               </span>
+                             </div>
+                             <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
+                               <span className="text-slate-400 font-bold">En Düşük Teklif:</span>
+                               <span className="font-black text-[#00E5A0]">
+                                 ₺{Math.min(...incomingBids.map((b) => Number(b.amount) || 0)).toLocaleString("tr-TR")}
+                               </span>
+                             </div>
+                             <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
+                               <span className="text-slate-400 font-bold">İlan Başına Teklif:</span>
+                               <span className="font-black text-[#06B6D4]">
+                                 {(incomingBids.length / Math.max(myLoads.length, 1)).toFixed(1)} adet
+                               </span>
+                             </div>
+                           </>
+                         ) : (
+                           <div className="rounded-xl border border-white/6 bg-white/[0.02] p-4 text-center text-xs text-slate-400">
+                             Yeni yük ilanı oluşturarak taşıyıcılardan teklif toplayabilirsiniz.
+                           </div>
+                         )
+                       ) : carrierBids.length > 0 ? (
+                         <>
+                           <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
+                             <span className="text-slate-400 font-bold">Kazanma Oranı:</span>
+                             <span className="font-black text-[#00E5A0]">
+                               %{Math.round((carrierBids.filter((b) => b.status === "accepted").length / carrierBids.length) * 100)}
+                             </span>
+                           </div>
+                           <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
+                             <span className="text-slate-400 font-bold">Ortalama Teklifim:</span>
+                             <span className="font-black text-white">
+                               ₺{Math.round(carrierBids.reduce((s, b) => s + Number(b.amount || 0), 0) / carrierBids.length).toLocaleString("tr-TR")}
+                             </span>
+                           </div>
+                           <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
+                             <span className="text-slate-400 font-bold">Bekleyen Teklifler:</span>
+                             <span className="font-black text-[#FBBF24]">
+                               {carrierBids.filter((b) => b.status === "pending").length} adet
+                             </span>
+                           </div>
+                         </>
+                       ) : (
+                         <div className="rounded-xl border border-white/6 bg-white/[0.02] p-4 text-center text-xs text-slate-400">
+                           Uygun yüklere teklif vererek performans istatistiklerinizi oluşturun.
+                         </div>
+                       )}
                      </div>
                    </div>
 
@@ -2026,7 +2236,6 @@ export default function TorkApp() {
                      </div>
                    </div>
                  </div>
-
                </div>
              </div>
            )}
@@ -2121,15 +2330,32 @@ export default function TorkApp() {
                     </div>
 
                     <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={loadSearch}
-                        onChange={(e) => setLoadSearch(e.target.value)}
-                        placeholder="Ara..."
-                        className="tork-input px-4 py-2.5 text-xs"
-                      />
+                      <div className="relative flex items-center">
+                        <input
+                          type="text"
+                          value={loadSearch}
+                          onChange={(e) => setLoadSearch(e.target.value)}
+                          placeholder="Ara..."
+                          className="tork-input px-4 py-2.5 pr-8 text-xs"
+                        />
+                        {loadSearch && (
+                          <button
+                            type="button"
+                            onClick={() => setLoadSearch("")}
+                            className="absolute right-2.5 flex h-4 w-4 items-center justify-center rounded-full text-slate-400 hover:text-white transition"
+                            aria-label="Aramayı temizle"
+                          >
+                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                       <button
-                        onClick={() => setActiveTab("create")}
+                        onClick={() => {
+                          resetCreateForm();
+                          setActiveTab("create");
+                        }}
                         className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-3 py-2 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
                       >
                         + Yeni Yük
@@ -2329,7 +2555,7 @@ export default function TorkApp() {
                                     destinationProvince?.name +
                                     (destinationDistrict ? " / " + destinationDistrict : "")
                                   }
-                                  loadId={editingLoad?.id}
+                                  loadId={editingLoad?.id || "new-load-preview"}
                                 />
                               </div>
                             </div>
@@ -3005,11 +3231,13 @@ export default function TorkApp() {
                       });
 
                       const getPricePerKm = (bid) => {
-                        const route = getRouteDistance(bid.load_id);
-                        if (!route || !route.distanceKm || route.distanceKm <= 0) return null;
+                        const dist =
+                          Number(bid.loads?.distance_km) ||
+                          getRouteDistance(bid.load_id)?.distanceKm;
+                        if (!dist || dist <= 0) return null;
                         const amount = Number(bid.amount);
                         if (!Number.isFinite(amount) || amount <= 0) return null;
-                        return amount / route.distanceKm;
+                        return amount / dist;
                       };
 
                       const sorted = [...filtered].sort((a, b) => {
@@ -3042,11 +3270,12 @@ export default function TorkApp() {
                          <div className="space-y-3">
                            {sorted.map((bid) => {
                              const isSelected = selectedBids.includes(bid.id);
-                             const route = getRouteDistance(bid.load_id);
-                             const pricePerKm = route && route.distanceKm > 0
-                               ? Number(bid.amount) / route.distanceKm
-                               : null;
-                             const isBestPricePerKm = bidFilter === "active" && pricePerKm !== null && sorted.length > 1 && pricePerKm === getPricePerKm(sorted[0]);
+                             const pricePerKm = getPricePerKm(bid);
+                             const isBestPricePerKm =
+                               bidFilter === "active" &&
+                               pricePerKm !== null &&
+                               sorted.length > 1 &&
+                               pricePerKm === getPricePerKm(sorted[0]);
 
                              return (
                                <BidCard
@@ -3084,11 +3313,13 @@ export default function TorkApp() {
           {showComparison && selectedBids.length >= 2 && (() => {
             const selected = incomingBids.filter((b) => selectedBids.includes(b.id));
             const getPricePerKm = (bid) => {
-              const route = getRouteDistance(bid.load_id);
-              if (!route || !route.distanceKm || route.distanceKm <= 0) return null;
+              const dist =
+                Number(bid.loads?.distance_km) ||
+                getRouteDistance(bid.load_id)?.distanceKm;
+              if (!dist || dist <= 0) return null;
               const amount = Number(bid.amount);
               if (!Number.isFinite(amount) || amount <= 0) return null;
-              return amount / route.distanceKm;
+              return amount / dist;
             };
 
             const bestPricePerKm = selected.reduce((best, bid) => {
@@ -3230,47 +3461,254 @@ export default function TorkApp() {
                         }}
                       />
 
-                      {activeBidLoadId === load.id && (
-                        <div className="mt-3 ml-6 space-y-3 border-l-2 border-[#00E5A0]/20 pl-6">
-                          <div>
-                            <label className="mb-2 block text-xs font-bold text-[#9AA7B5]">
-                              TEKLİF TUTARI (TL)
-                            </label>
-                            <input
-                              type="number"
-                              value={bidAmount}
-                              onChange={(e) => setBidAmount(e.target.value)}
-                              className="tork-input w-full px-4 py-3 text-sm"
-                              placeholder="Navlun teklifinizi girin..."
-                            />
-                          </div>
+                      {activeBidLoadId === load.id && (() => {
+                        const existingPending = carrierBids.find(
+                          (b) => b.load_id === load.id && b.status === "pending"
+                        );
+                        const existingAccepted = carrierBids.find(
+                          (b) => b.load_id === load.id && b.status === "accepted"
+                        );
 
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleSendBid(load.id)}
-                              className="flex-1 rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-4 py-3 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] transition-all hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
-                            >
-                              {loading ? "Gönderiliyor..." : "Teklif Gönder"}
-                            </button>
+                        if (existingAccepted) {
+                          return (
+                            <div className="mt-3 ml-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs">
+                              <span className="font-black text-emerald-400">Sevkiyat Onaylandı:</span>
+                              <span className="ml-1 text-slate-300">
+                                Bu ilana verdiğiniz teklif kabul edildi ve taşıma size atandı. Aktif Taşımalar sekmesinden takip edebilirsiniz.
+                              </span>
+                            </div>
+                          );
+                        }
 
-                            <button
-                              onClick={() => {
-                                setActiveBidLoadId(null);
-                                setBidAmount("");
-                              }}
-                              className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-xs font-bold text-[#9AA7B5] transition-all hover:border-white/15 hover:bg-white/[0.05]"
-                            >
-                              İptal
-                            </button>
+                        return (
+                          <div className="mt-3 ml-6 space-y-3 border-l-2 border-[#00E5A0]/20 pl-6">
+                            {existingPending && (
+                              <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-3.5 py-2.5 text-xs text-amber-300">
+                                <span className="font-black">Mevcut Aktif Teklifiniz:</span> ₺
+                                {Number(existingPending.amount).toLocaleString("tr-TR")}. Yeni bir tutar girerek teklifinizi güncelleyebilirsiniz.
+                              </div>
+                            )}
+
+                            <div>
+                              <label className="mb-2 block text-xs font-bold text-[#9AA7B5]">
+                                {existingPending ? "GÜNCEL TEKLİF TUTARI (TL)" : "TEKLİF TUTARI (TL)"}
+                              </label>
+                              <input
+                                type="number"
+                                value={bidAmount}
+                                onChange={(e) => setBidAmount(e.target.value)}
+                                className="tork-input w-full px-4 py-3 text-sm"
+                                placeholder={existingPending ? `Mevcut: ${existingPending.amount}` : "Navlun teklifinizi girin..."}
+                              />
+                            </div>
+
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleSendBid(load.id)}
+                                className="flex-1 rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-4 py-3 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] transition-all hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
+                              >
+                                {loading
+                                  ? "İşleniyor..."
+                                  : existingPending
+                                    ? "Teklifi Güncelle"
+                                    : "Teklif Gönder"}
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  setActiveBidLoadId(null);
+                                  setBidAmount("");
+                                }}
+                                className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-xs font-bold text-[#9AA7B5] transition-all hover:border-white/15 hover:bg-white/[0.05]"
+                              >
+                                İptal
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
                     </div>
                   ))}
                 </div>
               )}
             </div>
           )}
+
+           {/* =================================================
+               CARRIER MY BIDS ("TEKLİFLERİM")
+           ================================================= */}
+
+           {userDashboard.role === "carrier" &&
+             activeTab === "my-bids" && (
+             <div className="tork-fade-up">
+               <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                 <div>
+                   <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
+                     Taşıyıcı Teklif Merkezi
+                   </div>
+                   <h1 className="text-3xl font-black tracking-[-0.04em] text-[#F5F7FA]">
+                     Tekliflerim
+                   </h1>
+                   <p className="mt-1 text-sm text-[#9AA7B5]">
+                     Açık yüklere verdiğiniz tüm navlun tekliflerini ve güncel durumlarını takip edin.
+                   </p>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <span className="rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-xs font-bold text-slate-300">
+                     {carrierBids.length} Toplam Teklif
+                   </span>
+                 </div>
+               </div>
+
+               {carrierBids.length === 0 ? (
+                 <EmptyState
+                   title="Henüz teklif vermediniz"
+                   text="Uygun yükler pazarındaki ilanları inceleyerek navlun teklifi iletebilirsiniz."
+                   action={
+                     <button
+                       onClick={() => setActiveTab("board")}
+                       className="rounded-lg border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-6 py-3 text-xs font-black text-[#00E5A0] shadow-[0_0_12px_rgba(0,229,160,0.2)] hover:border-[#00E5A0]/40 hover:bg-[#00E5A0]/15"
+                     >
+                       Uygun Yüklere Git
+                     </button>
+                   }
+                 />
+               ) : (
+                 <div className="space-y-6">
+                   {/* SUMMARY KPI CARDS */}
+                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                     <div className="rounded-2xl border border-white/8 bg-[#0F1723] p-5">
+                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA7B5]">
+                         Toplam Teklifler
+                       </div>
+                       <div className="mt-2 text-2xl font-black text-white">
+                         {carrierBids.length}
+                       </div>
+                       <div className="mt-1 text-xs text-slate-400">Verilen teklifler</div>
+                     </div>
+
+                     <div className="rounded-2xl border border-[#FBBF24]/20 bg-[#FBBF24]/5 p-5">
+                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#FBBF24]">
+                         Bekleyen
+                       </div>
+                       <div className="mt-2 text-2xl font-black text-[#FBBF24]">
+                         {carrierBids.filter((b) => b.status === "pending").length}
+                       </div>
+                       <div className="mt-1 text-xs text-slate-400">İnceleme aşamasında</div>
+                     </div>
+
+                     <div className="rounded-2xl border border-[#00E5A0]/20 bg-[#00E5A0]/5 p-5">
+                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#00E5A0]">
+                         Kabul Edilen
+                       </div>
+                       <div className="mt-2 text-2xl font-black text-[#00E5A0]">
+                         {carrierBids.filter((b) => b.status === "accepted").length}
+                       </div>
+                       <div className="mt-1 text-xs text-slate-400">Atanmış taşımalar</div>
+                     </div>
+
+                     <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-5">
+                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-red-400">
+                         Reddedilen
+                       </div>
+                       <div className="mt-2 text-2xl font-black text-red-400">
+                         {carrierBids.filter((b) => b.status === "rejected").length}
+                       </div>
+                       <div className="mt-1 text-xs text-slate-400">Sonuçlanan teklifler</div>
+                     </div>
+                   </div>
+
+                   {/* FILTERS & SORT */}
+                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                     <div className="flex flex-wrap gap-2">
+                       {[
+                         { key: "all", label: "Tümü" },
+                         { key: "pending", label: "Bekleyen" },
+                         { key: "accepted", label: "Kabul Edilen" },
+                         { key: "rejected", label: "Reddedilen" },
+                       ].map((filter) => (
+                         <button
+                           key={filter.key}
+                           type="button"
+                           onClick={() => setCarrierBidFilter(filter.key)}
+                           className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
+                             carrierBidFilter === filter.key
+                               ? "bg-[#00E5A0]/15 text-[#00E5A0] border border-[#00E5A0]/30"
+                               : "border border-white/6 bg-white/[0.02] text-[#9AA7B5] hover:text-white hover:border-white/12"
+                           }`}
+                         >
+                           {filter.label}
+                         </button>
+                       ))}
+                     </div>
+
+                     <div className="flex items-center gap-2">
+                       <span className="text-xs font-bold text-slate-400">Sırala:</span>
+                       <select
+                         value={carrierBidSort}
+                         onChange={(e) => setCarrierBidSort(e.target.value)}
+                         className="tork-input px-3 py-2 text-xs font-bold"
+                       >
+                         <option value="newest">En Yeni</option>
+                         <option value="oldest">En Eski</option>
+                         <option value="amount-asc">En Düşük Tutar</option>
+                         <option value="amount-desc">En Yüksek Tutar</option>
+                       </select>
+                     </div>
+                   </div>
+
+                   {/* BIDS LIST */}
+                   {(() => {
+                     const filtered = carrierBids.filter((bid) => {
+                       if (carrierBidFilter === "all") return true;
+                       return bid.status === carrierBidFilter;
+                     });
+
+                     const getPricePerKm = (bid) => {
+                       const dist =
+                         Number(bid.loads?.distance_km) ||
+                         getRouteDistance(bid.load_id)?.distanceKm;
+                       if (!dist || dist <= 0) return null;
+                       const amount = Number(bid.amount);
+                       if (!Number.isFinite(amount) || amount <= 0) return null;
+                       return amount / dist;
+                     };
+
+                     const sorted = [...filtered].sort((a, b) => {
+                       if (carrierBidSort === "amount-asc") return Number(a.amount) - Number(b.amount);
+                       if (carrierBidSort === "amount-desc") return Number(b.amount) - Number(a.amount);
+                       if (carrierBidSort === "oldest") return new Date(a.created_at) - new Date(b.created_at);
+                       return new Date(b.created_at) - new Date(a.created_at);
+                     });
+
+                     if (sorted.length === 0) {
+                       return (
+                         <div className="rounded-2xl border border-white/6 bg-[#0F1723] p-8 text-center text-xs text-slate-400">
+                           Seçilen filtreye uygun teklif bulunamadı.
+                         </div>
+                       );
+                     }
+
+                     return (
+                       <div className="space-y-3">
+                         {sorted.map((bid) => (
+                           <BidCard
+                             key={bid.id}
+                             bid={bid}
+                             isCarrierView={true}
+                             pricePerKm={getPricePerKm(bid)}
+                             onViewLoad={(loadId) => {
+                               setActiveDetailLoadId(loadId);
+                             }}
+                           />
+                         ))}
+                       </div>
+                     );
+                   })()}
+                 </div>
+               )}
+             </div>
+           )}
 
            {/* =================================================
                ACTIVE TRANSPORTS
