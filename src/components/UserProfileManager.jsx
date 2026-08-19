@@ -132,6 +132,7 @@ export default function UserProfileManager({
       }
 
       setAvatarUrl(data.avatarUrl);
+      setAvatarError(null);
       if (onProfileUpdated) {
         onProfileUpdated({ ...userProfile, avatar_url: data.avatarUrl });
       }
@@ -624,6 +625,11 @@ export default function UserProfileManager({
         <div className="space-y-4">
           <VerificationCenter
             userProfile={userProfile}
+            onNavigateToMarketplace={() => {
+              if (onNavigateToTab) {
+                onNavigateToTab(isCarrier ? "board" : "loads");
+              }
+            }}
             onVerificationComplete={(updatedStatus) => {
               if (onProfileUpdated) {
                 onProfileUpdated({ ...userProfile, ...updatedStatus });

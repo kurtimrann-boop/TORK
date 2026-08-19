@@ -709,6 +709,20 @@ export default function TorkApp() {
           };
         });
       setActiveTransports(transports);
+      transports.forEach(async (tr) => {
+        try {
+          const actualsRes = await fetch(`/api/transports/${tr.id}/actuals`);
+          if (actualsRes.ok) {
+            const actualsJson = await actualsRes.json();
+            if (actualsJson?.success && actualsJson?.actuals) {
+              setTransportActuals((prev) => ({
+                ...prev,
+                [tr.id]: actualsJson.actuals,
+              }));
+            }
+          }
+        } catch {}
+      });
     }
   };
 
@@ -5633,12 +5647,42 @@ export default function TorkApp() {
             onClose={() => setActualsModalTransport(null)}
             initialActuals={transportActuals[actualsModalTransport.id] || {}}
             estimatedCost={30813}
-            onSave={(actualsPayload) => {
-              setTransportActuals((prev) => ({
-                ...prev,
-                [actualsModalTransport.id]: actualsPayload,
-              }));
-              setMessage("Gerçekleşen sefer maliyetleri başarıyla kaydedildi.");
+            onSave={async (actualsPayload) => {
+              try {
+                const trId = actualsModalTransport.id;
+                const acceptedAmt = Number(actualsModalTransport.acceptedAmount || actualsModalTransport.bid_amount || 40000);
+                const res = await fetch(`/api/transports/${trId}/actuals`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    bidAmount: acceptedAmt,
+                    fuelLiters: actualsPayload.fuel_liters,
+                    fuelPricePerLiter: actualsPayload.fuel_price_per_liter,
+                    fuelCost: actualsPayload.fuel_cost,
+                    driverCost: actualsPayload.driver_cost,
+                    tollCost: actualsPayload.toll_cost,
+                    maintenanceCost: actualsPayload.maintenance_cost,
+                    depreciationCost: actualsPayload.depreciation_cost,
+                    waitingHours: actualsPayload.waiting_hours,
+                    waitingCost: actualsPayload.waiting_cost,
+                    otherCost: actualsPayload.other_cost,
+                    notes: actualsPayload.notes,
+                    sourceType: "DRIVER_RECEIPT",
+                    sourceName: "Taşıyıcı Girişi",
+                  }),
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                  throw new Error(data.error || "Maliyet kaydedilemedi.");
+                }
+                setTransportActuals((prev) => ({
+                  ...prev,
+                  [trId]: data.actuals || actualsPayload,
+                }));
+                setMessage("Gerçekleşen sefer maliyetleri başarıyla kaydedildi.");
+              } catch (err) {
+                setMessage("Hata: " + (err.message || "Maliyetler kaydedilemedi."));
+              }
             }}
           />
         )}

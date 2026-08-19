@@ -168,24 +168,43 @@ export default function BidCard({
           <div className="text-[11px] text-[#A0AEC0] truncate">{deliveryInfo}</div>
         </div>
 
-        {/* 5. Fiyat & ₺/km */}
-        <div className="w-28 shrink-0 flex flex-col items-start justify-center">
-          <div className="flex items-center gap-1.5">
-            <span className="text-base xl:text-lg font-black text-[#F5A400] font-mono tracking-tight whitespace-nowrap">
-              {formatCurrencyTR(bid.amount)}
-            </span>
-            {isBestBid && !isCarrierView && (
-              <span className="inline-flex items-center rounded bg-[#F5A400]/20 px-1.5 py-0.5 text-[10px] font-black uppercase text-[#F5A400]">
-                EN İYİ
+        {/* 5. Fiyat & ₺/km OR Inline Edit Form */}
+        {isEditing && isCarrierView ? (
+          <div className="w-64 shrink-0 flex items-center gap-2">
+            <input
+              type="number"
+              value={editAmount}
+              onChange={(e) => setEditAmount(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSaveEdit(e);
+                if (e.key === "Escape") setIsEditing(false);
+              }}
+              placeholder="Yeni teklif tutarı"
+              className="w-full rounded-lg border border-[#F5A400] bg-[#1F2937] px-3 py-1.5 text-sm font-mono font-black text-[#F5A400] placeholder-[#F5A400]/50 focus:outline-none focus:ring-2 focus:ring-[#F5A400]/50"
+              autoFocus
+              disabled={isActionLoading}
+            />
+            <span className="text-xs font-bold text-[#A0AEC0]">₺</span>
+          </div>
+        ) : (
+          <div className="w-28 shrink-0 flex flex-col items-start justify-center">
+            <div className="flex items-center gap-1.5">
+              <span className="text-base xl:text-lg font-black text-[#F5A400] font-mono tracking-tight whitespace-nowrap">
+                {formatCurrencyTR(bid.amount)}
               </span>
+              {isBestBid && !isCarrierView && (
+                <span className="inline-flex items-center rounded bg-[#F5A400]/20 px-1.5 py-0.5 text-[10px] font-black uppercase text-[#F5A400]">
+                  EN İYİ
+                </span>
+              )}
+            </div>
+            {pricePerKm && (
+              <div className="text-[11px] font-mono text-[#A0AEC0] whitespace-nowrap">
+                {formatPricePerKm(pricePerKm)}
+              </div>
             )}
           </div>
-          {pricePerKm && (
-            <div className="text-[11px] font-mono text-[#A0AEC0] whitespace-nowrap">
-              {formatPricePerKm(pricePerKm)}
-            </div>
-          )}
-        </div>
+        )}
 
         {/* 6. Durum */}
         <div className="shrink-0 flex items-center justify-center">
@@ -214,7 +233,58 @@ export default function BidCard({
             </>
           )}
 
-          {/* Carrier Actions */}
+          {/* Carrier Actions: EDIT MODE */}
+          {isCarrierView && isPending && isEditing && (
+            <>
+              <button
+                type="button"
+                onClick={handleSaveEdit}
+                disabled={isActionLoading}
+                className="h-8 rounded-lg bg-[#22C55E] px-3.5 text-xs font-bold text-white shadow hover:bg-[#16a34a] disabled:opacity-50 transition flex items-center justify-center"
+              >
+                {isActionLoading ? "Kaydediliyor..." : "Kaydet"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditAmount(String(bid.amount || ""));
+                  setActionError("");
+                }}
+                disabled={isActionLoading}
+                className="h-8 rounded-lg border border-[#374151] bg-[#111827] px-2.5 text-xs font-bold text-[#A0AEC0] hover:text-[#F3F4F6] disabled:opacity-50 transition flex items-center justify-center"
+              >
+                İptal
+              </button>
+            </>
+          )}
+
+          {/* Carrier Actions: CANCEL CONFIRM MODE */}
+          {isCarrierView && isPending && showCancelConfirm && !isEditing && (
+            <>
+              <button
+                type="button"
+                onClick={handleConfirmCancel}
+                disabled={isActionLoading}
+                className="h-8 rounded-lg bg-[#EF4444] px-3.5 text-xs font-bold text-white shadow hover:bg-[#DC2626] disabled:opacity-50 transition flex items-center justify-center"
+              >
+                {isActionLoading ? "Geri Çekiliyor..." : "Onayla"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCancelConfirm(false);
+                  setActionError("");
+                }}
+                disabled={isActionLoading}
+                className="h-8 rounded-lg border border-[#374151] bg-[#111827] px-2.5 text-xs font-bold text-[#A0AEC0] hover:text-[#F3F4F6] disabled:opacity-50 transition flex items-center justify-center"
+              >
+                Vazgeç
+              </button>
+            </>
+          )}
+
+          {/* Carrier Actions: NORMAL MODE */}
           {isCarrierView && isPending && !isEditing && !showCancelConfirm && (
             <>
               <button
@@ -253,6 +323,13 @@ export default function BidCard({
         </div>
       </div>
 
+      {/* Error Message Display */}
+      {actionError && (
+        <div className="mt-3 rounded-lg border border-[#EF4444]/30 bg-[#EF4444]/10 px-3 py-2 text-xs text-[#EF4444]">
+          {actionError}
+        </div>
+      )}
+
       {/* MOBILE PROCUREMENT CARD (lg:hidden) */}
       <div className="lg:hidden space-y-3 text-xs">
         <div className="flex items-center justify-between">
@@ -264,22 +341,63 @@ export default function BidCard({
           <StatusBadge status={bid.status} />
         </div>
 
-        <div className="flex items-center justify-between border-t border-[#374151] pt-2">
-          <div className="text-[#A0AEC0]">
-            <div>{isCarrierView ? "Sizin Teklifiniz" : carrierName}</div>
-            <div className="text-[11px]">{formatRelativeTimeTR(bid.created_at)}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-base font-black font-mono text-[#F5A400]">
-              {formatCurrencyTR(bid.amount)}
+        {/* Mobile Inline Edit or Display */}
+        {isEditing && isCarrierView ? (
+          <div className="border-t border-[#374151] pt-3 space-y-2">
+            <label className="block text-xs font-bold text-[#F5A400]">Yeni Teklif Tutarı</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={editAmount}
+                onChange={(e) => setEditAmount(e.target.value)}
+                placeholder="Örn: 42500"
+                className="flex-1 rounded-lg border border-[#F5A400] bg-[#1F2937] px-3 py-2 text-sm font-mono font-black text-[#F5A400] placeholder-[#F5A400]/50 focus:outline-none focus:ring-2 focus:ring-[#F5A400]/50"
+                autoFocus
+                disabled={isActionLoading}
+              />
+              <span className="text-sm font-bold text-[#A0AEC0]">₺</span>
             </div>
-            {pricePerKm && (
-              <div className="text-[11px] font-mono text-[#A0AEC0]">
-                {formatPricePerKm(pricePerKm)}
-              </div>
-            )}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditAmount(String(bid.amount || ""));
+                  setActionError("");
+                }}
+                disabled={isActionLoading}
+                className="rounded-lg border border-[#374151] bg-[#111827] py-2 text-xs font-bold text-[#A0AEC0] disabled:opacity-50 transition"
+              >
+                İptal
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveEdit}
+                disabled={isActionLoading}
+                className="rounded-lg bg-[#22C55E] py-2 text-xs font-bold text-white shadow disabled:opacity-50 transition"
+              >
+                {isActionLoading ? "Kaydediliyor..." : "Kaydet"}
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between border-t border-[#374151] pt-2">
+            <div className="text-[#A0AEC0]">
+              <div>{isCarrierView ? "Sizin Teklifiniz" : carrierName}</div>
+              <div className="text-[11px]">{formatRelativeTimeTR(bid.created_at)}</div>
+            </div>
+            <div className="text-right">
+              <div className="text-base font-black font-mono text-[#F5A400]">
+                {formatCurrencyTR(bid.amount)}
+              </div>
+              {pricePerKm && (
+                <div className="text-[11px] font-mono text-[#A0AEC0]">
+                  {formatPricePerKm(pricePerKm)}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Mobile Action Buttons */}
         {isPending && !isCarrierView && (
@@ -300,7 +418,98 @@ export default function BidCard({
             </button>
           </div>
         )}
+
+        {/* Mobile Carrier Actions (NORMAL MODE) */}
+        {isPending && isCarrierView && !isEditing && !showCancelConfirm && (
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#374151]">
+            <button
+              type="button"
+              onClick={() => {
+                setShowCancelConfirm(true);
+                setIsEditing(false);
+              }}
+              className="min-h-[44px] rounded-lg border border-[#EF4444]/30 bg-[#EF4444]/10 text-xs font-bold text-[#EF4444] transition"
+            >
+              Geri Çek
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEditAmount(String(bid.amount || ""));
+                setIsEditing(true);
+                setShowCancelConfirm(false);
+              }}
+              className="min-h-[44px] rounded-lg border border-[#F5A400]/30 bg-[#F5A400]/10 text-xs font-bold text-[#F5A400] transition"
+            >
+              Düzenle
+            </button>
+          </div>
+        )}
+
+        {/* Mobile Carrier Actions (CANCEL CONFIRM MODE) */}
+        {isPending && isCarrierView && showCancelConfirm && !isEditing && (
+          <div className="border-t border-[#374151] pt-3 space-y-2">
+            <div className="text-xs text-[#EF4444]">Bu teklifi geri çekmek istediğinize emin misiniz?</div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCancelConfirm(false);
+                  setActionError("");
+                }}
+                disabled={isActionLoading}
+                className="rounded-lg border border-[#374151] bg-[#111827] py-2 text-xs font-bold text-[#A0AEC0] disabled:opacity-50 transition"
+              >
+                Vazgeç
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmCancel}
+                disabled={isActionLoading}
+                className="rounded-lg bg-[#EF4444] py-2 text-xs font-bold text-white shadow disabled:opacity-50 transition"
+              >
+                {isActionLoading ? "Geri Çekiliyor..." : "Onayla"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Error Message Display (Mobile) */}
+        {actionError && (
+          <div className="rounded-lg border border-[#EF4444]/30 bg-[#EF4444]/10 px-3 py-2 text-xs text-[#EF4444]">
+            {actionError}
+          </div>
+        )}
       </div>
+
+      {/* Live Smart Bidding Feedback (Desktop & Mobile) */}
+      {isEditing && isCarrierView && liveSmartBidding && (
+        <div className="mt-3 rounded-xl border border-[#F5A400]/20 bg-[#F5A400]/5 p-3 space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-bold text-[#F5A400]">Tahmin Edilen Kâr</span>
+            <span className="font-black text-[#F5A400] font-mono">
+              {formatCurrencyTR(liveSmartBidding.profit)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-[#A0AEC0]">Marj Oranı</span>
+            <span className="font-bold text-[#A0AEC0]">
+              %{liveSmartBidding.marginPercent.toFixed(1)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-[#A0AEC0]">Sefer Kalitesi</span>
+            <span className={`font-bold ${
+              liveSmartBidding.quality === "EXCELLENT" ? "text-[#22C55E]" :
+              liveSmartBidding.quality === "GOOD" ? "text-[#F5A400]" :
+              liveSmartBidding.quality === "ACCEPTABLE" ? "text-[#FBBF24]" :
+              "text-[#EF4444]"
+            }`}>
+              {liveSmartBidding.label}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

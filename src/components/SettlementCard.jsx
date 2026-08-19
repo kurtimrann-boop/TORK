@@ -217,7 +217,12 @@ export default function SettlementCard({
             </button>
 
             <button
-              onClick={() => setShowDisputeInput(!showDisputeInput)}
+              onClick={() => {
+                if (showDisputeInput) {
+                  setDisputeReason("");
+                }
+                setShowDisputeInput(!showDisputeInput);
+              }}
               className="rounded-xl border border-[#FF5C5C]/30 bg-[#FF5C5C]/10 px-5 py-3.5 text-xs font-bold text-[#FF5C5C] hover:bg-[#FF5C5C]/20 transition duration-150 active:scale-[0.99]"
             >
               Uyuşmazlık Bildir
@@ -244,7 +249,10 @@ export default function SettlementCard({
                 Uyuşmazlık Talebini İlet
               </button>
               <button
-                onClick={() => setShowDisputeInput(false)}
+                onClick={() => {
+                  setShowDisputeInput(false);
+                  setDisputeReason("");
+                }}
                 className="rounded-xl border border-white/[0.08] bg-[#101923] px-4 py-2 text-xs font-bold text-[#8C98A8] hover:text-[#F5F7FA]"
               >
                 Vazgeç

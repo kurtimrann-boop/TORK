@@ -146,7 +146,11 @@ export default function CarrierMarketplace({
     if (e) e.stopPropagation();
     setSelectedLoadIdState(load.id);
     setActiveBidLoadId(load.id);
-    setBidAmount(load.target_price ? String(load.target_price) : "");
+
+    // Check if carrier already has a bid on this load and pre-fill with that amount
+    const existingBid = carrierBids.find(b => b.load_id === load.id && b.status === "pending");
+    setBidAmount(existingBid ? String(existingBid.amount) : (load.target_price ? String(load.target_price) : ""));
+
     setDrawerOpen(true);
   };
 

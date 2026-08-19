@@ -3,6 +3,26 @@ import { calculateActualCost, calculateActualProfit, calculateActualMargin } fro
 
 export const runtime = "nodejs";
 
+// Shared in-memory store for transport actuals across API routes in nodejs runtime
+global.__TORK_ACTUALS__ = global.__TORK_ACTUALS__ || new Map();
+
+export async function GET(request, { params }) {
+  try {
+    const { id } = await params;
+    const actuals = global.__TORK_ACTUALS__?.get(id) || null;
+    return NextResponse.json({
+      success: true,
+      transportId: id,
+      actuals,
+    });
+  } catch (err) {
+    return NextResponse.json(
+      { success: false, error: "Gerçekleşen maliyet alınamadı.", details: err.message },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request, { params }) {
   try {
     const { id } = await params;
@@ -45,6 +65,8 @@ export async function POST(request, { params }) {
     const { totalActualCost, dataCompleteness } = calculateActualCost(actualsData);
     const actualProfit = calculateActualProfit(bidAmount, totalActualCost);
     const actualMargin = calculateActualMargin(bidAmount, actualProfit);
+
+    global.__TORK_ACTUALS__.set(id, actualsData);
 
     return NextResponse.json({
       success: true,
