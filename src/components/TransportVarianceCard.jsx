@@ -32,8 +32,8 @@ export default function TransportVarianceCard({
       <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-white/[0.06]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#00E5A0]" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
+            <span className="h-2 w-2 rounded-full bg-[#F5A400]" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#F5A400]">
               Finansal Sapma & Mutabakat Analizi
             </span>
           </div>
@@ -50,7 +50,7 @@ export default function TransportVarianceCard({
           <span
             className={`rounded-full border px-3.5 py-1 text-[11px] font-bold tracking-wider ${
               dataCompleteness === "COMPLETE"
-                ? "border-[#00E5A0]/40 bg-[#00E5A0]/10 text-[#00E5A0]"
+                ? "border-[#F5A400]/40 bg-[#F5A400]/10 text-[#F5A400]"
                 : dataCompleteness === "PARTIAL"
                 ? "border-[#F5B94C]/40 bg-[#F5B94C]/10 text-[#F5B94C]"
                 : "border-white/10 bg-white/[0.04] text-[#8C98A8]"
@@ -91,7 +91,7 @@ export default function TransportVarianceCard({
           {hasActuals && (
             <div
               className={`mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-black ${
-                isCostSavings ? "text-[#00E5A0]" : "text-[#FF5C5C]"
+                isCostSavings ? "text-[#F5A400]" : "text-[#FF5C5C]"
               }`}
             >
               <span>{isCostSavings ? "Tasarruf:" : "Maliyet Artışı:"}</span>
@@ -116,7 +116,7 @@ export default function TransportVarianceCard({
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-[#8C98A8]">Gerçekleşen Kâr:</span>
-                <span className="font-black text-[#00E5A0]">
+                <span className="font-black text-[#F5A400]">
                   {actualProfit !== null ? formatCurrencyTR(actualProfit) : formatCurrencyTR(estimatedProfit)}
                 </span>
               </div>
@@ -126,7 +126,7 @@ export default function TransportVarianceCard({
           {actualProfit !== null && (
             <div
               className={`mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-black ${
-                isProfitPositive ? "text-[#00E5A0]" : "text-[#F5B94C]"
+                isProfitPositive ? "text-[#F5A400]" : "text-[#F5B94C]"
               }`}
             >
               <span>Kâr Sapması:</span>
@@ -151,7 +151,7 @@ export default function TransportVarianceCard({
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-[#8C98A8]">Gerçekleşen Marj:</span>
-                <span className="font-black text-[#00E5A0]">
+                <span className="font-black text-[#F5A400]">
                   {actualMargin !== null ? `%${actualMargin.toFixed(1)}` : `~%${estimatedMargin.toFixed(1)}`}
                 </span>
               </div>
@@ -161,7 +161,7 @@ export default function TransportVarianceCard({
           {actualMargin !== null && (
             <div
               className={`mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-black ${
-                marginDiff >= 0 ? "text-[#00E5A0]" : "text-[#F5B94C]"
+                marginDiff >= 0 ? "text-[#F5A400]" : "text-[#F5B94C]"
               }`}
             >
               <span>Marj Değişimi:</span>

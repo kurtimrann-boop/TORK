@@ -124,7 +124,7 @@ export function deriveOperationalSignals({
       headline: `${pendingBids.length} bekleyen teklif sağlıklı marj aralığında`,
       detail: "Mevcut navlun teklifleri TORK taban maliyet modeline uygundur.",
       count: pendingBids.length,
-      accentColor: "#00E5A0",
+      accentColor: "#F5A400",
       hurmuzData: {
         status: "DENGELİ",
         targetMargin: "%15",
@@ -222,7 +222,7 @@ export function deriveOperationalSignals({
       headline: `${transportsCount} aktif sefer planlanan rota parametrelerinde ilerliyor`,
       detail: "Doğrudan maliyetler ve sürüş süreleri hedef bütçe limitleri dahilindedir.",
       count: transportsCount,
-      accentColor: "#00E5A0",
+      accentColor: "#F5A400",
       hurmuzData: {
         telemetrySync: "100%",
       },
@@ -311,7 +311,7 @@ export function deriveOperationalSignals({
       headline: "Tüm rota ve yük parametreleri doğrulandı",
       detail: "Resmi KGM ve EPDK güncel katsayıları ile tam uyumlu çalışmaktadır.",
       count: 0,
-      accentColor: "#00E5A0",
+      accentColor: "#F5A400",
       hurmuzData: {
         kgmAligned: true,
         epdkAligned: true,

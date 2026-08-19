@@ -4,8 +4,10 @@ const STEPS = [
   { id: "assigned", label: "Atandı", desc: "Taşıma eşleşti" },
   { id: "pickup_pending", label: "Yükleme", desc: "Araca yükleniyor" },
   { id: "in_transit", label: "Yolda", desc: "Sevkiyat sürüyor" },
-  { id: "delivered", label: "Teslim Edildi", desc: "POD bekleniyor" },
-  { id: "settled", label: "Mutabakat", desc: "Tamamlandı" },
+  { id: "pod_pending", label: "POD", desc: "Teslimat kanıtı bekleniyor" },
+  { id: "pod_verified", label: "Doğrulandı", desc: "POD onaylandı" },
+  { id: "delivered", label: "Teslim Edildi", desc: "Sefer tamamlandı" },
+  { id: "settled", label: "Mutabakat", desc: "Ödeme tamamlandı" },
 ];
 
 export default function TransportStatusStepper({ currentStatus = "assigned", onStatusChange = null, isCarrier = false }) {
@@ -20,12 +22,18 @@ export default function TransportStatusStepper({ currentStatus = "assigned", onS
         return 1;
       case "in_transit":
         return 2;
-      case "delivered":
+      case "pod_pending":
+      case "pod_uploaded":
+      case "pod_verifying":
         return 3;
+      case "pod_verified":
+        return 4;
+      case "delivered":
+        return 5;
       case "settled":
       case "paid":
       case "approved":
-        return 4;
+        return 6;
       default:
         return 0;
     }
@@ -56,7 +64,7 @@ export default function TransportStatusStepper({ currentStatus = "assigned", onS
   return (
     <div className="w-full">
       {/* Desktop Stepper */}
-      <div className="hidden sm:grid sm:grid-cols-5 gap-2 relative">
+      <div className="hidden sm:grid sm:grid-cols-7 gap-1 relative">
         {STEPS.map((step, idx) => {
           const isCompleted = idx < activeIndex;
           const isCurrent = idx === activeIndex;

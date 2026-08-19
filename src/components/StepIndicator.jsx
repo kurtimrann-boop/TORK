@@ -13,23 +13,23 @@ export default function StepIndicator({ steps, currentStep }) {
               key={step.id}
               className={`relative overflow-hidden flex items-center gap-3 rounded-2xl border p-3 transition-all duration-200 ${
                 isCurrent
-                  ? "border-[#00E5A0]/40 bg-[#00E5A0]/[0.08] shadow-[0_0_24px_rgba(0,229,160,0.12)]"
+                  ? "border-[#F5A400]/40 bg-[#F5A400]/[0.08] shadow-[0_0_24px_rgba(245,164,0,0.12)]"
                   : isCompleted
-                  ? "border-[#00E5A0]/25 bg-[#00E5A0]/[0.04] text-[#F5F7FA]"
+                  ? "border-[#F5A400]/25 bg-[#F5A400]/[0.04] text-[#F5F7FA]"
                   : "border-white/[0.08] bg-white/[0.02] text-[#8C98A8]"
               }`}
             >
               {/* Bottom Emerald Indicator Line for Active Step */}
               {isCurrent && (
-                <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#00E5A0] shadow-[0_0_8px_rgba(0,229,160,0.8)]" />
+                <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#F5A400] shadow-[0_0_8px_rgba(245,164,0,0.8)]" />
               )}
 
               <div
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl text-xs font-black transition-colors ${
                   isCurrent
-                    ? "bg-[#00E5A0] text-[#060B11]"
+                    ? "bg-[#F5A400] text-[#060B11]"
                     : isCompleted
-                    ? "bg-[#00E5A0]/20 text-[#00E5A0]"
+                    ? "bg-[#F5A400]/20 text-[#F5A400]"
                     : "bg-white/[0.06] text-[#8C98A8]"
                 }`}
               >
@@ -39,7 +39,7 @@ export default function StepIndicator({ steps, currentStep }) {
                 <div
                   className={`truncate text-xs font-bold uppercase tracking-wider ${
                     isCurrent
-                      ? "text-[#00E5A0]"
+                      ? "text-[#F5A400]"
                       : isCompleted
                       ? "text-[#F5F7FA]"
                       : "text-[#8C98A8]"
@@ -56,7 +56,7 @@ export default function StepIndicator({ steps, currentStep }) {
       {/* Mobile Compact Stepper */}
       <div className="sm:hidden flex items-center justify-between rounded-2xl border border-white/[0.08] bg-[#101923] p-3.5">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00E5A0] text-xs font-black text-[#060B11]">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F5A400] text-xs font-black text-[#060B11]">
             0{currentStep + 1}
           </div>
           <div>
@@ -76,9 +76,9 @@ export default function StepIndicator({ steps, currentStep }) {
               key={idx}
               className={`h-1.5 rounded-full transition-all ${
                 idx === currentStep
-                  ? "w-5 bg-[#00E5A0]"
+                  ? "w-5 bg-[#F5A400]"
                   : idx < currentStep
-                  ? "w-1.5 bg-[#00E5A0]/50"
+                  ? "w-1.5 bg-[#F5A400]/50"
                   : "w-1.5 bg-white/15"
               }`}
             />

@@ -4,10 +4,27 @@ import { calculateOperatingPricing } from "../../../../utils/pricingService";
 
 export const runtime = "nodejs";
 
+// Global active transport registry for Node.js runtime standalone/in-memory enforcement
+global.__TORK_ACTIVE_TRANSPORTS__ = global.__TORK_ACTIVE_TRANSPORTS__ || new Map();
+
+const ACTIVE_TRANSPORT_STATUSES = [
+  "assigned",
+  "pickup_pending",
+  "in_transit",
+  "pod_pending",
+  "pod_uploaded",
+  "pod_verifying",
+  "pod_verified",
+  "delivered",
+  "settlement_pending",
+];
+
 export async function POST(request) {
   try {
     const body = await request.json();
     const {
+      id: customId,
+      transportId: explicitTransportId,
       loadId,
       bidId,
       carrierId,
@@ -19,6 +36,8 @@ export async function POST(request) {
       loadProfile = null,
       customConsumption = null,
     } = body;
+
+    const transportId = explicitTransportId || customId || `tr-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
     if (!loadId || !bidId || !carrierId || !shipperId || !bidAmount) {
       return NextResponse.json(
@@ -32,6 +51,19 @@ export async function POST(request) {
       return NextResponse.json(
         { success: false, error: "Geçersiz teklif tutarı." },
         { status: 400 }
+      );
+    }
+
+    // Single Active Transport per Carrier Guard
+    const carrierActive = global.__TORK_ACTIVE_TRANSPORTS__.get(carrierId);
+    if (carrierActive && ACTIVE_TRANSPORT_STATUSES.includes(carrierActive.status)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Devam eden bir seferiniz bulunuyor. Yeni bir yük alabilmek için mevcut seferinizi tamamlamanız gerekiyor.",
+          code: "CARRIER_HAS_ACTIVE_TRANSPORT",
+        },
+        { status: 409 }
       );
     }
 
@@ -50,8 +82,6 @@ export async function POST(request) {
         { status: 500 }
       );
     }
-
-    const transportId = `tr-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
     // 2. Generate Immutable Estimate Snapshot
     const estimateSnapshot = createTransportEstimateSnapshot(transportId, pricing, numBid);
@@ -95,6 +125,9 @@ export async function POST(request) {
       updated_at: new Date().toISOString(),
     };
 
+    // Store in active transports registry
+    global.__TORK_ACTIVE_TRANSPORTS__.set(carrierId, transport);
+
     return NextResponse.json({
       success: true,
       transport,
@@ -109,3 +142,4 @@ export async function POST(request) {
     );
   }
 }
+

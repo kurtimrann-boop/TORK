@@ -145,7 +145,7 @@ export default function DistrictSelect({
           ref={listRef}
           id={listboxId}
           role="listbox"
-          className="absolute top-full z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-[#00E5A0]/20 bg-[#0B111A] shadow-lg"
+          className="absolute top-full z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-[#F5A400]/20 bg-[#0B111A] shadow-lg"
         >
           {filtered.length === 0 ? (
             <div className="px-4 py-3 text-sm text-[#667085]">
@@ -165,9 +165,9 @@ export default function DistrictSelect({
                     onMouseEnter={() => setHighlightedIndex(index)}
                     className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
                       highlightedIndex === index
-                        ? "bg-[#00E5A0]/10 text-[#00E5A0]"
+                        ? "bg-[#F5A400]/10 text-[#F5A400]"
                         : value === district
-                          ? "bg-[#00E5A0]/5 text-[#00E5A0]"
+                          ? "bg-[#F5A400]/5 text-[#F5A400]"
                           : "text-[#F5F7FA] hover:bg-white/[0.03]"
                     }`}
                   >

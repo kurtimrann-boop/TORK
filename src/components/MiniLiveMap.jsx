@@ -100,8 +100,8 @@ export default function MiniLiveMap({
       // Pulsing radar circle
       const circle = L.circle([coords.lat, coords.lng], {
         radius: 1800,
-        color: "#00E5A0",
-        fillColor: "#00E5A0",
+        color: "#F5A400",
+        fillColor: "#F5A400",
         fillOpacity: 0.1,
         weight: 1.5,
       }).addTo(map);
@@ -112,8 +112,8 @@ export default function MiniLiveMap({
         className: "tork-map-marker-wrap",
         html: `
           <div class="relative flex items-center justify-center">
-            <div class="absolute -inset-3 rounded-full bg-[#00E5A0]/20 animate-ping"></div>
-            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#00E5A0] shadow-[0_0_16px_rgba(0,229,160,0.9)] flex items-center justify-center">
+            <div class="absolute -inset-3 rounded-full bg-[#F5A400]/20 animate-ping"></div>
+            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#F5A400] shadow-[0_0_16px_rgba(245,164,0,0.9)] flex items-center justify-center">
               <div class="h-1.5 w-1.5 rounded-full bg-[#060B11]"></div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function MiniLiveMap({
       const marker = L.marker([coords.lat, coords.lng], { icon: locationIcon })
         .addTo(map)
         .bindPopup(
-          `<div class="p-1 text-center font-sans"><strong class="text-xs text-white">${locationName}</strong><br/><span class="text-[10px] text-[#00E5A0] font-bold">CANLI OPERASYON MERKEZİ</span></div>`,
+          `<div class="p-1 text-center font-sans"><strong class="text-xs text-white">${locationName}</strong><br/><span class="text-[10px] text-[#F5A400] font-bold">CANLI OPERASYON MERKEZİ</span></div>`,
           { closeButton: false }
         );
       markerRef.current = marker;
@@ -142,11 +142,11 @@ export default function MiniLiveMap({
       {/* Top Left Live Control Badge */}
       <div className="pointer-events-none absolute left-4 top-4 z-[400] flex items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-[#0B111A]/90 px-4 py-2 backdrop-blur-md shadow-lg">
         <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00E5A0] opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00E5A0]" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F5A400] opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-[#F5A400]" />
         </span>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
+          <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#F5A400]">
             Canlı Lojistik Radarı
           </div>
           <div className="text-xs font-bold text-[#F5F7FA]">
@@ -166,7 +166,7 @@ export default function MiniLiveMap({
           </div>
         </div>
         <div className="h-7 w-px bg-white/[0.08]" />
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00E5A0]/10 text-[#00E5A0] border border-[#00E5A0]/20">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F5A400]/10 text-[#F5A400] border border-[#F5A400]/20">
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
@@ -176,7 +176,7 @@ export default function MiniLiveMap({
       {/* Location Request CTA if coords missing */}
       {!coords && (
         <div className="absolute inset-0 z-[400] flex flex-col items-center justify-center bg-[#060B11]/70 p-6 text-center backdrop-blur-[2px]">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] text-[#00E5A0]">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] text-[#F5A400]">
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -191,7 +191,7 @@ export default function MiniLiveMap({
               type="button"
               onClick={onRequestLocation}
               disabled={isLocating}
-              className="mt-4 flex items-center gap-2 rounded-xl bg-[#00E5A0] px-4 py-2.5 text-xs font-bold text-[#060B11] shadow-[0_0_20px_rgba(0,229,160,0.3)] transition hover:bg-[#00c78a] active:scale-[0.98] disabled:opacity-50"
+              className="mt-4 flex items-center gap-2 rounded-xl bg-[#F5A400] px-4 py-2.5 text-xs font-bold text-[#060B11] shadow-[0_0_20px_rgba(245,164,0,0.3)] transition hover:bg-[#D98200] active:scale-[0.98] disabled:opacity-50"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

@@ -38,7 +38,7 @@ function GasolineIcon({ className = "h-4 w-4 text-slate-400" }) {
   );
 }
 
-function DieselTruckIcon({ className = "h-4 w-4 text-[#00E5A0]" }) {
+function DieselTruckIcon({ className = "h-4 w-4 text-[#F5A400]" }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
@@ -130,8 +130,8 @@ export default function FuelPriceWidget({ province = null, className = "" }) {
       <div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00E5A0]">
+            <span className="h-2 w-2 rounded-full bg-[#F5A400] animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#F5A400]">
               YAKIT PİYASASI
             </span>
             {activeProvinceName ? (
@@ -161,7 +161,7 @@ export default function FuelPriceWidget({ province = null, className = "" }) {
             className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-slate-400 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
           >
             <svg
-              className={`h-3.5 w-3.5 ${status === "loading" ? "animate-spin text-[#00E5A0]" : ""}`}
+              className={`h-3.5 w-3.5 ${status === "loading" ? "animate-spin text-[#F5A400]" : ""}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -222,7 +222,7 @@ export default function FuelPriceWidget({ province = null, className = "" }) {
             <button
               type="button"
               onClick={() => loadPrices(true)}
-              className="text-[11px] font-bold text-[#00E5A0] hover:underline"
+              className="text-[11px] font-bold text-[#F5A400] hover:underline"
             >
               Yenile
             </button>
@@ -231,18 +231,18 @@ export default function FuelPriceWidget({ province = null, className = "" }) {
           // 3 Fuel Price Rows
           <>
             {/* 1. MOTORİN (Primary Logistics Hierarchy — Emerald Highlight) */}
-            <div className="flex items-center justify-between rounded-xl border border-[#00E5A0]/25 bg-[#00E5A0]/[0.06] px-3.5 py-2.5 shadow-[0_0_16px_rgba(0,229,160,0.06)] transition hover:border-[#00E5A0]/40">
+            <div className="flex items-center justify-between rounded-xl border border-[#F5A400]/25 bg-[#F5A400]/[0.06] px-3.5 py-2.5 shadow-[0_0_16px_rgba(245,164,0,0.06)] transition hover:border-[#F5A400]/40">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#00E5A0]/30 bg-[#00E5A0]/15">
-                  <DieselTruckIcon className="h-3.5 w-3.5 text-[#00E5A0]" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#F5A400]/30 bg-[#F5A400]/15">
+                  <DieselTruckIcon className="h-3.5 w-3.5 text-[#F5A400]" />
                 </div>
                 <div>
                   <div className="text-xs font-black text-white">MOTORİN</div>
-                  <div className="text-[10px] font-bold text-[#00E5A0]/80">Dizel Navlun</div>
+                  <div className="text-[10px] font-bold text-[#F5A400]/80">Dizel Navlun</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm font-black tracking-tight text-[#00E5A0]">
+                <div className="text-sm font-black tracking-tight text-[#F5A400]">
                   {formatFuelPriceTR(prices.diesel?.price ?? prices.diesel?.average)}
                   <span className="text-[10px] font-medium text-slate-400"> / L</span>
                 </div>

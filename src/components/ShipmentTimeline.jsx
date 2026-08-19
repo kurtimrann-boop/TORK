@@ -32,7 +32,7 @@ export default function ShipmentTimeline({ currentStage = "assigned", events = [
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-full border text-[11px] font-black ${
                     isCompleted
-                      ? "border-[#00E5A0]/30 bg-[#00E5A0]/15 text-[#00E5A0]"
+                      ? "border-[#F5A400]/30 bg-[#F5A400]/15 text-[#F5A400]"
                       : "border-white/10 bg-white/[0.03] text-[#667085]"
                   }`}
                 >
@@ -47,7 +47,7 @@ export default function ShipmentTimeline({ currentStage = "assigned", events = [
                 {idx < STAGES.length - 1 && (
                   <div
                     className={`h-10 w-px ${
-                      isCompleted ? "bg-[#00E5A0]/30" : "bg-white/6"
+                      isCompleted ? "bg-[#F5A400]/30" : "bg-white/6"
                     }`}
                   />
                 )}
@@ -56,7 +56,7 @@ export default function ShipmentTimeline({ currentStage = "assigned", events = [
               <div className={`pb-8 ${isFuture ? "opacity-40" : ""}`}>
                 <div
                   className={`text-xs font-black uppercase tracking-[0.16em] ${
-                    isActive ? "text-[#06B6D4]" : isCompleted ? "text-[#00E5A0]" : "text-[#667085]"
+                    isActive ? "text-[#06B6D4]" : isCompleted ? "text-[#F5A400]" : "text-[#667085]"
                   }`}
                 >
                   {stage.label}

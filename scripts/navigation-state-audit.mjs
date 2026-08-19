@@ -25,7 +25,7 @@ while ((match = setActiveTabRegex.exec(pageContent)) !== null) {
 
 const knownValidTabs = new Set([
   "overview", "loads", "create", "bids", "wallet", "profile", "settings",
-  "board", "my-bids", "transports"
+  "board", "my-bids", "transports", "verification", "control-tower"
 ]);
 
 let invalidTabsFound = 0;

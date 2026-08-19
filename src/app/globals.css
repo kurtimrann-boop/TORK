@@ -1,43 +1,56 @@
 @import "tailwindcss";
 
 /* =========================================================
-   TORK DESIGN SYSTEM 2.0
-   Modern B2B Logistics Intelligence & Control Tower
-   Palette:
-   Canvas:     #060B11
-   Surface:    #0B111A
-   Elevated:   #101923
-   Emerald:    #00E5A0 (Primary Action & Status)
-   Amber:      #F5B94C (Warning & Destination)
-   Red:        #FF5C5C (Critical & Alert)
-   Text Main:  #F5F7FA
-   Text Muted: #8C98A8
+   TORK INDUSTRIAL DESIGN SYSTEM (SPRINT 14)
+   Modern Industrial B2B Logistics Tech & Fintech Platform
+   
+   Brand Palette:
+   Primary:      TORK Orange   #F5A400
+   Secondary:    Orange Dark   #D98200
+   Base:         Graphite      #111827
+   Surface:      Surface Dark  #1F2937
+   Elevated:     Elevated      #283548
+   Border:       Slate Border  #374151
+   Text Main:    Light Grey    #F3F4F6
+   Text Muted:   Muted Grey    #A0AEC0
+   
+   Semantic Status:
+   Success:      #22C55E (Verified, Paid, Delivered, Completed)
+   Danger:       #EF4444 (Critical, Dispute, Cancelled, Rejected)
+   Warning:      #F5A400 (Pending, In Review, High Risk)
    ========================================================= */
 
 :root {
-  --tork-bg: #060B11;
-  --tork-bg-soft: #0B111A;
+  --tork-orange: #F5A400;
+  --tork-orange-dark: #D98200;
+  --tork-orange-glow: rgba(245, 164, 0, 0.22);
 
-  --tork-panel: rgba(11, 17, 26, 0.92);
-  --tork-panel-solid: #0B111A;
-  --tork-panel-elevated: #101923;
+  --tork-bg: #111827;
+  --tork-bg-soft: #162032;
 
-  --tork-emerald: #00E5A0;
-  --tork-emerald-hover: #00c78a;
-  --tork-amber: #F5B94C;
-  --tork-red: #FF5C5C;
+  --tork-panel: rgba(31, 41, 55, 0.94);
+  --tork-panel-solid: #1F2937;
+  --tork-surface: #1F2937;
+  --tork-panel-elevated: #283548;
 
-  --tork-white: #F5F7FA;
-  --tork-text: #F5F7FA;
-  --tork-muted: #8C98A8;
-  --tork-subtle: #5A6778;
+  --tork-border: #374151;
+  --tork-border-hover: rgba(245, 164, 0, 0.40);
+  --tork-border-strong: rgba(245, 164, 0, 0.65);
 
-  --tork-border: rgba(255, 255, 255, 0.06);
-  --tork-border-hover: rgba(0, 229, 160, 0.30);
-  --tork-border-strong: rgba(0, 229, 160, 0.45);
+  --tork-text: #F3F4F6;
+  --tork-muted: #A0AEC0;
+  --tork-subtle: #6B7280;
+
+  --tork-success: #22C55E;
+  --tork-danger: #EF4444;
+  --tork-warning: #F5A400;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
 
   --background: var(--tork-bg);
-  --foreground: var(--tork-white);
+  --foreground: var(--tork-text);
 }
 
 @theme inline {
@@ -74,21 +87,19 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-
-  background:
+  background-color: var(--tork-bg);
+  background-image:
     radial-gradient(
-      circle at 15% 10%,
-      rgba(0, 229, 160, 0.035),
+      circle at 10% 10%,
+      rgba(245, 164, 0, 0.03),
       transparent 35%
     ),
     radial-gradient(
-      circle at 85% 90%,
-      rgba(245, 185, 76, 0.025),
+      circle at 90% 90%,
+      rgba(217, 130, 0, 0.025),
       transparent 40%
-    ),
-    var(--tork-bg);
-
-  color: var(--tork-white);
+    );
+  color: var(--tork-text);
 
   font-family:
     var(--font-geist-sans),
@@ -100,6 +111,8 @@ body {
     "Segoe UI",
     sans-serif;
 
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -138,8 +151,8 @@ a {
 }
 
 ::selection {
-  background: rgba(0, 229, 160, 0.25);
-  color: #F5F7FA;
+  background: rgba(245, 164, 0, 0.30);
+  color: #FFFFFF;
 }
 
 /* =========================================================
@@ -147,33 +160,32 @@ a {
    ========================================================= */
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #060B11;
+  background: #111827;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1B2430;
-  border-radius: 999px;
+  background: #374151;
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2D3949;
+  background: #4B5563;
 }
 
 /* =========================================================
-   TORK APP BACKGROUND
+   TORK INDUSTRIAL PANELS & CARDS
    ========================================================= */
 
 .tork-shell {
   position: relative;
   min-height: 100vh;
   isolation: isolate;
-  overflow: hidden;
-  background-color: #060B11;
+  background-color: var(--tork-bg);
 }
 
 .tork-grid {
@@ -181,144 +193,200 @@ a {
   inset: 0;
   z-index: -2;
   pointer-events: none;
-  opacity: 0.35;
+  opacity: 0.25;
   background-image:
     linear-gradient(
-      rgba(255, 255, 255, 0.015) 1px,
+      rgba(255, 255, 255, 0.02) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.015) 1px,
+      rgba(255, 255, 255, 0.02) 1px,
       transparent 1px
     );
-  background-size: 40px 40px;
-  mask-image:
-    linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 1),
-      rgba(0, 0, 0, 0.8) 60%,
-      transparent 100%
-    );
+  background-size: 32px 32px;
 }
-
-.tork-noise {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.015;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='.85'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-}
-
-/* =========================================================
-   PANELS / CARDS
-   ========================================================= */
 
 .tork-panel {
   position: relative;
-  background: rgba(11, 17, 26, 0.95);
+  background: var(--tork-panel);
   border: 1px solid var(--tork-border);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .tork-panel-hover {
   transition:
-    transform 200ms ease-out,
-    border-color 200ms ease-out,
-    box-shadow 200ms ease-out,
-    background 200ms ease-out;
+    transform 160ms ease-out,
+    border-color 160ms ease-out,
+    box-shadow 160ms ease-out;
 }
 
 .tork-panel-hover:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  border-color: rgba(245, 164, 0, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
 /* =========================================================
-   BUTTONS
+   BUTTON SYSTEM (4 MAIN VARIANTS)
    ========================================================= */
 
-.tork-button-primary {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(0, 229, 160, 0.35);
-  background: #00E5A0;
-  color: #060B11;
-  font-weight: 900;
-  box-shadow: 0 0 24px rgba(0, 229, 160, 0.25);
+/* Primary: Orange Solid */
+.tork-button-primary,
+.tork-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 20px;
+  background: #F5A400;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(245, 164, 0, 0.6);
+  box-shadow: 0 4px 14px rgba(245, 164, 0, 0.25);
   transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    background-color 180ms ease;
+    background-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.tork-button-primary:hover {
+.tork-button-primary:hover,
+.tork-btn-primary:hover {
+  background: #D98200;
   transform: translateY(-1px);
-  background-color: #00c78a;
-  box-shadow: 0 0 32px rgba(0, 229, 160, 0.35);
+  box-shadow: 0 6px 20px rgba(245, 164, 0, 0.35);
 }
 
-.tork-button-primary:active {
+.tork-button-primary:active,
+.tork-btn-primary:active {
   transform: translateY(0);
 }
 
-.tork-button-primary:disabled {
-  cursor: not-allowed;
+.tork-button-primary:disabled,
+.tork-btn-primary:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
-.tork-button-secondary {
-  border: 1px solid var(--tork-border);
-  background: rgba(255, 255, 255, 0.03);
-  color: #8C98A8;
+/* Secondary: Graphite Surface + Border */
+.tork-button-secondary,
+.tork-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  background: #1F2937;
+  color: #F3F4F6;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid #374151;
   transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
-.tork-button-secondary:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #F5F7FA;
+.tork-button-secondary:hover,
+.tork-btn-secondary:hover {
+  background: #283548;
+  border-color: #4B5563;
+  color: #FFFFFF;
   transform: translateY(-1px);
 }
 
+/* Tertiary / Ghost */
+.tork-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  background: transparent;
+  color: #A0AEC0;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+.tork-btn-ghost:hover {
+  color: #F3F4F6;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Destructive */
+.tork-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #EF4444;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.tork-btn-danger:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  border-color: #EF4444;
+}
+
 /* =========================================================
-   INPUTS
+   INPUTS & FORMS
    ========================================================= */
 
 .tork-input {
   width: 100%;
-  color: #F5F7FA;
-  background: #060B11;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  min-height: 44px;
+  padding: 10px 14px;
+  color: #F3F4F6;
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: var(--radius-md);
+  font-size: 14px;
   transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    background 180ms ease;
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
 }
 
 .tork-input::placeholder {
-  color: rgba(140, 152, 168, 0.80);
+  color: #6B7280;
 }
 
 .tork-input:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: #4B5563;
 }
 
 .tork-input:focus {
-  border-color: rgba(0, 229, 160, 0.50);
-  background: #060B11;
-  box-shadow: 0 0 0 3px rgba(0, 229, 160, 0.16);
+  border-color: #F5A400;
+  background: #111827;
+  box-shadow: 0 0 0 3px rgba(245, 164, 0, 0.18);
 }
 
 .tork-input:disabled {
@@ -327,72 +395,93 @@ a {
 }
 
 select.tork-input {
-  color: #F5F7FA;
   appearance: none;
-  background-image:
-    linear-gradient(
-      45deg,
-      transparent 50%,
-      #8C98A8 50%
-    ),
-    linear-gradient(
-      135deg,
-      #8C98A8 50%,
-      transparent 50%
-    );
-  background-position:
-    calc(100% - 18px) 50%,
-    calc(100% - 13px) 50%;
-  background-size:
-    5px 5px,
-    5px 5px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23A0AEC0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-position: right 14px center;
   background-repeat: no-repeat;
+  background-size: 16px 16px;
+  padding-right: 40px;
 }
 
 select.tork-input option {
-  background: #0B111A;
-  color: #F5F7FA;
+  background: #1F2937;
+  color: #F3F4F6;
 }
 
 /* =========================================================
-   TYPOGRAPHY HELPERS
+   TYPOGRAPHY & ACCENTS
    ========================================================= */
 
 .tork-eyebrow {
-  color: #8C98A8;
-  font-size: 11px;
+  color: #A0AEC0;
+  font-size: 12px;
   line-height: 1.2;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.tork-muted {
-  color: var(--tork-muted);
-}
-
-.tork-subtle {
-  color: var(--tork-subtle);
+.tork-tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 /* =========================================================
-   LIVE STATUS
+   TURKISH LICENSE PLATE BADGE
+   ========================================================= */
+
+.tork-plate-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid #374151;
+  border-radius: 6px;
+  background: #FFFFFF;
+  color: #111827;
+  font-family: var(--font-mono), monospace;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  user-select: all;
+}
+
+.tork-plate-tr {
+  background: #003399;
+  color: #FFFFFF;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 3px 5px;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tork-plate-text {
+  padding: 3px 8px;
+  color: #000000;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   LIVE STATUS & SIGNALS
    ========================================================= */
 
 .tork-status-live {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  width: fit-content;
-  border: 1px solid rgba(0, 229, 160, 0.25);
-  background: rgba(0, 229, 160, 0.08);
+  border: 1px solid rgba(245, 164, 0, 0.35);
+  background: rgba(245, 164, 0, 0.10);
   border-radius: 999px;
-  padding: 6px 12px;
-  color: #00E5A0;
-  font-size: 11px;
-  line-height: 1;
+  padding: 5px 12px;
+  color: #F5A400;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
 }
 
 .tork-status-live::before {
@@ -400,51 +489,122 @@ select.tork-input option {
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: #00E5A0;
-  box-shadow:
-    0 0 0 3px rgba(0, 229, 160, 0.15),
-    0 0 12px rgba(0, 229, 160, 0.85);
+  background: #F5A400;
+  box-shadow: 0 0 8px rgba(245, 164, 0, 0.85);
   animation: torkPulse 2s infinite;
 }
 
 @keyframes torkPulse {
-  0%,
-  100% {
+  0%, 100% {
     opacity: 1;
     transform: scale(1);
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.45;
     transform: scale(0.85);
   }
 }
 
 /* =========================================================
-   PAGE ANIMATIONS
+   SHIMMER SKELETON LOADING
+   ========================================================= */
+
+.tork-skeleton {
+  background: linear-gradient(
+    90deg,
+    #1F2937 0%,
+    #283548 50%,
+    #1F2937 100%
+  );
+  background-size: 200% 100%;
+  animation: torkShimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes torkShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================================
+   DRAWER & MODAL ANIMATIONS
+   ========================================================= */
+
+.tork-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 24, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 999;
+}
+
+.tork-drawer-right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 520px;
+  background: #162032;
+  border-left: 1px solid #374151;
+  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  overflow-y: auto;
+  animation: torkSlideLeft 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes torkSlideLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* =========================================================
+   TOAST NOTIFICATION CONTAINER
+   ========================================================= */
+
+.tork-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 300px;
+  max-width: 440px;
+  padding: 14px 18px;
+  background: #1F2937;
+  border: 1px solid #374151;
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  color: #F3F4F6;
+  font-size: 14px;
+  animation: torkToastSlide 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes torkToastSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================================================
+   PAGE TRANSITIONS
    ========================================================= */
 
 .tork-fade-up {
   animation:
     torkFadeUp
-    300ms
-    cubic-bezier(0.16, 1, 0.3, 1)
-    both;
-}
-
-.tork-fade-up-delay {
-  animation:
-    torkFadeUp
-    350ms
-    60ms
-    cubic-bezier(0.16, 1, 0.3, 1)
-    both;
-}
-
-.tork-fade-up-delay-2 {
-  animation:
-    torkFadeUp
-    400ms
-    100ms
+    220ms
     cubic-bezier(0.16, 1, 0.3, 1)
     both;
 }
@@ -452,7 +612,7 @@ select.tork-input option {
 @keyframes torkFadeUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -461,94 +621,66 @@ select.tork-input option {
 }
 
 /* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 1023px) {
-  .tork-shell {
-    overflow-x: hidden;
-  }
-}
-
-@media (max-width: 639px) {
-  .tork-panel {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .tork-input {
-    border-radius: 12px;
-  }
-
-  .tork-eyebrow {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-  }
-}
-
-/* =========================================================
-   LEAFLET OVERRIDES — TORK DARK THEME
+   LEAFLET OVERRIDES — TORK INDUSTRIAL DARK
    ========================================================= */
 
 .leaflet-container {
-  background: #0B111A !important;
+  background: #111827 !important;
   font-family: inherit;
 }
 
 .leaflet-control-zoom a {
-  color: #F5F7FA !important;
-  background: #101923 !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #F3F4F6 !important;
+  background: #1F2937 !important;
+  border-color: #374151 !important;
+  border-radius: 6px !important;
 }
 
 .leaflet-control-zoom a:hover {
-  background: #1B2430 !important;
+  background: #283548 !important;
+  color: #F5A400 !important;
 }
 
 .leaflet-control-attribution {
-  background: rgba(11, 17, 26, 0.85) !important;
-  color: #8C98A8 !important;
-  font-size: 9px !important;
-}
-
-.leaflet-control-attribution a {
-  color: #8C98A8 !important;
+  background: rgba(17, 24, 39, 0.9) !important;
+  color: #A0AEC0 !important;
+  font-size: 11px !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #101923 !important;
-  color: #F5F7FA !important;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5) !important;
+  background: #1F2937 !important;
+  color: #F3F4F6 !important;
+  border: 1px solid #374151;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5) !important;
 }
 
 .leaflet-popup-tip {
-  background: #101923 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1F2937 !important;
+  border: 1px solid #374151;
 }
 
 .leaflet-popup-content {
-  margin: 10px 14px !important;
-  font-size: 12px !important;
+  margin: 12px 16px !important;
+  font-size: 13px !important;
   line-height: 1.5 !important;
 }
 
 .leaflet-popup-content strong {
-  color: #00E5A0;
+  color: #F5A400;
   font-weight: 800;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
 }
 
 /* =========================================================
-   ACCESSIBILITY
+   ACCESSIBILITY & FOCUS
    ========================================================= */
 
 :focus-visible {
-  outline: 2px solid #00E5A0;
-  outline-offset: 3px;
+  outline: 2px solid #F5A400;
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

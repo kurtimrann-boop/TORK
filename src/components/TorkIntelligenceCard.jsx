@@ -11,7 +11,7 @@ import TorkVerifiedCard from "./TorkVerifiedCard";
  * - Canvas: #060B11
  * - Surface: #0B111A
  * - Elevated: #101923
- * - Primary: #00E5A0
+ * - Primary: #F5A400
  * - Warning: #F5B94C
  * - Critical: #FF5C5C
  * - Muted: #8C98A8
@@ -159,7 +159,7 @@ export default function TorkIntelligenceCard({
       case "MEDIUM":
         return { dot: "bg-[#F5B94C]", text: "text-[#F5B94C]", border: "border-[#F5B94C]/20", bg: "bg-[#F5B94C]/5" };
       case "LOW":
-        return { dot: "bg-[#00E5A0]", text: "text-[#00E5A0]", border: "border-[#00E5A0]/20", bg: "bg-[#00E5A0]/5" };
+        return { dot: "bg-[#F5A400]", text: "text-[#F5A400]", border: "border-[#F5A400]/20", bg: "bg-[#F5A400]/5" };
       default:
         return { dot: "bg-[#8C98A8]", text: "text-[#8C98A8]", border: "border-[#8C98A8]/20", bg: "bg-[#8C98A8]/5" };
     }
@@ -176,7 +176,7 @@ export default function TorkIntelligenceCard({
            ========================================================= */}
         <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5 mb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#00E5A0]/10 border border-[#00E5A0]/20 text-[#00E5A0]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F5A400]/10 border border-[#F5A400]/20 text-[#F5A400]">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
@@ -186,7 +186,7 @@ export default function TorkIntelligenceCard({
                 <span className="text-xs font-mono font-bold tracking-[0.14em] text-[#F5F7FA] uppercase">
                   TORK INTELLIGENCE
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#00E5A0]">EXECUTIVE</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#F5A400]">EXECUTIVE</span>
               </div>
               <p className="text-[11px] text-[#8C98A8]">Yönetici özeti & operasyonel karar kulesi</p>
             </div>
@@ -201,10 +201,10 @@ export default function TorkIntelligenceCard({
               disabled={loading || isCooldown}
               aria-label="Operasyon analizini yenile"
               title={isCooldown ? "Lütfen bekleyin..." : "Analizi Yenile"}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] bg-[#101923] text-[#8C98A8] hover:text-[#00E5A0] hover:border-[#00E5A0]/30 transition disabled:opacity-40"
+              className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] bg-[#101923] text-[#8C98A8] hover:text-[#F5A400] hover:border-[#F5A400]/30 transition disabled:opacity-40"
             >
               <svg
-                className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#00E5A0]" : ""}`}
+                className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#F5A400]" : ""}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -217,8 +217,8 @@ export default function TorkIntelligenceCard({
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/[0.06] bg-[#101923] text-[10px] font-mono">
               {isGeminiOnline ? (
                 <>
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#00E5A0] animate-pulse" />
-                  <span className="text-[#00E5A0] font-semibold">ONLINE</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#F5A400] animate-pulse" />
+                  <span className="text-[#F5A400] font-semibold">ONLINE</span>
                 </>
               ) : (
                 <>
@@ -235,7 +235,7 @@ export default function TorkIntelligenceCard({
            ========================================================= */}
         <div className="rounded-xl border border-white/[0.04] bg-[#101923] p-3.5 mb-4 space-y-2.5">
           <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.14em] text-[#8C98A8]">
-            <span className="text-[#00E5A0] font-bold">YÖNETİCİ ÖZETİ</span>
+            <span className="text-[#F5A400] font-bold">YÖNETİCİ ÖZETİ</span>
             <span className="text-[#8C98A8]/60 font-sans">{formattedTime}</span>
           </div>
 
@@ -304,7 +304,7 @@ export default function TorkIntelligenceCard({
                 <button
                   type="button"
                   onClick={() => onNavigate("create")}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#00E5A0]/10 border border-[#00E5A0]/20 text-[11px] font-mono font-medium text-[#00E5A0] hover:bg-[#00E5A0]/20 transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#F5A400]/10 border border-[#F5A400]/20 text-[11px] font-mono font-medium text-[#F5A400] hover:bg-[#F5A400]/20 transition"
                 >
                   <span>Yeni yük oluştur</span>
                   <span>+</span>
@@ -324,7 +324,7 @@ export default function TorkIntelligenceCard({
                     onClick={() => setSelectedSignal(isSelected ? null : signal)}
                     className={`w-full text-left rounded-xl border p-2.5 sm:p-3 transition-all duration-150 flex items-start gap-2.5 active:scale-[0.995] ${
                       isSelected
-                        ? "border-[#00E5A0]/40 bg-[#101923] shadow-md ring-1 ring-[#00E5A0]/20"
+                        ? "border-[#F5A400]/40 bg-[#101923] shadow-md ring-1 ring-[#F5A400]/20"
                         : "border-white/[0.04] bg-[#101923]/70 hover:bg-[#101923] hover:border-white/[0.1]"
                     }`}
                   >
@@ -360,10 +360,10 @@ export default function TorkIntelligenceCard({
             5. SIGNAL DETAIL PANEL (WHY + WHAT NEXT + ACTIONS)
            ========================================================= */}
         {selectedSignal && (
-          <div className="rounded-xl border border-[#00E5A0]/30 bg-[#060B11] p-3.5 sm:p-4 mb-4 space-y-3 animate-fadeIn shadow-xl">
+          <div className="rounded-xl border border-[#F5A400]/30 bg-[#060B11] p-3.5 sm:p-4 mb-4 space-y-3 animate-fadeIn shadow-xl">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#00E5A0]">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#F5A400]">
                   SİNYAL DETAYI
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-white/5 text-[#8C98A8]">
@@ -386,7 +386,7 @@ export default function TorkIntelligenceCard({
 
             {/* WHY? (NEDEN OLUŞTU?) */}
             <div className="rounded-lg bg-[#101923] p-2.5 border border-white/[0.04] space-y-1.5">
-              <div className="text-[9px] font-mono font-bold uppercase text-[#00E5A0]">
+              <div className="text-[9px] font-mono font-bold uppercase text-[#F5A400]">
                 NEDEN OLUŞTU? (HÜRMÜZ HESAP DAYANAĞI)
               </div>
               {selectedSignal.relatedLoad && (
@@ -426,7 +426,7 @@ export default function TorkIntelligenceCard({
             </div>
 
             {/* TORK VERIFIED Independence Status */}
-            <div className="flex items-center justify-between text-[10px] font-mono px-2.5 py-1.5 rounded-lg bg-[#00E5A0]/5 border border-[#00E5A0]/20 text-[#00E5A0]">
+            <div className="flex items-center justify-between text-[10px] font-mono px-2.5 py-1.5 rounded-lg bg-[#F5A400]/5 border border-[#F5A400]/20 text-[#F5A400]">
               <span>TORK VERIFIED: ✓ HESAP TUTARLI</span>
               <span className="font-bold">{selectedSignal.verifiedScore || 100} / 100</span>
             </div>
@@ -439,7 +439,7 @@ export default function TorkIntelligenceCard({
                   onNavigate(selectedSignal.actionTarget);
                   setSelectedSignal(null);
                 }}
-                className="w-full py-2 rounded-lg bg-[#00E5A0]/10 hover:bg-[#00E5A0]/20 border border-[#00E5A0]/30 text-xs font-mono font-bold text-[#00E5A0] transition flex items-center justify-center gap-1.5"
+                className="w-full py-2 rounded-lg bg-[#F5A400]/10 hover:bg-[#F5A400]/20 border border-[#F5A400]/30 text-xs font-mono font-bold text-[#F5A400] transition flex items-center justify-center gap-1.5"
               >
                 <span>{selectedSignal.actionLabel || "DETAYI GÖR"}</span>
                 <span>→</span>
@@ -457,19 +457,19 @@ export default function TorkIntelligenceCard({
           </div>
           <div className="flex items-center justify-between text-[10px] font-mono">
             <div className="flex flex-col items-center text-center flex-1">
-              <span className="h-2 w-2 rounded-full bg-[#00E5A0] mb-1" />
+              <span className="h-2 w-2 rounded-full bg-[#F5A400] mb-1" />
               <span className="text-[#F5F7FA] font-bold">HÜRMÜZ</span>
               <span className="text-[9px] text-[#8C98A8]">Hesapladı</span>
             </div>
-            <div className="h-[1px] bg-[#00E5A0]/30 flex-1 mx-1" />
+            <div className="h-[1px] bg-[#F5A400]/30 flex-1 mx-1" />
             <div className="flex flex-col items-center text-center flex-1">
-              <span className="h-2 w-2 rounded-full bg-[#00E5A0] mb-1" />
+              <span className="h-2 w-2 rounded-full bg-[#F5A400] mb-1" />
               <span className="text-[#F5F7FA] font-bold">VERIFIED</span>
               <span className="text-[9px] text-[#8C98A8]">Doğruladı</span>
             </div>
-            <div className="h-[1px] bg-[#00E5A0]/30 flex-1 mx-1" />
+            <div className="h-[1px] bg-[#F5A400]/30 flex-1 mx-1" />
             <div className="flex flex-col items-center text-center flex-1">
-              <span className="h-2 w-2 rounded-full bg-[#00E5A0] mb-1" />
+              <span className="h-2 w-2 rounded-full bg-[#F5A400] mb-1" />
               <span className="text-[#F5F7FA] font-bold">GEMINI</span>
               <span className="text-[9px] text-[#8C98A8]">Yorumladı</span>
             </div>
@@ -503,7 +503,7 @@ export default function TorkIntelligenceCard({
             {/* Header & Assessment Badge */}
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#00E5A0]">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#F5A400]">
                   TORK INTELLIGENCE ANALİZİ
                 </span>
               </div>
@@ -512,7 +512,7 @@ export default function TorkIntelligenceCard({
                   ? "bg-[#FF5C5C]/10 border-[#FF5C5C]/30 text-[#FF5C5C]"
                   : aiResult.assessment === "CAUTION"
                   ? "bg-[#F5B94C]/10 border-[#F5B94C]/30 text-[#F5B94C]"
-                  : "bg-[#00E5A0]/10 border-[#00E5A0]/30 text-[#00E5A0]"
+                  : "bg-[#F5A400]/10 border-[#F5A400]/30 text-[#F5A400]"
               }`}>
                 {aiResult.assessment === "RISK" ? "RİSKLİ" : aiResult.assessment === "CAUTION" ? "DİKKAT" : "SAĞLIKLI"}
               </span>
@@ -536,19 +536,19 @@ export default function TorkIntelligenceCard({
                   <button
                     type="button"
                     onClick={() => setShowWhyTooltip(!showWhyTooltip)}
-                    className="text-[10px] text-[#00E5A0] hover:underline flex items-center gap-1"
+                    className="text-[10px] text-[#F5A400] hover:underline flex items-center gap-1"
                     title="Formül Açıklaması"
                   >
                     <span>Formül</span>
-                    <span className="h-3.5 w-3.5 rounded-full border border-[#00E5A0]/40 inline-flex items-center justify-center text-[9px]">i</span>
+                    <span className="h-3.5 w-3.5 rounded-full border border-[#F5A400]/40 inline-flex items-center justify-center text-[9px]">i</span>
                   </button>
                 </div>
                 <p className="text-xs text-[#F5F7FA]/90 leading-relaxed">
                   {aiResult.pricingAssessment}
                 </p>
                 {showWhyTooltip && (
-                  <div className="mt-2 p-2.5 rounded-lg bg-[#101923] border border-[#00E5A0]/30 text-[11px] font-mono text-[#8C98A8] space-y-1 animate-fadeIn">
-                    <div className="text-[#00E5A0] font-bold">HÜRMÜZ HESAPLAMA METODOLOJİSİ:</div>
+                  <div className="mt-2 p-2.5 rounded-lg bg-[#101923] border border-[#F5A400]/30 text-[11px] font-mono text-[#8C98A8] space-y-1 animate-fadeIn">
+                    <div className="text-[#F5A400] font-bold">HÜRMÜZ HESAPLAMA METODOLOJİSİ:</div>
                     <div>• Taban Maliyet = Yakıt + Sürücü + Geçiş + Bakım + Amortisman</div>
                     <div>• Tavsiye Navlun = Taban Maliyet / (1 - Hedef Marj)</div>
                   </div>
@@ -576,13 +576,13 @@ export default function TorkIntelligenceCard({
             {/* 4. FIRSATLAR */}
             {aiResult.opportunities && aiResult.opportunities.length > 0 && (
               <div>
-                <div className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#00E5A0] mb-1">
+                <div className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#F5A400] mb-1">
                   FIRSATLAR
                 </div>
                 <ul className="space-y-1 text-xs text-[#8C98A8]">
                   {aiResult.opportunities.map((op, i) => (
                     <li key={i} className="flex items-start gap-1.5">
-                      <span className="text-[#00E5A0] font-bold">•</span>
+                      <span className="text-[#F5A400] font-bold">•</span>
                       <span>{op}</span>
                     </li>
                   ))}
@@ -593,14 +593,14 @@ export default function TorkIntelligenceCard({
             {/* 5. ÖNERİLEN AKSİYON & DEEP ACTION LINKS */}
             {aiResult.recommendedActions && aiResult.recommendedActions.length > 0 && (
               <div className="pt-2 border-t border-white/[0.06]">
-                <div className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#00E5A0] mb-1">
+                <div className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#F5A400] mb-1">
                   ÖNERİLEN AKSİYON (AI KARAR DESTEĞİ)
                 </div>
                 <ul className="space-y-1.5 text-xs text-[#F5F7FA]">
                   {aiResult.recommendedActions.map((act, i) => (
                     <li key={i} className="flex items-start justify-between gap-2 p-1.5 rounded-lg bg-[#101923]/60 hover:bg-[#101923] transition">
                       <div className="flex items-start gap-1.5">
-                        <span className="text-[#00E5A0] font-bold">→</span>
+                        <span className="text-[#F5A400] font-bold">→</span>
                         <span>{act}</span>
                       </div>
                       {onNavigate && (
@@ -612,7 +612,7 @@ export default function TorkIntelligenceCard({
                             else if (act.toLowerCase().includes("sefer") || act.toLowerCase().includes("mutabakat")) onNavigate(isShipper ? "wallet" : "transports");
                             else onNavigate("overview");
                           }}
-                          className="text-[10px] font-mono text-[#00E5A0] hover:underline flex-shrink-0"
+                          className="text-[10px] font-mono text-[#F5A400] hover:underline flex-shrink-0"
                         >
                           İncele
                         </button>
@@ -652,7 +652,7 @@ export default function TorkIntelligenceCard({
           type="button"
           onClick={handleAnalyze}
           disabled={loading || (isCooldown && aiResult)}
-          className="w-full h-[46px] rounded-xl bg-[#00E5A0] hover:bg-[#00E5A0]/90 active:scale-[0.99] text-[#060B11] font-bold text-xs sm:text-sm font-mono tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(0,229,160,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-[46px] rounded-xl bg-[#F5A400] hover:bg-[#F5A400]/90 active:scale-[0.99] text-[#060B11] font-bold text-xs sm:text-sm font-mono tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(245,164,0,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>

@@ -4,7 +4,7 @@ export default function ToggleSwitch({ enabled, onChange }) {
       onClick={() => onChange(!enabled)}
       className={`relative inline-flex h-7 w-12 shrink-0 rounded-full border-2 transition-all ${
         enabled
-          ? "border-[#00E5A0] bg-[#00E5A0]/15"
+          ? "border-[#F5A400] bg-[#F5A400]/15"
           : "border-white/10 bg-white/[0.03]"
       }`}
     >

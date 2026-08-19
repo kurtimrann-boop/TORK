@@ -1,7 +1,9 @@
 "use client";
 
+import React, { useMemo, useState } from "react";
 import StatusBadge from "./StatusBadge";
 import { formatRelativeTimeTR, formatCurrencyTR } from "../utils/turkish";
+import { calculateOperatingPricing, evaluateCarrierBid } from "../utils/pricingService";
 
 function formatPricePerKm(value) {
   if (value === null || value === undefined || !Number.isFinite(value)) return "—";
@@ -14,6 +16,8 @@ export default function BidCard({
   onAccept,
   onReject,
   onViewLoad,
+  onEditBid,
+  onCancelBid,
   isBestBid = false,
   isBestPricePerKm = false,
   isSelected = false,
@@ -23,107 +27,216 @@ export default function BidCard({
   const isPending = bid.status === "pending";
   const isAccepted = bid.status === "accepted";
   const isRejected = bid.status === "rejected";
+  const isCancelled = bid.status === "cancelled";
 
-  const carrierName = bid.profiles?.company_name || "Taşıyıcı";
+  // Inline Edit & Cancel Confirmation States
+  const [isEditing, setIsEditing] = useState(false);
+  const [editAmount, setEditAmount] = useState(String(bid.amount || ""));
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [actionError, setActionError] = useState("");
+
+  const carrierName = bid.profiles?.company_name || bid.profiles?.full_name || "Taşıyıcı";
   const vehicleInfo = bid.loads?.vehicle_type || "TIR";
   const cargoInfo = bid.loads?.tonnage ? `${bid.loads.tonnage} Ton` : "Komple Yük";
   const deliveryInfo = bid.loads?.duration_minutes
     ? `${Math.round(bid.loads.duration_minutes / 60)} sa teslim`
     : "24 sa içinde";
 
+  // Dynamic Live Smart Bidding Re-calculation for Carrier during Editing
+  const liveSmartBidding = useMemo(() => {
+    if (!isCarrierView) return null;
+    const currentNum = Number(isEditing ? editAmount : bid.amount);
+    if (!Number.isFinite(currentNum) || currentNum <= 0) return null;
+
+    const dist = Number(bid.loads?.distance_km) || 730;
+    const dur = Number(bid.loads?.duration_minutes) || 525;
+    const vType = bid.loads?.vehicle_type || "TIR";
+
+    const pricing = calculateOperatingPricing({
+      distanceKm: dist,
+      durationMinutes: dur,
+      vehicleType: vType,
+    });
+
+    if (!pricing) return null;
+
+    const analytics = evaluateCarrierBid(currentNum, pricing);
+    const profit = analytics?.estimatedProfit ?? analytics?.profit ?? 0;
+    return {
+      pricing,
+      analytics,
+      operatingCost: pricing.totals.totalOperatingCost,
+      profit,
+      marginPercent: analytics?.marginPercent ?? 0,
+      quality: analytics?.quality ?? "HEALTHY",
+      label: analytics?.label ?? "Hesaplandı",
+    };
+  }, [isCarrierView, isEditing, editAmount, bid.amount, bid.loads]);
+
+  const handleSaveEdit = async (e) => {
+    e?.preventDefault();
+    setActionError("");
+
+    const num = Number(editAmount);
+    if (!Number.isFinite(num) || num <= 0) {
+      setActionError("Lütfen geçerli bir teklif tutarı giriniz.");
+      return;
+    }
+
+    if (num === Number(bid.amount)) {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsActionLoading(true);
+    try {
+      if (onEditBid) {
+        await onEditBid(bid.id, num);
+      }
+      setIsEditing(false);
+    } catch (err) {
+      setActionError(err.message || "Teklif güncellenemedi.");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    setIsActionLoading(true);
+    setActionError("");
+    try {
+      if (onCancelBid) {
+        await onCancelBid(bid.id);
+      }
+      setShowCancelConfirm(false);
+    } catch (err) {
+      setActionError(err.message || "Teklif geri çekilemedi.");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
   return (
     <div
-      className={`group relative rounded-2xl border transition-all duration-200 select-none p-4 sm:px-5 sm:py-3.5 ${
+      className={`group relative rounded-xl border transition-all duration-150 select-none p-4 sm:px-5 sm:py-3.5 ${
         isSelected
-          ? "border-[#00E5A0]/40 bg-[#00E5A0]/[0.05]"
-          : "border-white/[0.06] bg-[#0B111A] hover:border-[#00E5A0]/30 hover:bg-[#101923] hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+          ? "border-[#F5A400] bg-[#1F2937] shadow-lg shadow-[#F5A400]/10"
+          : isEditing
+            ? "border-[#F5A400] bg-[#1F2937]"
+            : "border-[#374151] bg-[#111827] hover:border-[#4B5563] hover:bg-[#1F2937]"
       }`}
     >
-      {/* =========================================================================
-          DESKTOP PROCUREMENT DATA ROW (lg:grid)
-          Columns: ROTA | YÜK | TAŞIYICI | ARAÇ | TESLİM | FİYAT & ₺/KM | DURUM | AKSİYON
-         ========================================================================= */}
-      <div className="hidden lg:grid grid-cols-12 items-center gap-3 text-xs">
-        {/* 1. Route & Select (3 cols) */}
-        <div className="col-span-3 flex items-center gap-2 min-w-0">
+      {/* DESKTOP PROCUREMENT DATA ROW */}
+      <div className="hidden lg:flex items-center justify-between gap-3.5 text-xs">
+        {/* 1. Route & Select */}
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           {onSelect && !isCarrierView && (
             <input
               type="checkbox"
               checked={isSelected}
               onChange={() => onSelect(bid.id)}
-              className="h-3.5 w-3.5 accent-[#00E5A0] rounded shrink-0 mr-1"
+              className="h-4 w-4 accent-[#F5A400] rounded shrink-0 mr-1 cursor-pointer"
             />
           )}
-          <span className="h-1.5 w-1.5 rounded-full bg-[#00E5A0] shrink-0" />
+          <span className="h-2 w-2 rounded-full bg-[#F5A400] shrink-0" />
           <div className="min-w-0 truncate">
-            <span className="font-bold text-[#F5F7FA]">{bid.loads?.origin || "—"}</span>
-            <span className="text-[#00E5A0] mx-1">→</span>
-            <span className="font-bold text-[#F5F7FA]">{bid.loads?.destination || "—"}</span>
+            <span className="font-bold text-[#F3F4F6]">{bid.loads?.origin || "—"}</span>
+            <span className="text-[#F5A400] mx-1.5 font-bold">→</span>
+            <span className="font-bold text-[#F3F4F6]">{bid.loads?.destination || "—"}</span>
           </div>
         </div>
 
-        {/* 2. Yük Bilgisi (1 col) */}
-        <div className="col-span-1 text-[#8C98A8] truncate font-medium">
+        {/* 2. Tonaj / Yük */}
+        <div className="w-20 shrink-0 text-[#A0AEC0] font-semibold truncate text-left">
           {cargoInfo}
         </div>
 
-        {/* 3. Taşıyıcı (2 cols) */}
-        <div className="col-span-2 min-w-0">
-          <div className="font-bold text-[#F5F7FA] truncate">
+        {/* 3. Teklif Sahibi / Zaman */}
+        <div className="w-28 shrink-0 min-w-0">
+          <div className="font-bold text-[#F3F4F6] truncate">
             {isCarrierView ? "Sizin Teklifiniz" : carrierName}
           </div>
-          <div className="text-[10px] text-[#8C98A8] truncate">
+          <div className="text-[11px] text-[#A0AEC0] truncate">
             {formatRelativeTimeTR(bid.created_at)}
           </div>
         </div>
 
-        {/* 4. Araç & Teslim (1 col) */}
-        <div className="col-span-1 text-[#8C98A8] truncate">
-          <div className="font-medium text-[#F5F7FA]">{vehicleInfo}</div>
-          <div className="text-[10px] text-[#8C98A8]">{deliveryInfo}</div>
+        {/* 4. Araç & Süre */}
+        <div className="w-24 shrink-0">
+          <div className="font-bold text-[#F3F4F6] truncate">{vehicleInfo}</div>
+          <div className="text-[11px] text-[#A0AEC0] truncate">{deliveryInfo}</div>
         </div>
 
-        {/* 5. Fiyat & ₺/km & Best Bid Pill (2 cols) */}
-        <div className="col-span-2 flex flex-col items-start justify-center">
+        {/* 5. Fiyat & ₺/km */}
+        <div className="w-28 shrink-0 flex flex-col items-start justify-center">
           <div className="flex items-center gap-1.5">
-            <span className="text-base xl:text-lg font-black text-[#F5F7FA] tracking-tight">
+            <span className="text-base xl:text-lg font-black text-[#F5A400] font-mono tracking-tight whitespace-nowrap">
               {formatCurrencyTR(bid.amount)}
             </span>
             {isBestBid && !isCarrierView && (
-              <span className="inline-flex items-center rounded-md border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#00E5A0]">
-                EN DÜŞÜK
+              <span className="inline-flex items-center rounded bg-[#F5A400]/20 px-1.5 py-0.5 text-[10px] font-black uppercase text-[#F5A400]">
+                EN İYİ
               </span>
             )}
           </div>
           {pricePerKm && (
-            <div className="text-[11px] font-mono text-[#8C98A8]">
+            <div className="text-[11px] font-mono text-[#A0AEC0] whitespace-nowrap">
               {formatPricePerKm(pricePerKm)}
             </div>
           )}
         </div>
 
-        {/* 6. Durum (1 col) */}
-        <div className="col-span-1 flex items-center">
+        {/* 6. Durum */}
+        <div className="shrink-0 flex items-center justify-center">
           <StatusBadge status={bid.status} />
         </div>
 
-        {/* 7. Aksiyonlar (2 cols) */}
-        <div className="col-span-2 flex items-center justify-end gap-2">
+        {/* 7. Aksiyonlar */}
+        <div className="shrink-0 flex items-center justify-end gap-1.5 whitespace-nowrap">
+          {/* Shipper Actions: Kabul Et / Reddet */}
           {isPending && !isCarrierView && (
             <>
               <button
                 type="button"
                 onClick={onAccept}
-                className="rounded-xl bg-[#00E5A0] px-3.5 py-2 text-xs font-black text-[#060B11] shadow-[0_0_14px_rgba(0,229,160,0.25)] hover:bg-[#00d896] active:scale-[0.98] transition"
+                className="h-8 rounded-lg bg-[#22C55E] px-3.5 text-xs font-bold text-white shadow hover:bg-[#16a34a] transition flex items-center justify-center"
               >
-                Teklifi Kabul Et
+                Kabul Et
               </button>
               <button
                 type="button"
                 onClick={onReject}
-                className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-2.5 py-2 text-xs font-bold text-[#8C98A8] hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 transition"
+                className="h-8 rounded-lg border border-[#374151] bg-[#111827] px-2.5 text-xs font-bold text-[#EF4444] hover:bg-[#EF4444]/10 transition flex items-center justify-center"
               >
                 Reddet
+              </button>
+            </>
+          )}
+
+          {/* Carrier Actions */}
+          {isCarrierView && isPending && !isEditing && !showCancelConfirm && (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditAmount(String(bid.amount || ""));
+                  setIsEditing(true);
+                  setShowCancelConfirm(false);
+                }}
+                className="h-8 rounded-lg border border-[#F5A400]/30 bg-[#F5A400]/10 px-2.5 text-xs font-bold text-[#F5A400] hover:bg-[#F5A400]/20 transition flex items-center justify-center"
+              >
+                Düzenle
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCancelConfirm(true);
+                  setIsEditing(false);
+                }}
+                className="h-8 rounded-lg border border-[#EF4444]/30 bg-[#EF4444]/10 px-2.5 text-xs font-bold text-[#EF4444] hover:bg-[#EF4444]/20 transition flex items-center justify-center"
+              >
+                Geri Çek
               </button>
             </>
           )}
@@ -132,7 +245,7 @@ export default function BidCard({
             <button
               type="button"
               onClick={() => onViewLoad(bid.load_id)}
-              className="rounded-xl bg-white/[0.04] border border-white/[0.08] px-3 py-2 text-xs font-bold text-[#8C98A8] hover:text-[#F5F7FA] hover:border-white/20 transition"
+              className="h-8 rounded-lg border border-[#374151] bg-[#1F2937] px-2.5 text-xs font-semibold text-[#A0AEC0] hover:text-[#F3F4F6] transition flex items-center justify-center"
             >
               İlanı Gör
             </button>
@@ -140,70 +253,50 @@ export default function BidCard({
         </div>
       </div>
 
-      {/* =========================================================================
-          MOBILE STACKED PROCUREMENT CARD (< lg)
-          Fiyat en üstte, CTA en altta
-         ========================================================================= */}
-      <div className="lg:hidden flex flex-col gap-3">
-        {/* Top: Fiyat, Best Badge & Status */}
-        <div className="flex items-center justify-between border-b border-white/[0.05] pb-2.5">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-black text-[#F5F7FA] tracking-tight">
-                {formatCurrencyTR(bid.amount)}
-              </span>
-              {isBestBid && !isCarrierView && (
-                <span className="inline-flex items-center rounded-md border border-[#00E5A0]/25 bg-[#00E5A0]/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#00E5A0]">
-                  EN DÜŞÜK
-                </span>
-              )}
-            </div>
-            {pricePerKm && (
-              <div className="text-xs font-mono text-[#8C98A8] mt-0.5">
-                {formatPricePerKm(pricePerKm)}
-              </div>
-            )}
+      {/* MOBILE PROCUREMENT CARD (lg:hidden) */}
+      <div className="lg:hidden space-y-3 text-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 font-bold text-[#F3F4F6]">
+            <span>{bid.loads?.origin || "—"}</span>
+            <span className="text-[#F5A400]">→</span>
+            <span>{bid.loads?.destination || "—"}</span>
           </div>
           <StatusBadge status={bid.status} />
         </div>
 
-        {/* Middle: Rota & Taşıyıcı Detayları */}
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sm font-bold text-[#F5F7FA]">
-            <span>{bid.loads?.origin || "—"}</span>
-            <span className="text-[#00E5A0]">→</span>
-            <span>{bid.loads?.destination || "—"}</span>
+        <div className="flex items-center justify-between border-t border-[#374151] pt-2">
+          <div className="text-[#A0AEC0]">
+            <div>{isCarrierView ? "Sizin Teklifiniz" : carrierName}</div>
+            <div className="text-[11px]">{formatRelativeTimeTR(bid.created_at)}</div>
           </div>
-
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#8C98A8]">
-            <span className="font-semibold text-[#F5F7FA]">
-              {isCarrierView ? "Sizin Teklifiniz" : carrierName}
-            </span>
-            <span>·</span>
-            <span>{vehicleInfo}</span>
-            <span>·</span>
-            <span>{cargoInfo}</span>
-            <span>·</span>
-            <span>{formatRelativeTimeTR(bid.created_at)}</span>
+          <div className="text-right">
+            <div className="text-base font-black font-mono text-[#F5A400]">
+              {formatCurrencyTR(bid.amount)}
+            </div>
+            {pricePerKm && (
+              <div className="text-[11px] font-mono text-[#A0AEC0]">
+                {formatPricePerKm(pricePerKm)}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Bottom: Action CTAs (44px+ touch target) */}
+        {/* Mobile Action Buttons */}
         {isPending && !isCarrierView && (
-          <div className="pt-2 border-t border-white/[0.05] flex gap-2">
-            <button
-              type="button"
-              onClick={onAccept}
-              className="flex-1 h-11 rounded-xl bg-[#00E5A0] text-xs font-black text-[#060B11] shadow-[0_0_14px_rgba(0,229,160,0.2)] hover:bg-[#00d896] active:scale-[0.98] transition flex items-center justify-center"
-            >
-              Teklifi Kabul Et
-            </button>
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#374151]">
             <button
               type="button"
               onClick={onReject}
-              className="h-11 px-4 rounded-xl border border-white/[0.08] bg-white/[0.03] text-xs font-bold text-[#8C98A8] hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition flex items-center justify-center"
+              className="tork-btn-secondary min-h-[44px] text-xs font-bold text-[#EF4444]"
             >
               Reddet
+            </button>
+            <button
+              type="button"
+              onClick={onAccept}
+              className="min-h-[44px] rounded-lg bg-[#22C55E] text-white font-black text-xs shadow transition"
+            >
+              Kabul Et
             </button>
           </div>
         )}

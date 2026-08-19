@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   PRICING_VEHICLE_CONFIG,
   calculateOperatingPricing,
@@ -99,12 +99,10 @@ export default function CarrierSmartBiddingWidget({
       calculatedPricing: pricing,
       bidParams: {
         bidAmount,
-        estimatedProfit: bidAnalytics?.estimatedProfit,
-        estimatedMarginPercent: bidAnalytics?.marginPercent,
+        bidEvaluation: bidAnalytics,
       },
     });
   }, [
-    pricing,
     distanceKm,
     durationMinutes,
     selectedVehicle,
@@ -113,308 +111,181 @@ export default function CarrierSmartBiddingWidget({
     loadProfile,
     isRoundTrip,
     returnBuffer,
+    pricing,
     bidAmount,
     bidAnalytics,
   ]);
 
-  if (!pricing) return null;
-
-  const { totals, breakdown, vehicle, route, load: normalizedLoad } = pricing;
-  const numBid = Number(bidAmount) || 0;
-  const marginVal = bidAnalytics ? bidAnalytics.marginPercent : null;
-
-  // Determine Gauge Zone
-  const getGaugeZone = (margin) => {
-    if (margin === null || margin === undefined) return null;
-    if (margin < 0) return "LOSS";
-    if (margin < 10) return "LOW";
-    if (margin < 18) return "VIABLE";
-    if (margin < 28) return "HEALTHY";
-    return "PREMIUM";
+  const formatTL = (val) => {
+    if (!Number.isFinite(val)) return "0 ₺";
+    return `${Math.round(val).toLocaleString("tr-TR")} ₺`;
   };
 
-  const activeZone = getGaugeZone(marginVal);
-
-  const gaugeTiers = [
-    { id: "LOSS", label: "LOSS", range: "< %0", color: "#FF5C5C", activeBg: "bg-[#FF5C5C]", activeBorder: "border-[#FF5C5C]" },
-    { id: "LOW", label: "LOW", range: "%0-%10", color: "#F5B94C", activeBg: "bg-[#F5B94C]", activeBorder: "border-[#F5B94C]" },
-    { id: "VIABLE", label: "VIABLE", range: "%10-%18", color: "#38BDF8", activeBg: "bg-[#38BDF8]", activeBorder: "border-[#38BDF8]" },
-    { id: "HEALTHY", label: "HEALTHY", range: "%18-%28", color: "#00E5A0", activeBg: "bg-[#00E5A0]", activeBorder: "border-[#00E5A0]" },
-    { id: "PREMIUM", label: "PREMIUM", range: "> %28", color: "#FCD34D", activeBg: "bg-[#FCD34D]", activeBorder: "border-[#FCD34D]" },
-  ];
-
   return (
-    <div
-      aria-label="Taşıyıcı Akıllı Maliyet ve Kârlılık Görünümü"
-      className={`rounded-3xl border border-white/[0.06] bg-[#0B111A] p-5 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.4)] select-none ${className}`}
-    >
-      {/* Top Header & Vehicle Selector & Verified Badge */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.06] pb-4">
-        <div className="flex flex-wrap items-center gap-2.5">
+    <div className={`space-y-4 rounded-xl border border-[#374151] bg-[#1F2937] p-4 text-[#F3F4F6] shadow-xl ${className}`}>
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#374151] pb-3">
+        <div>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-pulse" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#00E5A0]">
-              Akıllı Fiyatlandırma & Kârlılık Terminali
+            <span className="flex h-2.5 w-2.5 rounded-full bg-[#F5A400] shadow-[0_0_8px_#F5A400]" />
+            <h3 className="text-sm font-black uppercase tracking-wider text-[#F3F4F6]">
+              Akıllı Maliyet & Teklif Asistanı
+            </h3>
+          </div>
+          <p className="mt-0.5 text-xs text-[#A0AEC0]">
+            Maliyetin altında teklif vermeyi önler, sefer kârlılığını anlık analiz eder.
+          </p>
+        </div>
+
+        {/* Vehicle Selector */}
+        <div className="flex items-center gap-1 rounded-lg border border-[#374151] bg-[#111827] p-1 text-xs font-bold">
+          {["TIR", "KAMYON", "KAMYONET", "ONTEKER"].map((v) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setSelectedVehicle(v)}
+              className={`rounded px-2.5 py-1 transition ${
+                selectedVehicle === v
+                  ? "bg-[#F5A400] text-[#111827] font-black"
+                  : "text-[#A0AEC0] hover:text-[#F3F4F6]"
+              }`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Operating Cost Breakdown Summary Cards */}
+      {pricing && (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-lg border border-[#374151] bg-[#111827] p-2.5">
+            <span className="text-[11px] font-bold text-[#A0AEC0] uppercase tracking-wider">
+              Tahmini Yakıt
+            </span>
+            <div className="mt-1 text-sm font-black font-mono text-[#F3F4F6]">
+              {formatTL(pricing.costBreakdown?.fuelCost)}
+            </div>
+            <span className="text-[11px] text-[#A0AEC0]">
+              ~{Math.round(pricing.costBreakdown?.litersNeeded || 0)} Litre
             </span>
           </div>
-          {verifiedAudit && (
-            <TorkVerifiedCard auditResult={verifiedAudit} compact={true} />
-          )}
-        </div>
 
-        {/* Vehicle Selection Segmented Pills */}
-        <div className="flex flex-wrap items-center gap-1 rounded-xl border border-white/[0.06] bg-[#101923] p-1">
-          {Object.values(PRICING_VEHICLE_CONFIG).map((v) => {
-            const isSelected = selectedVehicle === v.id;
-            return (
-              <button
-                key={v.id}
-                type="button"
-                onClick={() => setSelectedVehicle(v.id)}
-                className={`rounded-lg px-2.5 py-1 text-xs font-bold transition duration-150 ${
-                  isSelected
-                    ? "bg-[#00E5A0] text-[#060B11] shadow-[0_0_12px_rgba(0,229,160,0.3)]"
-                    : "text-[#8C98A8] hover:text-[#F5F7FA]"
-                }`}
-              >
-                {v.shortLabel}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Hero: TEKLİFİNİZ */}
-      <div className="mt-5 rounded-2xl border border-white/[0.06] bg-[#101923] p-5 text-center">
-        <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8C98A8]">
-          Teklifiniz
-        </div>
-        <div className="mt-1 text-3xl sm:text-4xl font-black tracking-[-0.04em] text-[#F5F7FA]">
-          {numBid > 0 ? `₺${numBid.toLocaleString("tr-TR")}` : "₺0"}
-        </div>
-        <div className="mt-1 text-xs text-[#8C98A8]">
-          {route.distanceKm} km · {route.durationHours} sa sürüş · {vehicle.shortLabel}
-        </div>
-      </div>
-
-      {/* 3 Columns: Tahmini Maliyet | Tahmini Kâr | Tahmini Marj */}
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {/* Col 1: Tahmini Maliyet */}
-        <div className="rounded-2xl border border-white/[0.06] bg-[#101923] p-4 text-center">
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]">
-            Tahmini Maliyet
-          </div>
-          <div className="mt-1 text-xl sm:text-2xl font-black tracking-[-0.03em] text-[#F5F7FA]">
-            ₺{totals.totalOperatingCost.toLocaleString("tr-TR")}
-          </div>
-          <div className="mt-0.5 text-[11px] text-[#8C98A8]">
-            ₺{totals.unitCostPerKm.toFixed(2)} / km
-          </div>
-        </div>
-
-        {/* Col 2: Tahmini Kâr */}
-        <div className={`rounded-2xl border p-4 text-center ${
-          !bidAnalytics
-            ? "border-white/[0.06] bg-[#101923]"
-            : bidAnalytics.estimatedProfit >= 0
-            ? "border-[#00E5A0]/20 bg-[#00E5A0]/[0.06]"
-            : "border-[#FF5C5C]/20 bg-[#FF5C5C]/[0.06]"
-        }`}>
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]">
-            Tahmini Kâr
-          </div>
-          <div className={`mt-1 text-xl sm:text-2xl font-black tracking-[-0.03em] ${
-            !bidAnalytics
-              ? "text-[#F5F7FA]"
-              : bidAnalytics.estimatedProfit >= 0
-              ? "text-[#00E5A0]"
-              : "text-[#FF5C5C]"
-          }`}>
-            {bidAnalytics
-              ? `${bidAnalytics.estimatedProfit >= 0 ? "+" : ""}₺${bidAnalytics.estimatedProfit.toLocaleString("tr-TR")}`
-              : "—"}
-          </div>
-          <div className="mt-0.5 text-[11px] text-[#8C98A8]">
-            {bidAnalytics ? (bidAnalytics.estimatedProfit >= 0 ? "Net Sefer Kârı" : "Zarar") : "Teklif bekleniyor"}
-          </div>
-        </div>
-
-        {/* Col 3: Tahmini Marj */}
-        <div className={`rounded-2xl border p-4 text-center ${
-          !bidAnalytics
-            ? "border-white/[0.06] bg-[#101923]"
-            : activeZone === "PREMIUM"
-            ? "border-[#FCD34D]/30 bg-[#FCD34D]/[0.06]"
-            : activeZone === "HEALTHY"
-            ? "border-[#00E5A0]/30 bg-[#00E5A0]/[0.06]"
-            : activeZone === "VIABLE"
-            ? "border-[#38BDF8]/30 bg-[#38BDF8]/[0.06]"
-            : activeZone === "LOW"
-            ? "border-[#F5B94C]/30 bg-[#F5B94C]/[0.06]"
-            : "border-[#FF5C5C]/30 bg-[#FF5C5C]/[0.06]"
-        }`}>
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8C98A8]">
-            Tahmini Marj
-          </div>
-          <div className={`mt-1 text-xl sm:text-2xl font-black tracking-[-0.03em] ${
-            !bidAnalytics
-              ? "text-[#F5F7FA]"
-              : activeZone === "PREMIUM"
-              ? "text-[#FCD34D]"
-              : activeZone === "HEALTHY"
-              ? "text-[#00E5A0]"
-              : activeZone === "VIABLE"
-              ? "text-[#38BDF8]"
-              : activeZone === "LOW"
-              ? "text-[#F5B94C]"
-              : "text-[#FF5C5C]"
-          }`}>
-            {marginVal !== null ? `%${marginVal.toLocaleString("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` : "—"}
-          </div>
-          <div className="mt-0.5 text-[11px] font-bold text-[#8C98A8]">
-            {activeZone || "—"}
-          </div>
-        </div>
-      </div>
-
-      {/* Horizontal Profit Gauge */}
-      <div className="mt-5 rounded-2xl border border-white/[0.06] bg-[#101923] p-4">
-        <div className="mb-2.5 flex items-center justify-between text-[11px] font-bold text-[#8C98A8]">
-          <span>KÂRLILIK GÖSTERGESİ (PROFIT GAUGE)</span>
-          {bidAnalytics && (
-            <span className="font-mono text-xs font-black text-[#F5F7FA]">
-              {bidAnalytics.message}
+          <div className="rounded-lg border border-[#374151] bg-[#111827] p-2.5">
+            <span className="text-[11px] font-bold text-[#A0AEC0] uppercase tracking-wider">
+              Otoyol / HGS
             </span>
-          )}
-        </div>
+            <div className="mt-1 text-sm font-black font-mono text-[#F3F4F6]">
+              {formatTL(pricing.costBreakdown?.tollCost)}
+            </div>
+            <span className="text-[11px] text-[#A0AEC0]">Geçiş & Köprü</span>
+          </div>
 
-        <div className="grid grid-cols-5 gap-1.5">
-          {gaugeTiers.map((tier) => {
-            const isCurrent = activeZone === tier.id;
-            return (
-              <div
-                key={tier.id}
-                className={`relative flex flex-col items-center justify-center rounded-xl py-2 px-1 text-center transition-all duration-200 ${
-                  isCurrent
-                    ? `${tier.activeBg} text-[#060B11] font-black shadow-lg scale-[1.02]`
-                    : "bg-white/[0.02] border border-white/[0.04] text-[#8C98A8]"
-                }`}
-              >
-                <span className="text-[10px] font-black tracking-wider">{tier.label}</span>
-                <span className={`text-[9px] ${isCurrent ? "text-[#060B11]/80 font-bold" : "text-[#8C98A8]/60"}`}>
-                  {tier.range}
-                </span>
-                {isCurrent && (
-                  <span className="absolute -top-1 h-2 w-2 rounded-full bg-white shadow" />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+          <div className="rounded-lg border border-[#374151] bg-[#111827] p-2.5">
+            <span className="text-[11px] font-bold text-[#A0AEC0] uppercase tracking-wider">
+              Sürücü & Amortisman
+            </span>
+            <div className="mt-1 text-sm font-black font-mono text-[#F3F4F6]">
+              {formatTL(
+                (pricing.costBreakdown?.driverCost || 0) +
+                (pricing.costBreakdown?.maintenanceCost || 0)
+              )}
+            </div>
+            <span className="text-[11px] text-[#A0AEC0]">İşçilik + Bakım</span>
+          </div>
 
-      {/* Advanced Toggles & Accordion */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-[#8C98A8] border-t border-white/[0.06] pt-3">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => {
-              setUseCustomConsumption(!useCustomConsumption);
-              if (!useCustomConsumption && !customConsumptionInput) {
-                setCustomConsumptionInput(String(vehicleConfig.consumptionPer100Km));
-              }
-            }}
-            className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition ${
-              useCustomConsumption
-                ? "border-[#00E5A0]/40 bg-[#00E5A0]/10 text-[#00E5A0]"
-                : "border-white/[0.06] bg-[#101923] text-[#8C98A8] hover:text-[#F5F7FA]"
-            }`}
-          >
-            {useCustomConsumption ? "✓ Özel Tüketim" : "+ Özel Tüketim"}
-          </button>
-
-          <label className="flex items-center gap-1.5 cursor-pointer font-bold text-[#8C98A8] hover:text-[#F5F7FA]">
-            <input
-              type="checkbox"
-              checked={isRoundTrip}
-              onChange={(e) => setIsRoundTrip(e.target.checked)}
-              className="h-3.5 w-3.5 rounded border-white/20 bg-white/5 accent-[#00E5A0]"
-            />
-            <span>Gidiş-Dönüş</span>
-          </label>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setShowCostBreakdown(!showCostBreakdown)}
-          className="flex items-center gap-1.5 font-bold text-[#00E5A0] hover:text-[#00c78a]"
-        >
-          <span>Maliyet Kalemleri (6 Kalem)</span>
-          <svg
-            className={`h-3.5 w-3.5 transition-transform duration-200 ${showCostBreakdown ? "rotate-180" : ""}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Expanded Custom Consumption Input */}
-      {useCustomConsumption && (
-        <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#00E5A0]/20 bg-[#00E5A0]/[0.04] p-3 text-xs">
-          <span className="font-bold text-[#F5F7FA]">{vehicle.shortLabel} Özel Tüketim:</span>
-          <input
-            type="number"
-            min="1"
-            max="100"
-            step="0.1"
-            value={customConsumptionInput}
-            onChange={(e) => setCustomConsumptionInput(e.target.value)}
-            placeholder={String(vehicleConfig.consumptionPer100Km)}
-            className="w-20 rounded-lg border border-white/20 bg-[#060B11] px-2 py-1 text-xs font-mono font-bold text-[#00E5A0]"
-          />
-          <span className="text-[#8C98A8]">L / 100km</span>
+          <div className="rounded-lg border border-[#F5A400]/40 bg-[#F5A400]/10 p-2.5">
+            <span className="text-[11px] font-bold text-[#F5A400] uppercase tracking-wider">
+              Minimum Taban Maliyet
+            </span>
+            <div className="mt-1 text-sm font-black font-mono text-[#F5A400]">
+              {formatTL(pricing.operatingCost)}
+            </div>
+            <span className="text-[11px] text-[#A0AEC0]">Zarar Eşiği</span>
+          </div>
         </div>
       )}
 
-      {/* Expanded Cost Breakdown */}
-      {showCostBreakdown && (
-        <div className="mt-3 space-y-1.5 rounded-2xl border border-white/[0.06] bg-[#101923] p-4 text-xs">
-          <div className="flex justify-between py-1 border-b border-white/[0.04]">
-            <span className="text-[#8C98A8]">1. Akaryakıt (Motorin {breakdown.route.fuel.liters} L)</span>
-            <span className="font-mono font-bold text-[#F5F7FA]">₺{breakdown.route.fuel.cost.toLocaleString("tr-TR")}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-white/[0.04]">
-            <span className="text-[#8C98A8]">2. Sürücü İşçilik ({breakdown.route.driver.hours} sa)</span>
-            <span className="font-mono font-bold text-[#F5F7FA]">₺{breakdown.route.driver.cost.toLocaleString("tr-TR")}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-white/[0.04]">
-            <span className="text-[#8C98A8]">3. Otoyol & Köprü Geçiş</span>
-            <span className="font-mono font-bold text-[#F5F7FA]">
-              {breakdown.route.toll.isIncluded ? `₺${breakdown.route.toll.cost.toLocaleString("tr-TR")}` : "Dahil Edilmedi"}
-            </span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-white/[0.04]">
-            <span className="text-[#8C98A8]">4. Bakım & Lastik</span>
-            <span className="font-mono font-bold text-[#F5F7FA]">₺{breakdown.route.maintenance.cost.toLocaleString("tr-TR")}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-white/[0.04]">
-            <span className="text-[#8C98A8]">5. Amortisman & Yıpranma</span>
-            <span className="font-mono font-bold text-[#F5F7FA]">₺{breakdown.route.depreciation.cost.toLocaleString("tr-TR")}</span>
-          </div>
-          {totals.loadSpecificDirectCost > 0 && (
-            <div className="flex justify-between py-1 border-b border-white/[0.04] text-[#F5B94C]">
-              <span>6. Yüke Özel Harç / İzin</span>
-              <span className="font-mono font-bold">₺{totals.loadSpecificDirectCost.toLocaleString("tr-TR")}</span>
+      {/* Real-time Bid Profit Analysis */}
+      {bidAnalytics ? (
+        <div
+          className={`rounded-lg border p-3.5 transition ${
+            bidAnalytics.profitMargin >= 10
+              ? "border-[#22C55E]/40 bg-[#22C55E]/10"
+              : bidAnalytics.profitMargin >= 0
+              ? "border-[#F5A400]/40 bg-[#F5A400]/10"
+              : "border-[#EF4444]/40 bg-[#EF4444]/10"
+          }`}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#A0AEC0]">
+                Net Kâr · Teklif Kârlılık Analizi ({formatTL(parseFloat(bidAmount))})
+              </span>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span
+                  className={`text-lg font-black font-mono ${
+                    bidAnalytics.profit >= 0 ? "text-[#22C55E]" : "text-[#EF4444]"
+                  }`}
+                >
+                  {bidAnalytics.profit >= 0 ? "+" : ""}
+                  {formatTL(bidAnalytics.profit)}
+                </span>
+                <span
+                  className={`text-xs font-bold font-mono px-2 py-0.5 rounded ${
+                    bidAnalytics.profitMargin >= 10
+                      ? "bg-[#22C55E]/20 text-[#22C55E]"
+                      : bidAnalytics.profitMargin >= 0
+                      ? "bg-[#F5A400]/20 text-[#F5A400]"
+                      : "bg-[#EF4444]/20 text-[#EF4444]"
+                  }`}
+                >
+                  %{Math.round(bidAnalytics.profitMargin)} Marj
+                </span>
+              </div>
             </div>
-          )}
-          <div className="flex justify-between py-1 pt-2 font-bold text-[#F5F7FA]">
-            <span className="text-[#8C98A8]">Genel İdare & Operasyon Payı (%{breakdown.overhead.ratePercent})</span>
-            <span className="font-mono">₺{breakdown.overhead.cost.toLocaleString("tr-TR")}</span>
+
+            <div className="text-right text-xs">
+              <div className="font-bold text-[#F3F4F6]">{bidAnalytics.ratingLabel}</div>
+              <div className="text-[11px] text-[#A0AEC0]">{bidAnalytics.advice}</div>
+            </div>
           </div>
         </div>
+      ) : (
+        <div className="rounded-lg border border-[#374151] bg-[#111827]/60 p-3 text-center text-xs text-[#A0AEC0]">
+          💡 Yukarıdaki teklif kutusuna tutar girdiğinizde anlık kârlılık ve marj analizi hesaplanır.
+        </div>
+      )}
+
+      {/* Advanced Cost Breakdown Toggle */}
+      <div className="pt-1">
+        <button
+          type="button"
+          onClick={() => setShowCostBreakdown(!showCostBreakdown)}
+          className="text-xs font-bold text-[#F5A400] hover:text-[#D98200] transition flex items-center gap-1"
+        >
+          <span>{showCostBreakdown ? "▼ Maliyet Detaylarını Gizle" : "▶ Detaylı Maliyet Parametrelerini Göster"}</span>
+        </button>
+
+        {showCostBreakdown && pricing && (
+          <div className="mt-3 space-y-3 rounded-lg border border-[#374151] bg-[#111827] p-3 text-xs">
+            <div className="grid grid-cols-2 gap-2 text-[#A0AEC0]">
+              <div>Ortalama Tüketim: <span className="text-[#F3F4F6] font-mono">{pricing.costBreakdown?.consumptionRate} L/100km</span></div>
+              <div>Motorin Litre Fiyatı: <span className="text-[#F3F4F6] font-mono">{fuelPricePerLiter.toFixed(2)} ₺</span></div>
+              <div>Tahmini Sefer Süresi: <span className="text-[#F3F4F6] font-mono">{Math.round(durationMinutes / 60)} saat {durationMinutes % 60} dk</span></div>
+              <div>Boş Dönüş Tamponu: <span className="text-[#F3F4F6] font-mono">%{returnBuffer}</span></div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Cryptographic Proof Verification Card */}
+      {verifiedAudit && (
+        <TorkVerifiedCard
+          verifiedAudit={verifiedAudit}
+          context="CARRIER_BID_EVALUATION"
+          className="mt-2"
+        />
       )}
     </div>
   );

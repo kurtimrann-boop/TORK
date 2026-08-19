@@ -13,7 +13,7 @@ const MapComponent = dynamic(() => import("./TorkMap"), {
   loading: () => (
     <div className="flex h-[360px] sm:h-[420px] lg:h-[460px] w-full items-center justify-center rounded-3xl border border-white/8 bg-[#090D14] text-sm text-[#9AA7B5]">
       <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-4 py-2 text-xs font-bold text-slate-300">
-        <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-pulse" />
+        <span className="h-2 w-2 rounded-full bg-[#F5A400] animate-pulse" />
         Harita yükleniyor...
       </div>
     </div>
@@ -207,13 +207,13 @@ export default function RouteVisualization({
         {/* Floating Live Route Info Pill (Bottom-Left) */}
         {activeStatus === "success" && routeState.distanceText && (
           <div className="absolute left-3 bottom-3 z-[400] flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0B111A]/85 px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-all duration-300">
-            <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-xl bg-[#00E5A0]/10 text-[#00E5A0]">
+            <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-xl bg-[#F5A400]/10 text-[#F5A400]">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
             </div>
             <div>
-              <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#00E5A0]">
+              <div className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#F5A400]">
                 CANLI ROTA
               </div>
               <div className="text-xs sm:text-sm font-black text-white tracking-tight">
@@ -221,7 +221,7 @@ export default function RouteVisualization({
                 {routeState.fuelCost && (
                   <>
                     <span className="text-white/40"> · </span>
-                    <span className="text-[#00E5A0]/90">≈ {routeState.fuelCost.formatted?.cost} yakıt</span>
+                    <span className="text-[#F5A400]/90">≈ {routeState.fuelCost.formatted?.cost} yakıt</span>
                   </>
                 )}
               </div>
@@ -232,8 +232,8 @@ export default function RouteVisualization({
         {/* Loading Floating Indicator with smooth 300ms transition */}
         {activeStatus === "loading" && (
           <div className="absolute inset-x-0 top-3 z-[1000] flex justify-center pointer-events-none transition-all duration-300">
-            <div className="flex items-center gap-2 rounded-full border border-[#00E5A0]/25 bg-black/80 px-4 py-2 text-xs font-black text-[#00E5A0] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md">
-              <span className="h-2 w-2 rounded-full bg-[#00E5A0] animate-ping" />
+            <div className="flex items-center gap-2 rounded-full border border-[#F5A400]/25 bg-black/80 px-4 py-2 text-xs font-black text-[#F5A400] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md">
+              <span className="h-2 w-2 rounded-full bg-[#F5A400] animate-ping" />
               Rota hesaplanıyor...
             </div>
           </div>

@@ -32,9 +32,9 @@ export default function TorkVerifiedCard({ auditResult = null, compact = false }
   const statusConfig = isPass
     ? {
         label: "HESAP TUTARLI",
-        textColor: "text-[#00E5A0]",
-        bgColor: "bg-[#00E5A0]/10",
-        borderColor: "border-[#00E5A0]/30",
+        textColor: "text-[#F5A400]",
+        bgColor: "bg-[#F5A400]/10",
+        borderColor: "border-[#F5A400]/30",
         badgeIcon: "✓",
       }
     : isWarning
@@ -103,7 +103,7 @@ export default function TorkVerifiedCard({ auditResult = null, compact = false }
             <span>{statusConfig.label}</span>
           </div>
           <div className="px-2.5 py-1 rounded-full border border-[#101923] bg-[#060B11] text-xs font-mono text-[#F5F7FA]">
-            Skor: <span className={score === 100 ? "text-[#00E5A0] font-bold" : "text-[#F5B94C] font-bold"}>{score}</span>/100
+            Skor: <span className={score === 100 ? "text-[#F5A400] font-bold" : "text-[#F5B94C] font-bold"}>{score}</span>/100
           </div>
         </div>
       </div>
@@ -129,7 +129,7 @@ export default function TorkVerifiedCard({ auditResult = null, compact = false }
             <div
               key={idx}
               className={`flex items-center justify-between px-2.5 py-1.5 rounded-md border text-[11px] font-mono ${
-                itemPass ? "bg-[#00E5A0]/5 border-[#00E5A0]/20 text-[#00E5A0]" : "bg-[#FF5C5C]/5 border-[#FF5C5C]/20 text-[#FF5C5C]"
+                itemPass ? "bg-[#F5A400]/5 border-[#F5A400]/20 text-[#F5A400]" : "bg-[#FF5C5C]/5 border-[#FF5C5C]/20 text-[#FF5C5C]"
               }`}
             >
               <span>{item.label}</span>
@@ -185,7 +185,7 @@ export default function TorkVerifiedCard({ auditResult = null, compact = false }
                 <span
                   className={`mt-0.5 font-bold text-xs ${
                     check.status === "PASS"
-                      ? "text-[#00E5A0]"
+                      ? "text-[#F5A400]"
                       : check.status === "WARNING"
                       ? "text-[#F5B94C]"
                       : "text-[#FF5C5C]"

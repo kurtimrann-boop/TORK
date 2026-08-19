@@ -6,15 +6,15 @@ export default function StatCard({
   accent = "neutral",
 }) {
   const accentText = {
-    emerald: "text-[#00E5A0]",
-    cyan: "text-[#00E5A0]",
+    emerald: "text-[#F5A400]",
+    cyan: "text-[#F5A400]",
     amber: "text-[#F5B94C]",
     neutral: "text-[#F5F7FA]",
   }[accent] || "text-[#F5F7FA]";
 
   const indicatorDot = {
-    emerald: "bg-[#00E5A0]",
-    cyan: "bg-[#00E5A0]",
+    emerald: "bg-[#F5A400]",
+    cyan: "bg-[#F5A400]",
     amber: "bg-[#F5B94C]",
     neutral: "bg-white/40",
   }[accent] || "bg-white/40";
@@ -35,7 +35,7 @@ export default function StatCard({
       <div className="mt-2 flex items-center justify-between text-xs text-[#8C98A8]">
         <span className="truncate">{detail}</span>
         {trend && (
-          <span className="text-[10px] font-bold text-[#00E5A0] bg-[#00E5A0]/10 px-1.5 py-0.5 rounded-md">
+          <span className="text-[10px] font-bold text-[#F5A400] bg-[#F5A400]/10 px-1.5 py-0.5 rounded-md">
             {trend}
           </span>
         )}

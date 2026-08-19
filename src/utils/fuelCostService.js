@@ -1,3 +1,5 @@
+import { calculateWeightAdjustedConsumption } from "./pricingService.js";
+
 /**
  * TORK Fuel Cost Calculation Engine (Hürmüz Foundation Phase 2)
  * 
@@ -59,6 +61,7 @@ export const DEFAULT_VEHICLE_PROFILE = VEHICLE_CONSUMPTION_PROFILES.TIR;
  * @param {number} params.distanceKm - Route distance in kilometers
  * @param {number} params.fuelPricePerLiter - Unit fuel price (₺ / Liter)
  * @param {string} [params.vehicleTypeId] - Vehicle type key ('TIR', 'KAMYON', etc.)
+ * @param {number} [params.tonnage] - Cargo weight in tonnes for weight-aware adjustment
  * @param {number} [params.customConsumption] - Optional user-overridden consumption (L/100km)
  * @returns {Object|null} Calculation results or null if invalid inputs
  */
@@ -66,6 +69,7 @@ export function calculateRouteFuelCost({
   distanceKm,
   fuelPricePerLiter,
   vehicleTypeId = "TIR",
+  tonnage = null,
   customConsumption = null,
 }) {
   const numDist = typeof distanceKm === "number" ? distanceKm : parseFloat(distanceKm);
@@ -76,9 +80,14 @@ export function calculateRouteFuelCost({
   }
 
   const profile = VEHICLE_CONSUMPTION_PROFILES[vehicleTypeId] || DEFAULT_VEHICLE_PROFILE;
-  const consumption = customConsumption && Number.isFinite(customConsumption) && customConsumption > 0
-    ? customConsumption
-    : profile.consumptionPer100Km;
+
+  const weightAdj = calculateWeightAdjustedConsumption({
+    vehicleType: vehicleTypeId,
+    tonnage,
+    customConsumption,
+  });
+
+  const consumption = weightAdj.adjustedConsumption;
 
   // Exact math:
   const fuelLiters = (numDist / 100) * consumption;
@@ -95,6 +104,11 @@ export function calculateRouteFuelCost({
   return {
     distanceKm: Math.round(numDist * 10) / 10,
     consumptionPer100Km: consumption,
+    baseConsumptionPer100Km: weightAdj.baseConsumption,
+    weightFactor: weightAdj.weightFactor,
+    payloadRatio: weightAdj.payloadRatio,
+    payloadPercent: weightAdj.payloadPercent,
+    isWeightAdjusted: weightAdj.isWeightAdjusted,
     vehicleProfile: profile,
     fuelLiters: roundedLiters,
     rawLiters: fuelLiters,
@@ -110,7 +124,9 @@ export function calculateRouteFuelCost({
     breakdown: {
       step1: `${Math.round(numDist)} km ÷ 100 × ${consumption} L = ${roundedLiters.toLocaleString("tr-TR")} Litre`,
       step2: `${roundedLiters.toLocaleString("tr-TR")} L × ₺${numPrice.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${formattedCostTR}`,
-      disclaimer: "TORK varsayılan araç tüketim profili ve güncel akaryakıt pompa fiyatına dayalı tahmini değerdir.",
+      disclaimer: weightAdj.isWeightAdjusted
+        ? "TORK Hürmüz Tonaj-Duyarlı Ağırlık Modeli V1 ve güncel akaryakıt pompa fiyatına dayalı tahmini değerdir."
+        : "TORK varsayılan araç tüketim profili ve güncel akaryakıt pompa fiyatına dayalı tahmini değerdir.",
     },
   };
 }

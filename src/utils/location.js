@@ -1,5 +1,5 @@
 import { TURKEY_PROVINCE_COORDINATES, getProvinceCoordinate } from "../data/turkeyProvinceCoordinates.js";
-import { getProvinceByCode } from "../data/turkeyProvinces.js";
+import { getProvinceByCode, TURKEY_PROVINCES } from "../data/turkeyProvinces.js";
 import { getDistrictCoordinate, getDistrictCoordinatesByProvince } from "../data/turkeyDistrictCoordinates.js";
 
 /**
@@ -184,4 +184,81 @@ export function setRouteDistance(loadId, distanceKm, durationMinutes) {
 export function getRouteDistance(loadId) {
   if (!loadId) return null;
   return routeDistanceCache.get(loadId) || null;
+}
+
+/**
+ * Resolves geographical coordinates from any location representation (string, object, code).
+ */
+export function resolveLocationCoordinates(locInput) {
+  if (!locInput) return null;
+
+  // Case 1: Already has lat/lng
+  if (typeof locInput === "object" && typeof locInput.lat === "number" && typeof locInput.lng === "number") {
+    const norm = normalizeLocation(locInput);
+    if (norm) {
+      return {
+        ...norm,
+        provinceName: locInput.provinceName || locInput.name || "",
+        districtName: locInput.districtName || "",
+      };
+    }
+  }
+
+  // Case 2: Object with provinceCode / districtId
+  if (typeof locInput === "object" && locInput.provinceCode) {
+    return buildLocationObject({
+      provinceCode: locInput.provinceCode,
+      provinceName: locInput.provinceName,
+      districtId: locInput.districtId,
+      districtName: locInput.districtName,
+    });
+  }
+
+  // Case 3: String like "İstanbul / Arnavutköy" or "Ankara"
+  if (typeof locInput === "string") {
+    const raw = locInput.trim();
+    if (!raw) return null;
+
+    const parts = raw.split("/").map((p) => p.trim());
+    const provincePart = parts[0];
+    const districtPart = parts[1] || null;
+
+    // Search in turkeyProvinces
+    const prov = getProvinceByCode(provincePart) || (TURKEY_PROVINCES && TURKEY_PROVINCES.find(
+      (p) =>
+        p.name.toLocaleUpperCase("tr-TR") === provincePart.toLocaleUpperCase("tr-TR") ||
+        provincePart.toLocaleUpperCase("tr-TR").includes(p.name.toLocaleUpperCase("tr-TR"))
+    ));
+
+    if (prov) {
+      return buildLocationObject({
+        provinceCode: prov.code,
+        provinceName: prov.name,
+        districtName: districtPart,
+      });
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extracts normalized origin & destination coordinates for a load record safely.
+ */
+export function resolveLoadLocations(load) {
+  if (!load) return { origin: null, destination: null };
+
+  const origin = resolveLocationCoordinates(
+    load.origin ||
+    load.origin_location ||
+    (load.origin_province_code ? { provinceCode: load.origin_province_code, districtId: load.origin_district_id } : null)
+  );
+
+  const destination = resolveLocationCoordinates(
+    load.destination ||
+    load.destination_location ||
+    (load.destination_province_code ? { provinceCode: load.destination_province_code, districtId: load.destination_district_id } : null)
+  );
+
+  return { origin, destination };
 }

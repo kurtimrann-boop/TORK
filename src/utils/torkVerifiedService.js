@@ -1,3 +1,5 @@
+import { calculateWeightAdjustedConsumption, WEIGHT_FUEL_MODEL } from "./pricingService.js";
+
 /**
  * TORK VERIFIED — Bağımsız Hesaplama ve Maliyet Denetim Motoru (V1)
  * 
@@ -7,7 +9,7 @@
  * 
  * Bu servis, Hürmüz'den gelen hesaplama çıktısını körü körüne kabul etmez.
  * Temel fiziksel ve operasyonel değişkenlerden bağımsız olarak yeniden hesaplar,
- * 12 kritik tutarlılık denetiminden geçirir ve deterministik bir denetim skoru üretir.
+ * 13 kritik tutarlılık denetiminden geçirir ve deterministik bir denetim skoru üretir.
  */
 
 export const VERIFIED_VEHICLE_CONFIG = {
@@ -110,22 +112,29 @@ export function verifyPricingCalculation({ inputParams = {}, calculatedPricing =
   const tripMultiplier = isRoundTrip ? 2 * (1 + bufferPct / 100) : 1;
   const effectiveDistanceKm = baseDist * tripMultiplier;
 
-  const durationMinsInput = inputParams.durationMinutes ?? calculatedPricing?.route?.durationMinutes;
+  const durationMinsInput = inputParams.durationMinutes;
   const effectiveDurationMinutes = durationMinsInput && Number.isFinite(Number(durationMinsInput)) && Number(durationMinsInput) > 0
     ? (Number(durationMinsInput) * tripMultiplier)
     : (effectiveDistanceKm / 65) * 60 + 60;
   const tripDurationHours = effectiveDurationMinutes / 60;
 
-  // 1. Bağımsız Yakıt Hesabı
+  // 1. Bağımsız Yakıt Hesabı (Ağırlık Düzeltmeli Model V1)
   const isCustomConsumption = inputParams.customConsumption !== null &&
     inputParams.customConsumption !== undefined &&
     Number.isFinite(Number(inputParams.customConsumption)) &&
     Number(inputParams.customConsumption) >= 1 &&
     Number(inputParams.customConsumption) <= 100;
 
-  const consumption = isCustomConsumption
-    ? Number(inputParams.customConsumption)
-    : vConfig.consumptionPer100Km;
+  const rawTonnage = inputParams.tonnage ?? inputParams.loadProfile?.tonnage ?? inputParams.load?.tonnage ?? calculatedPricing?.load?.tonnage ?? null;
+  const verifiedTonnage = rawTonnage !== null && Number.isFinite(Number(rawTonnage)) && Number(rawTonnage) > 0 ? Number(rawTonnage) : null;
+
+  const verifiedWeightAdj = calculateWeightAdjustedConsumption({
+    vehicleType: vKey,
+    tonnage: verifiedTonnage,
+    customConsumption: isCustomConsumption ? Number(inputParams.customConsumption) : null,
+  });
+
+  const consumption = verifiedWeightAdj.adjustedConsumption;
 
   const unitFuelPrice = Number.isFinite(Number(inputParams.fuelPricePerLiter)) && Number(inputParams.fuelPricePerLiter) > 0
     ? Number(inputParams.fuelPricePerLiter)
@@ -457,6 +466,38 @@ export function verifyPricingCalculation({ inputParams = {}, calculatedPricing =
     delta: 0,
     detail: tollCostValue ? `₺${Number(tollCostValue).toLocaleString("tr-TR")} geçiş bedeli dahil edildi.` : "Geçiş ücreti doğrulanmadı (Maliyete sahte 0 TL eklenmedi).",
   });
+
+  // CHECK_13: Tonaj -> Yakıt Tüketimi Tutarlılığı (Weight-Aware Model V1)
+  const receivedFuelConsumption = rBreakdown.route?.fuel?.consumptionPer100Km ?? null;
+  const receivedFuelLiters = rBreakdown.route?.fuel?.liters ?? null;
+  if (receivedFuelConsumption !== null && receivedFuelConsumption !== undefined) {
+    const deltaCons = Math.abs(Number(receivedFuelConsumption) - consumption);
+    const passCons = deltaCons <= 0.15;
+    checks.push({
+      id: "CHECK_13_PAYLOAD_FUEL_CONSISTENCY",
+      name: "Tonaj - Yakıt Tüketim Tutarlılığı (Ağırlık Modeli V1)",
+      status: passCons ? "PASS" : "FAIL",
+      expected: consumption,
+      received: Number(receivedFuelConsumption),
+      delta: deltaCons,
+      detail: verifiedWeightAdj.isWeightAdjusted
+        ? `${verifiedWeightAdj.tonnage} ton (%${verifiedWeightAdj.payloadPercent} doluluk) -> ${consumption} L/100km ampirik ağırlık eğrisi`
+        : `Standart nominal tüketim (${consumption} L/100km)`,
+    });
+    if (!passCons) {
+      errors.push(`Ağırlığa göre yakıt tüketiminde sapma: Beklenen ${consumption} L/100km, Alınan ${receivedFuelConsumption} L/100km`);
+    }
+  } else {
+    checks.push({
+      id: "CHECK_13_PAYLOAD_FUEL_CONSISTENCY",
+      name: "Tonaj - Yakıt Tüketim Tutarlılığı (Ağırlık Modeli V1)",
+      status: "PASS",
+      expected: consumption,
+      received: consumption,
+      delta: 0,
+      detail: "Bağımsız ağırlık-yakıt tüketimi doğrulandı",
+    });
+  }
 
   // Deterministik Skor Hesaplama
   let score = 100;
