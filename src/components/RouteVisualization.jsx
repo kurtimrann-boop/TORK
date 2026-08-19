@@ -189,6 +189,16 @@ export default function RouteVisualization({
       ? routeState.points
       : [];
 
+  const currentFuelCost = useMemo(() => {
+    if (!routeState?.distanceKm) return null;
+    return calculateRouteFuelCost({
+      distanceKm: routeState.distanceKm,
+      fuelPricePerLiter: routeState.fuelPrice || 78.54,
+      vehicleTypeId: vehicleType || "TIR",
+      tonnage: tonnage != null ? parseFloat(tonnage) : null,
+    });
+  }, [routeState.distanceKm, routeState.fuelPrice, vehicleType, tonnage]);
+
   return (
     <div className="space-y-4">
       <div className="relative overflow-hidden rounded-3xl">
