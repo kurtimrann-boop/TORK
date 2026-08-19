@@ -11,6 +11,7 @@ export default function MiniLiveMap({
   destination = null,
   routeDistanceKm = 730,
   routeDurationText = "8 sa 45 dk",
+  className = "",
 }) {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -52,7 +53,7 @@ export default function MiniLiveMap({
     // Neutral Turkey center
     const initialLat = coords?.lat || 39.5;
     const initialLng = coords?.lng || 35.5;
-    const initialZoom = coords ? 11 : 6;
+    const initialZoom = coords ? 12 : 6;
 
     const map = L.map(mapContainerRef.current, {
       center: [initialLat, initialLng],
@@ -70,6 +71,40 @@ export default function MiniLiveMap({
 
     mapRef.current = map;
 
+    // Mount initial marker if coords present
+    if (coords?.lat && coords?.lng) {
+      const circle = L.circle([coords.lat, coords.lng], {
+        radius: 1800,
+        color: "#F5A400",
+        fillColor: "#F5A400",
+        fillOpacity: 0.1,
+        weight: 1.5,
+      }).addTo(map);
+      circleRef.current = circle;
+
+      const locationIcon = L.divIcon({
+        className: "tork-map-marker-wrap",
+        html: `
+          <div class="relative flex items-center justify-center">
+            <div class="absolute -inset-3 rounded-full bg-[#F5A400]/20 animate-ping"></div>
+            <div class="h-4 w-4 rounded-full border-2 border-white bg-[#F5A400] shadow-[0_0_16px_rgba(245,164,0,0.9)] flex items-center justify-center">
+              <div class="h-1.5 w-1.5 rounded-full bg-[#060B11]"></div>
+            </div>
+          </div>
+        `,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
+      });
+
+      const marker = L.marker([coords.lat, coords.lng], { icon: locationIcon })
+        .addTo(map)
+        .bindPopup(
+          `<div class="p-1 text-center font-sans"><strong class="text-xs text-white">${locationName}</strong><br/><span class="text-[10px] text-[#F5A400] font-bold">CANLI OPERASYON MERKEZİ</span></div>`,
+          { closeButton: false }
+        );
+      markerRef.current = marker;
+    }
+
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
@@ -78,7 +113,7 @@ export default function MiniLiveMap({
       markerRef.current = null;
       circleRef.current = null;
     };
-  }, [hasLeaflet, coords]);
+  }, [hasLeaflet]);
 
   // Update Marker & Position when coords change
   useEffect(() => {
@@ -134,7 +169,7 @@ export default function MiniLiveMap({
 
   return (
     <div
-      className="relative h-[340px] sm:h-[380px] w-full overflow-hidden rounded-3xl border border-white/[0.06] bg-[#0B111A] shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
+      className={`relative h-[320px] sm:h-[340px] w-full overflow-hidden rounded-2xl border border-[#374151] bg-[#111827] shadow-xl ${className}`}
       aria-label={`Canlı Kontrol Haritası - ${locationName}`}
     >
       <div ref={mapContainerRef} className="h-full w-full" />

@@ -22,6 +22,7 @@ import { getMarkerLocation, buildLocationObject, getRouteDistance, setRouteDista
 import { getProvinceByName } from "../data/turkeyProvinces";
 import { formatCurrencyTR, formatRelativeTimeTR } from "../utils/turkish";
 import WeatherIndicator from "../components/WeatherIndicator";
+import OperationalTelemetryStrip from "../components/OperationalTelemetryStrip";
 import DashboardOperationsHub from "../components/DashboardOperationsHub";
 import PricingEngineCard from "../components/PricingEngineCard";
 import CarrierSmartBiddingWidget from "../components/CarrierSmartBiddingWidget";
@@ -375,6 +376,52 @@ export default function TorkApp() {
 
   const [userDashboard, setUserDashboard] =
     useState(null);
+
+  const [userLocation, setUserLocation] = useState({
+    coords: null,
+    city: "İstanbul",
+    accuracy: null,
+    status: "idle",
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    if (typeof window !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude, accuracy } = pos.coords;
+          let detectedCity = "İstanbul";
+          try {
+            const geoRes = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=tr`
+            );
+            if (geoRes.ok) {
+              const geoData = await geoRes.json();
+              detectedCity = geoData.address?.province || geoData.address?.city || geoData.address?.state || "İstanbul";
+            }
+          } catch (e) {}
+
+          if (isMounted) {
+            setUserLocation({
+              coords: { lat: latitude, lng: longitude },
+              city: detectedCity.replace(" İli", "").replace(" Province", "").trim(),
+              accuracy: Math.round(accuracy),
+              status: "ready",
+            });
+          }
+        },
+        () => {
+          if (isMounted) {
+            setUserLocation((prev) => ({ ...prev, status: "denied" }));
+          }
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const [activeTab, setActiveTab] =
     useState("overview");
@@ -2502,6 +2549,15 @@ export default function TorkApp() {
             onLogout={handleLogout}
           />
 
+          {/* Operational Telemetry Strip (Weather, Fuel & Network Telemetry - Sprint 15.3) */}
+          <div className="mb-4 sm:mb-5">
+            <OperationalTelemetryStrip
+              userDashboard={userDashboard}
+              userLocation={userLocation}
+              detectedProvince={userLocation?.city || userDashboard?.city || "İstanbul"}
+            />
+          </div>
+
           {/* =================================================
               CONTROL TOWER (Sprint 6)
           ================================================= */}
@@ -2511,14 +2567,15 @@ export default function TorkApp() {
           )}
 
           {/* =================================================
-              OVERVIEW
+              OVERVIEW (Map-First Command Center - Sprint 15.3)
           ================================================= */}
 
           {activeTab === "overview" && (
-             <div className="tork-fade-up space-y-8">
-               {/* REAL OPERATIONS HUB + MINI MAP + TORK INTELLIGENCE + QUICK ACTIONS */}
+             <div className="tork-fade-up space-y-5">
+               {/* CONSOLIDATED MAP-FIRST OPERATIONS HUB & 8/4 GRID */}
                <DashboardOperationsHub
                  userDashboard={userDashboard}
+                 userLocation={userLocation}
                  myLoads={myLoads}
                  loads={loads}
                  bids={userDashboard.role === "shipper" ? incomingBids : carrierBids}
@@ -2530,273 +2587,6 @@ export default function TorkApp() {
                    setActiveTab("create");
                  }}
                />
-
-               {/* OPERASYON İSTATİSTİK ÖZETİ (Mobile 2x2 Grid) */}
-               <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-                 {userDashboard.role === "shipper" ? (
-                   <>
-                     <StatCard
-                       label="Aktif İlanlar"
-                       value={shipperOpenCount}
-                       detail="Pazaryeri"
-                       accent="emerald"
-                     />
-                     <StatCard
-                       label="Atanan Taşımalar"
-                       value={shipperAssignedCount}
-                       detail="Devam eden"
-                       accent="cyan"
-                     />
-                     <StatCard
-                       label="Gelen Teklifler"
-                       value={incomingBids.length}
-                       detail={`${incomingBids.filter((b) => b.status === "pending").length} bekleyen`}
-                       accent="amber"
-                     />
-                     <StatCard
-                       label="Cüzdan Bakiyesi"
-                       value={`₺${walletBalance.toLocaleString("tr-TR")}`}
-                       detail="Kullanılabilir bakiye"
-                       accent="emerald"
-                     />
-                   </>
-                 ) : (
-                   <>
-                     <StatCard
-                       label="Açık Yükler"
-                       value={loads.length}
-                       detail="Pazaryeri"
-                       accent="emerald"
-                     />
-                     <StatCard
-                       label="Aktif Taşımalar"
-                       value={activeTransports.length}
-                       detail="Devam eden"
-                       accent="cyan"
-                     />
-                     <StatCard
-                       label="Tekliflerim"
-                       value={carrierBids.length}
-                       detail={`${carrierBids.filter((b) => b.status === "pending").length} bekleyen`}
-                       accent="amber"
-                     />
-                     <StatCard
-                       label="Cüzdan Bakiyesi"
-                       value={`₺${walletBalance.toLocaleString("tr-TR")}`}
-                       detail="Kullanılabilir bakiye"
-                       accent="emerald"
-                     />
-                   </>
-                 )}
-               </div>
-
-               {/* MAIN OPERATIONS DETAILS GRID */}
-               <div className="grid gap-6 lg:grid-cols-5">
-                 {/* LEFT: RECENT LOADS / BIDS */}
-                 <div className="lg:col-span-3 space-y-6">
-                   {/* RECENT LOADS */}
-                   {userDashboard.role === "shipper" && myLoads.length > 0 && (
-                     <div>
-                       <div className="mb-4 flex items-center justify-between">
-                         <div>
-                           <h3 className="text-lg font-black text-[#F5F7FA]">Son Yükler</h3>
-                           <p className="mt-1 text-xs text-[#9AA7B5]">Aktif ilanlarınız</p>
-                         </div>
-                         <button
-                           onClick={() => handleTabChange("loads")}
-                           className="text-xs font-bold text-[#F5A400] hover:text-[#F5A400]/80"
-                         >
-                           Tümünü Gör →
-                         </button>
-                       </div>
-
-                       <div className="space-y-3">
-                         {myLoads.slice(0, 2).map((load) => {
-                           const bidCount = incomingBids.filter((b) => b.load_id === load.id).length;
-                           return (
-                             <LoadCard
-                               key={load.id}
-                               load={load}
-                               bidCount={bidCount}
-                               onViewDetails={() => setActiveDetailLoadId(load.id)}
-                             />
-                           );
-                         })}
-                       </div>
-                     </div>
-                   )}
-
-                   {/* RECENT LOADS (CARRIER VIEW) */}
-                   {userDashboard.role === "carrier" && loads.length > 0 && (
-                     <div>
-                       <div className="mb-4 flex items-center justify-between">
-                         <div>
-                           <h3 className="text-lg font-black text-[#F5F7FA]">Uygun Yükler</h3>
-                           <p className="mt-1 text-xs text-[#9AA7B5]">Açık taşıma fırsatları</p>
-                         </div>
-                         <button
-                           onClick={() => handleTabChange("board")}
-                           className="text-xs font-bold text-[#F5A400] hover:text-[#F5A400]/80"
-                         >
-                           Tümünü Gör →
-                         </button>
-                       </div>
-
-                       <div className="space-y-3">
-                         {loads.slice(0, 2).map((load) => (
-                           <LoadCard
-                             key={load.id}
-                             load={load}
-                             onViewDetails={() => setActiveDetailLoadId(load.id)}
-                             onBid={() => {
-                               handleTabChange("board");
-                               setActiveBidLoadId(load.id);
-                             }}
-                           />
-                         ))}
-                       </div>
-                     </div>
-                   )}
-
-                   {/* RECENT BIDS */}
-                   <div>
-                     <div className="mb-4 flex items-center justify-between">
-                       <div>
-                         <h3 className="text-lg font-black text-[#F5F7FA]">
-                           {userDashboard.role === "shipper" ? "Son Gelen Teklifler" : "Son Tekliflerim"}
-                         </h3>
-                         <p className="mt-1 text-xs text-[#9AA7B5]">
-                           {userDashboard.role === "shipper" ? "İlanlarınıza gelen teklifler" : "Verdiğiniz son navlun teklifleri"}
-                         </p>
-                       </div>
-                       <button
-                         onClick={() => handleTabChange(userDashboard.role === "shipper" ? "bids" : "my-bids")}
-                         className="text-xs font-bold text-[#F5A400] hover:text-[#F5A400]/80"
-                       >
-                         Tümünü Gör →
-                       </button>
-                     </div>
-
-                     <div className="space-y-3">
-                       {(userDashboard.role === "shipper" ? incomingBids : carrierBids).length === 0 ? (
-                         <div className="rounded-2xl border border-white/6 bg-white/[0.02] p-6 text-center text-xs text-slate-400">
-                           {userDashboard.role === "shipper" ? "Henüz gelen teklif bulunmuyor." : "Henüz teklif vermediniz."}
-                         </div>
-                       ) : (
-                         (userDashboard.role === "shipper" ? incomingBids : carrierBids).slice(0, 2).map((bid) => (
-                           <BidCard
-                             key={bid.id}
-                             bid={bid}
-                             isCarrierView={userDashboard.role === "carrier"}
-                             onAccept={() =>
-                               handleUpdateBidStatus(bid.id, bid.load_id, "accepted")
-                             }
-                             onReject={() =>
-                               handleUpdateBidStatus(bid.id, bid.load_id, "rejected")
-                             }
-                             onEditBid={handleEditCarrierBid}
-                             onCancelBid={handleCancelCarrierBid}
-                             onViewLoad={(loadId) => setActiveDetailLoadId(loadId)}
-                           />
-                         ))
-                       )}
-                     </div>
-                   </div>
-                 </div>
-
-                 {/* RIGHT: ANALYTICS + SYSTEM STATUS */}
-                 <div className="lg:col-span-2 space-y-6">
-                   <div className="rounded-2xl border border-white/8 bg-[#0F1723] p-6">
-                     <div className="flex items-center justify-between mb-2">
-                       <h3 className="text-sm font-black text-[#F5F7FA]">
-                         {userDashboard.role === "shipper" ? "Navlun Maliyet Analizi" : "Teklif Performansı"}
-                       </h3>
-                       <span className="text-[10px] font-black uppercase tracking-wider text-[#F5A400]">
-                         CANLI KPI
-                       </span>
-                     </div>
-                     <p className="text-xs text-[#9AA7B5]">
-                       {userDashboard.role === "shipper" ? "Gelen tekliflerin piyasa özeti" : "Verilen teklifler ve başarı oranları"}
-                     </p>
-
-                     <div className="mt-5 space-y-2.5">
-                       {userDashboard.role === "shipper" ? (
-                         incomingBids.length > 0 ? (
-                           <>
-                             <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
-                               <span className="text-slate-400 font-bold">Ortalama Teklif:</span>
-                               <span className="font-black text-white">
-                                 ₺{Math.round(incomingBids.reduce((s, b) => s + Number(b.amount || 0), 0) / incomingBids.length).toLocaleString("tr-TR")}
-                               </span>
-                             </div>
-                             <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
-                               <span className="text-slate-400 font-bold">En Düşük Teklif:</span>
-                               <span className="font-black text-[#F5A400]">
-                                 ₺{Math.min(...incomingBids.map((b) => Number(b.amount) || 0)).toLocaleString("tr-TR")}
-                               </span>
-                             </div>
-                             <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
-                               <span className="text-slate-400 font-bold">İlan Başına Teklif:</span>
-                               <span className="font-black text-[#06B6D4]">
-                                 {(incomingBids.length / Math.max(myLoads.length, 1)).toFixed(1)} adet
-                               </span>
-                             </div>
-                           </>
-                         ) : (
-                           <div className="rounded-xl border border-white/6 bg-white/[0.02] p-4 text-center text-xs text-slate-400">
-                             Yeni yük ilanı oluşturarak taşıyıcılardan teklif toplayabilirsiniz.
-                           </div>
-                         )
-                       ) : carrierBids.length > 0 ? (
-                         <>
-                           <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
-                             <span className="text-slate-400 font-bold">Kazanma Oranı:</span>
-                             <span className="font-black text-[#F5A400]">
-                               %{Math.round((carrierBids.filter((b) => b.status === "accepted").length / carrierBids.length) * 100)}
-                             </span>
-                           </div>
-                           <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
-                             <span className="text-slate-400 font-bold">Ortalama Teklifim:</span>
-                             <span className="font-black text-white">
-                               ₺{Math.round(carrierBids.reduce((s, b) => s + Number(b.amount || 0), 0) / carrierBids.length).toLocaleString("tr-TR")}
-                             </span>
-                           </div>
-                           <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-3 text-xs">
-                             <span className="text-slate-400 font-bold">Bekleyen Teklifler:</span>
-                             <span className="font-black text-[#FBBF24]">
-                               {carrierBids.filter((b) => b.status === "pending").length} adet
-                             </span>
-                           </div>
-                         </>
-                       ) : (
-                         <div className="rounded-xl border border-white/6 bg-white/[0.02] p-4 text-center text-xs text-slate-400">
-                           Uygun yüklere teklif vererek performans istatistiklerinizi oluşturun.
-                         </div>
-                       )}
-                     </div>
-                   </div>
-
-                   <div className="rounded-2xl border border-white/8 bg-[#0F1723] p-6">
-                     <h3 className="mb-4 text-sm font-black text-[#F5F7FA]">Sistem Durumu</h3>
-                     <div className="space-y-3">
-                       <div className="flex items-center justify-between text-xs">
-                         <span className="text-[#9AA7B5]">MFA Politikası</span>
-                         <span className="font-black text-emerald-400">AKTİF</span>
-                       </div>
-                       <div className="h-px bg-white/6" />
-                       <div className="flex items-center justify-between text-xs">
-                         <span className="text-[#9AA7B5]">Kritik Uyarılar</span>
-                         <span className="font-black text-[#FBBF24]">ZORUNLU</span>
-                       </div>
-                       <div className="h-px bg-white/6" />
-                       <div className="flex items-center justify-between text-xs">
-                         <span className="text-[#9AA7B5]">Ağ</span>
-                         <span className="font-black text-emerald-400">CANLI</span>
-                       </div>
-                     </div>
-                   </div>
-                 </div>
-               </div>
              </div>
            )}
 
