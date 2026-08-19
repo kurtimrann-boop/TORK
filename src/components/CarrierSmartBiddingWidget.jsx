@@ -270,7 +270,7 @@ export default function CarrierSmartBiddingWidget({
         {showCostBreakdown && pricing && (
           <div className="mt-3 space-y-3 rounded-lg border border-[#374151] bg-[#111827] p-3 text-xs">
             <div className="grid grid-cols-2 gap-2 text-[#A0AEC0]">
-              <div>Ortalama Tüketim: <span className="text-[#F3F4F6] font-mono">{pricing.costBreakdown?.consumptionRate} L/100km</span></div>
+              <div>Ortalama Tüketim: <span className="text-[#F3F4F6] font-mono">{pricing.breakdown?.route?.fuel?.consumptionPer100Km || pricing.costBreakdown?.consumptionRate || 32} L/100km</span></div>
               <div>Motorin Litre Fiyatı: <span className="text-[#F3F4F6] font-mono">{fuelPricePerLiter.toFixed(2)} ₺</span></div>
               <div>Tahmini Sefer Süresi: <span className="text-[#F3F4F6] font-mono">{Math.round(durationMinutes / 60)} saat {durationMinutes % 60} dk</span></div>
               <div>Boş Dönüş Tamponu: <span className="text-[#F3F4F6] font-mono">%{returnBuffer}</span></div>

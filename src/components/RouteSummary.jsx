@@ -60,11 +60,15 @@ export default function RouteSummary({
                     TAHMİNİ YAKIT MALİYETİ
                   </span>
                   <span className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] font-bold text-slate-400">
-                    {fuelCostInfo.vehicleProfile?.shortLabel || "TIR"} · Motorin
+                    {fuelCostInfo.vehicleProfile?.shortLabel || "TIR"} · {fuelCostInfo.isWeightAdjusted ? `${fuelCostInfo.tonnage || ""} Ton` : "Nominal (0t)"}
                   </span>
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">
-                  {fuelCostInfo.formatted?.liters} ({fuelCostInfo.formatted?.consumption})
+                  {fuelCostInfo.formatted?.liters} (
+                  {fuelCostInfo.isWeightAdjusted
+                    ? `${fuelCostInfo.formatted?.consumption} · Tonaj Etkisi: %${fuelCostInfo.payloadPercent}`
+                    : `${fuelCostInfo.formatted?.consumption} · Nominal Tüketim / Tonaj Bekleniyor`}
+                  )
                 </div>
               </div>
             </div>

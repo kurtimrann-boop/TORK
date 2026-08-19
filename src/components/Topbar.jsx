@@ -286,7 +286,7 @@ export default function Topbar({
                     <button
                       type="button"
                       onClick={() => {
-                        onNavigate("settings");
+                        onNavigate("profile");
                         setAvatarMenuOpen(false);
                       }}
                       className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-[#A0AEC0] hover:text-[#F3F4F6] hover:bg-[#283548] transition text-left"

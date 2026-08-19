@@ -50,7 +50,6 @@ const ADMIN_TABS = [
   { id: "transports", label: "Taşımalar", icon: <IconTruck className="h-4 w-4" /> },
   { id: "wallet", label: "Cüzdan & Finans", icon: <IconWallet className="h-4 w-4" /> },
   { id: "profile", label: "Profilim", icon: <IconUser className="h-4 w-4" /> },
-  { id: "settings", label: "Ayarlar", icon: <IconSettings className="h-4 w-4" /> },
 ];
 
 const SHIPPER_TABS = [
@@ -60,7 +59,6 @@ const SHIPPER_TABS = [
   { id: "bids", label: "Gelen Teklifler", icon: <IconInbox className="h-4 w-4" /> },
   { id: "wallet", label: "Cüzdan", icon: <IconWallet className="h-4 w-4" /> },
   { id: "profile", label: "Profilim", icon: <IconUser className="h-4 w-4" /> },
-  { id: "settings", label: "Ayarlar", icon: <IconSettings className="h-4 w-4" /> },
 ];
 
 const CARRIER_TABS = [
@@ -70,7 +68,6 @@ const CARRIER_TABS = [
   { id: "transports", label: "Aktif Taşımalar", icon: <IconTruck className="h-4 w-4" /> },
   { id: "wallet", label: "Cüzdan", icon: <IconWallet className="h-4 w-4" /> },
   { id: "profile", label: "Profilim", icon: <IconUser className="h-4 w-4" /> },
-  { id: "settings", label: "Ayarlar", icon: <IconSettings className="h-4 w-4" /> },
 ];
 
 function IconTower({ className = "h-4 w-4" }) {
@@ -1381,13 +1378,14 @@ export default function TorkApp() {
       setMessage("");
 
       // Validate provinces selected
-      if (
-        !originProvince ||
-        !destinationProvince
-      ) {
-        setMessage(
-          "Lütfen başlangıç ve bitiş illerini seçiniz.",
-        );
+      if (!originProvince) {
+        setMessage("Lütfen yükleme ilini (Nereden) seçiniz.");
+        setLoading(false);
+        return;
+      }
+
+      if (!destinationProvince) {
+        setMessage("Lütfen teslimat ilini (Nereye) seçiniz.");
         setLoading(false);
         return;
       }
@@ -3023,10 +3021,25 @@ export default function TorkApp() {
 
                       <form
                         onSubmit={(e) => {
+                          e.preventDefault();
+                          if (createLoadStep === 0) {
+                            if (!originProvince) {
+                              setMessage("Lütfen yükleme noktasını (Nereden) seçiniz.");
+                              return;
+                            }
+                            if (!destinationProvince) {
+                              setMessage("Lütfen teslimat noktasını (Nereye) seçiniz.");
+                              return;
+                            }
+                            if (originProvince.code === destinationProvince.code) {
+                              setMessage("Başlangıç ve bitiş illeri farklı olmalıdır.");
+                              return;
+                            }
+                          }
                           if (createLoadStep === 4) {
                             handleCreateLoad(e);
                           } else {
-                            e.preventDefault();
+                            setMessage("");
                             setCreateLoadStep(
                               createLoadStep + 1
                             );
@@ -3138,6 +3151,8 @@ export default function TorkApp() {
                                     (destinationDistrict ? " / " + destinationDistrict : "")
                                   }
                                   loadId={editingLoad?.id || "new-load-preview"}
+                                  tonnage={tonnage}
+                                  vehicleType={vehicle}
                                 />
                               </div>
                             </div>
@@ -3419,6 +3434,8 @@ export default function TorkApp() {
                                 destinationProvince?.name +
                                 (destinationDistrict ? " / " + destinationDistrict : "")
                               }
+                              tonnage={tonnage}
+                              vehicleType={vehicle}
                             />
                           </div>
 
@@ -3526,8 +3543,8 @@ export default function TorkApp() {
 
                       <button
                         type="submit"
-                        disabled={loading || loadActionLoading}
-                        className="rounded-xl bg-[#F5A400] px-8 py-3 text-xs font-black text-[#060B11] shadow-[0_0_24px_rgba(245,164,0,0.25)] transition hover:bg-[#00c78a] active:scale-[0.99] disabled:opacity-50"
+                        disabled={loading || loadActionLoading || (createLoadStep === 0 && (!originProvince || !destinationProvince || originProvince.code === destinationProvince.code))}
+                        className="rounded-xl bg-[#F5A400] px-8 py-3 text-xs font-black text-[#060B11] shadow-[0_0_24px_rgba(245,164,0,0.25)] transition hover:bg-[#00c78a] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {loading || loadActionLoading
                           ? "İşleniyor..."

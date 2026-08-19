@@ -11,7 +11,7 @@ export default function Sidebar({ tabs, activeTab, userDashboard, onTabChange })
       return [
         {
           label: "GENEL",
-          tabIds: ["board", "overview"],
+          tabIds: ["overview"],
         },
         {
           label: "YÜK BORSASI",
@@ -27,7 +27,7 @@ export default function Sidebar({ tabs, activeTab, userDashboard, onTabChange })
         },
         {
           label: "HESAP",
-          tabIds: ["profile", "settings"],
+          tabIds: ["profile"],
         },
       ];
     }
@@ -40,7 +40,7 @@ export default function Sidebar({ tabs, activeTab, userDashboard, onTabChange })
         },
         {
           label: "OPERASYON",
-          tabIds: ["loads", "bids"],
+          tabIds: ["loads", "transports"],
         },
         {
           label: "FİNANS",
@@ -48,7 +48,7 @@ export default function Sidebar({ tabs, activeTab, userDashboard, onTabChange })
         },
         {
           label: "HESAP",
-          tabIds: ["profile", "settings"],
+          tabIds: ["profile"],
         },
       ];
     }
@@ -69,7 +69,7 @@ export default function Sidebar({ tabs, activeTab, userDashboard, onTabChange })
       },
       {
         label: "HESAP",
-        tabIds: ["profile", "settings"],
+        tabIds: ["profile"],
       },
     ];
   };

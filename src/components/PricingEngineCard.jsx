@@ -140,10 +140,15 @@ export default function PricingEngineCard({
               <span className="font-mono font-black">{load.complexityScore}/5</span>
             </span>
 
-            {breakdown.route.fuel.isWeightAdjusted && (
+            {breakdown?.route?.fuel?.isWeightAdjusted ? (
               <span className="inline-flex items-center gap-1.5 rounded bg-[#F5A400]/10 border border-[#F5A400]/30 px-2.5 py-0.5 text-xs font-bold text-[#F5A400]">
                 <span>Tonaj Etkisi: %{breakdown.route.fuel.payloadPercent}</span>
                 <span className="font-mono font-black">({breakdown.route.fuel.consumptionPer100Km} L/100km)</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded bg-[#111827] border border-[#374151] px-2.5 py-0.5 text-xs font-medium text-[#A0AEC0]">
+                <span>Nominal Tüketim (Tonaj Bekleniyor)</span>
+                <span className="font-mono font-bold text-[#F3F4F6]">({breakdown?.route?.fuel?.consumptionPer100Km || 32} L/100km)</span>
               </span>
             )}
           </div>
@@ -305,30 +310,42 @@ export default function PricingEngineCard({
             <div className="flex items-center justify-between rounded-lg border border-[#374151] bg-[#111827] p-3">
               <div>
                 <div className="font-bold text-[#F3F4F6]">1. Yakıt Maliyeti</div>
-                <div className="text-[11px] text-[#A0AEC0]">{breakdown.route.fuel.liters} L ({breakdown.route.fuel.consumptionPer100Km} L/100km) · Akaryakıt (Motorin)</div>
+                <div className="text-[11px] text-[#A0AEC0]">
+                  {breakdown?.route?.fuel?.liters ?? 0} L ({breakdown?.route?.fuel?.consumptionPer100Km ?? 32} L/100km) · Akaryakıt (Motorin)
+                </div>
               </div>
               <div className="text-right font-mono font-bold text-[#F3F4F6]">
-                ₺{breakdown.route.fuel.cost.toLocaleString("tr-TR")}
+                ₺{(breakdown?.route?.fuel?.cost ?? 0).toLocaleString("tr-TR")}
               </div>
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-[#374151] bg-[#111827] p-3">
               <div>
                 <div className="font-bold text-[#F3F4F6]">2. Otoyol & Köprü (HGS)</div>
-                <div className="text-[11px] text-[#A0AEC0]">{breakdown.route.toll.isTollCorridor ? "Otoyol Geçiş Ücreti" : "Standart Geçiş"}</div>
+                <div className="text-[11px] text-[#A0AEC0]">
+                  {breakdown?.route?.toll?.status === "unavailable"
+                    ? "Doğrulanmış KGM koridor verisi bekleniyor (0 ₺)"
+                    : breakdown?.route?.toll?.isTollCorridor
+                    ? "KGM / Otoyol Geçiş Ücreti"
+                    : "Standart Geçiş"}
+                </div>
               </div>
               <div className="text-right font-mono font-bold text-[#F3F4F6]">
-                ₺{breakdown.route.toll.cost.toLocaleString("tr-TR")}
+                {breakdown?.route?.toll?.cost != null
+                  ? `₺${breakdown.route.toll.cost.toLocaleString("tr-TR")}`
+                  : "₺0 (Dahil Edilmedi)"}
               </div>
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-[#374151] bg-[#111827] p-3">
               <div>
                 <div className="font-bold text-[#F3F4F6]">3. Sürücü / Personel</div>
-                <div className="text-[11px] text-[#A0AEC0]">{route.durationHours} Saat Sürüş + Günlük Harcırah</div>
+                <div className="text-[11px] text-[#A0AEC0]">
+                  {route?.durationHours ?? 0} Saat Sürüş + Günlük Harcırah
+                </div>
               </div>
               <div className="text-right font-mono font-bold text-[#F3F4F6]">
-                ₺{breakdown.route.driver.cost.toLocaleString("tr-TR")}
+                ₺{(breakdown?.route?.driver?.cost ?? 0).toLocaleString("tr-TR")}
               </div>
             </div>
 
@@ -338,7 +355,7 @@ export default function PricingEngineCard({
                 <div className="text-[11px] text-[#A0AEC0]">Periyodik bakım ve yıpranma payı</div>
               </div>
               <div className="text-right font-mono font-bold text-[#F3F4F6]">
-                ₺{(breakdown.route.maintenance.cost + breakdown.route.depreciation.cost).toLocaleString("tr-TR")}
+                ₺{((breakdown?.route?.maintenance?.cost ?? 0) + (breakdown?.route?.depreciation?.cost ?? 0)).toLocaleString("tr-TR")}
               </div>
             </div>
           </div>

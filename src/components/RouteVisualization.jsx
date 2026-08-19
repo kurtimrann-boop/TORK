@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import RouteSummary from "./RouteSummary";
 import { setRouteDistance } from "../utils/location";
@@ -37,6 +37,8 @@ export default function RouteVisualization({
   showSummary = true,
   profile = "driving-car",
   loadId,
+  tonnage = null,
+  vehicleType = "TIR",
 }) {
   const [routeState, setRouteState] = useState({
     status: "idle", // idle | loading | success | error
@@ -44,7 +46,7 @@ export default function RouteVisualization({
     durationText: null,
     distanceKm: null,
     points: [],
-    fuelCost: null,
+    fuelPrice: 78.54,
   });
 
   const abortControllerRef = useRef(null);
@@ -115,8 +117,8 @@ export default function RouteVisualization({
           throw new Error(data.error || "Rota hesaplanamadı.");
         }
 
-        // Live Fuel Cost calculation
-        let calculatedFuelCost = null;
+        // Live Fuel Price lookup
+        let liveDieselPrice = 78.54;
         if (data.distanceKm) {
           try {
             const originCity = originLabel ? originLabel.split("/")[0].trim() : null;
@@ -124,18 +126,12 @@ export default function RouteVisualization({
               ? await fetchCityFuelPrices(originCity).catch(() => fetchNationalFuelPrices())
               : await fetchNationalFuelPrices();
 
-            const dieselPrice =
+            liveDieselPrice =
               fuelRes?.prices?.diesel?.price ??
               fuelRes?.prices?.diesel?.average ??
-              76.35;
-
-            calculatedFuelCost = calculateRouteFuelCost({
-              distanceKm: data.distanceKm,
-              fuelPricePerLiter: dieselPrice,
-              vehicleTypeId: "TIR",
-            });
+              78.54;
           } catch (fuelErr) {
-            console.warn("[RouteVisualization] Yakıt maliyeti hesaplanamadı:", fuelErr);
+            console.warn("[RouteVisualization] Yakıt fiyatı alınamadı:", fuelErr);
           }
         }
 
@@ -146,7 +142,7 @@ export default function RouteVisualization({
             durationText: data.durationText,
             distanceKm: data.distanceKm,
             geometry: data.geometry || [],
-            fuelCost: calculatedFuelCost,
+            fuelPrice: liveDieselPrice,
           });
         }
 
@@ -156,7 +152,7 @@ export default function RouteVisualization({
           durationText: data.durationText,
           distanceKm: data.distanceKm,
           points: data.geometry || [],
-          fuelCost: calculatedFuelCost,
+          fuelPrice: liveDieselPrice,
         });
 
         if (loadId && data.distanceKm != null) {
@@ -218,10 +214,10 @@ export default function RouteVisualization({
               </div>
               <div className="text-xs sm:text-sm font-black text-white tracking-tight">
                 {routeState.distanceText} <span className="text-white/40">·</span> {routeState.durationText}
-                {routeState.fuelCost && (
+                {currentFuelCost && (
                   <>
                     <span className="text-white/40"> · </span>
-                    <span className="text-[#F5A400]/90">≈ {routeState.fuelCost.formatted?.cost} yakıt</span>
+                    <span className="text-[#F5A400]/90">≈ {currentFuelCost.formatted?.cost} yakıt</span>
                   </>
                 )}
               </div>
@@ -229,17 +225,17 @@ export default function RouteVisualization({
           </div>
         )}
 
-        {/* Loading Floating Indicator with smooth 300ms transition */}
+        {/* Loading Overlay Pill */}
         {activeStatus === "loading" && (
-          <div className="absolute inset-x-0 top-3 z-[1000] flex justify-center pointer-events-none transition-all duration-300">
-            <div className="flex items-center gap-2 rounded-full border border-[#F5A400]/25 bg-black/80 px-4 py-2 text-xs font-black text-[#F5A400] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md">
+          <div className="absolute inset-x-0 top-3 z-[1000] flex justify-center">
+            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/80 px-4 py-1.5 text-xs font-bold text-slate-300 shadow-xl backdrop-blur-md">
               <span className="h-2 w-2 rounded-full bg-[#F5A400] animate-ping" />
-              Rota hesaplanıyor...
+              <span>Gerçek karayolu rotası hesaplanıyor...</span>
             </div>
           </div>
         )}
 
-        {/* Error Floating Banner with Retry Action */}
+        {/* Error Notification Pill */}
         {activeStatus === "error" && (
           <div className="absolute inset-x-0 top-3 z-[1000] flex justify-center transition-all duration-300">
             <div className="flex items-center gap-2.5 rounded-full border border-red-500/25 bg-black/85 px-4 py-2 text-xs font-bold text-red-400 shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md">
@@ -257,7 +253,7 @@ export default function RouteVisualization({
                     durationText: null,
                     distanceKm: null,
                     points: [],
-                    fuelCost: null,
+                    fuelPrice: 78.54,
                   });
                 }}
                 className="underline hover:text-red-300 font-bold ml-1"
@@ -291,7 +287,7 @@ export default function RouteVisualization({
                   ? "Rota hesaplanamadı."
                   : "Henüz hesaplanmadı"
           }
-          fuelCostInfo={activeStatus === "success" ? routeState.fuelCost : null}
+          fuelCostInfo={activeStatus === "success" ? currentFuelCost : null}
         />
       )}
     </div>
